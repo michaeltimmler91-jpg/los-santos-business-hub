@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Los Santos Business Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-overlay">
+    <h1></h1>
+    <p></p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="intro">
+    <h2>Aktuelle Unternehmen</h2>
+    <p>Hier siehst du, wer geöffnet hat und ob Lieferung möglich ist.</p>
+  </section>
+
+  <div class="filter-box">
+    <input type="text" id="searchInput" placeholder="Unternehmen suchen ...">
+
+    <div class="filter-bar">
+      <button class="active-filter" data-filter="all">Alle</button>
+      <button data-filter="essen">Essen & Lieferung</button>
+      <button data-filter="behoerden">Behörden & Medizin</button>
+      <button data-filter="werkstatt">Tuning & Werkstatt</button>
+      <button data-filter="service">Unternehmen & Service</button>
+    </div>
+  </div>
+
+  <section class="business-grid" id="businessGrid">
+
+    <div class="card" data-category="essen">
+      <img src="bilder/burgershot.png" alt="Burger Shot">
+      <h3>Burger Shot</h3>
+      <span class="status closed">Geschlossen</span>
+      <span class="delivery no">Keine Lieferung</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="essen">
+      <img src="bilder/hookies.png" alt="Hookies">
+      <h3>Hookies</h3>
+      <span class="status closed">Geschlossen</span>
+      <span class="delivery no">Keine Lieferung</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="essen">
+      <img src="bilder/pearls.png" alt="Pearls">
+      <h3>Pearls</h3>
+      <span class="status closed">Geschlossen</span>
+      <span class="delivery no">Keine Lieferung</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="behoerden">
+      <img src="bilder/lsmd.png" alt="LSMD">
+      <h3>LSMD</h3>
+      <span class="status closed">Geschlossen</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="behoerden">
+      <img src="bilder/lspd.png" alt="LSPD">
+      <h3>LSPD</h3>
+      <span class="status closed">Geschlossen</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="werkstatt">
+      <img src="bilder/blackline.png" alt="Blackline Tuning">
+      <h3>Blackline Tuning</h3>
+      <span class="status closed">Geschlossen</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="werkstatt">
+      <img src="bilder/bennys.png" alt="Bennys">
+      <h3>Bennys</h3>
+      <span class="status closed">Geschlossen</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="service">
+      <img src="bilder/smokeys.png" alt="Smokey's Weed Shop">
+      <h3>Smokey's Weed</h3>
+      <span class="status closed">Geschlossen</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="service">
+      <img src="bilder/adler-partner.png" alt="Adler & Partner">
+      <h3>Adler & Partner</h3>
+      <span class="status closed">Geschlossen</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+    <div class="card" data-category="service">
+      <img src="bilder/balkan-recordzz.png" alt="Balkan Recordzz">
+      <h3>Balkan Recordzz</h3>
+      <span class="status closed">Geschlossen</span>
+      <div class="buttons">
+        <a href="#">Website</a>
+        <a href="#">Verteiler</a>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  Diese Website dient ausschließlich dem Roleplay auf dem GTA-/FiveM-Server Verdano City. Alle Unternehmen, Personen und Dienstleistungen sind rein fiktiv und gehören zum RP-Konzept des Servers.
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
