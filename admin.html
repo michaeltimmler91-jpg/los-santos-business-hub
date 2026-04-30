@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Admin Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body{
+      margin:0;
+      min-height:100vh;
+      background:#0b0b14;
+      color:white;
+      font-family:Arial, sans-serif;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+    }
+
+    .box{
+      width:100%;
+      max-width:480px;
+      background:#151522;
+      padding:30px;
+      border-radius:22px;
+      box-shadow:0 0 30px rgba(255,20,147,0.35);
+      text-align:center;
+    }
+
+    h1{
+      color:#ff1493;
+      margin-bottom:20px;
+    }
+
+    input{
+      width:100%;
+      padding:15px;
+      border-radius:14px;
+      border:none;
+      background:#222233;
+      color:white;
+      font-size:16px;
+      margin-bottom:15px;
+      box-sizing:border-box;
+    }
+
+    button{
+      width:100%;
+      padding:14px;
+      margin-top:10px;
+      border:none;
+      border-radius:14px;
+      font-weight:bold;
+      cursor:pointer;
+      font-size:16px;
+    }
+
+    .pink{background:#ff1493;color:white;}
+    .green{background:#00ff88;color:black;}
+    .red{background:#ff4d6d;color:white;}
+    .blue{background:#00e0ff;color:black;}
+    .gray{background:#555;color:white;}
+
+    .hidden{display:none;}
+
+    .status{
+      margin:15px 0;
+      padding:12px;
+      border-radius:12px;
+      background:#0b0b14;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box" id="loginBox">
+  <h1>Business Login</h1>
+  <input type="password" id="codeInput" placeholder="Zugangscode eingeben">
+  <button class="pink" onclick="login()">Einloggen</button>
+</div>
+
+<div class="box hidden" id="adminBox">
+  <h1 id="businessTitle">Firma</h1>
+
+  <div class="status" id="statusText">Status: -</div>
+  <div class="status" id="deliveryText">Lieferung: -</div>
+
+  <button class="green" onclick="setOpen(true)">÷ffnen</button>
+  <button class="red" onclick="setOpen(false)">Schlieﬂen</button>
+
+  <button class="blue" onclick="setDelivery(true)">Lieferung Ja</button>
+  <button class="gray" onclick="setDelivery(false)">Lieferung Nein</button>
+
+  <button class="pink" onclick="logout()">Ausloggen</button>
+</div>
+
+<script>
+const SUPABASE_URL = "https://eulfqqkxqxjgszqdffhy.supabase.co";
+const SUPABASE_KEY = "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const ACCESS_CODES = {
+  "BURGER2026": "Burger Shot",
+  "HOOKIES2026": "Hookies",
+  "PEARLS2026": "Pearls",
+  "LSMD2026": "LSMD",
+  "LSPD2026": "LSPD",
+  "BLACKLINE2026": "Blackline Tuning",
+  "BENNYS2026": "Bennys",
+  "SMOKEYS2026": "Smokey's Weed Shop",
+  "ADLER2026": "Adler & Partner",
+  "BALKAN2026": "Balkan Recordzz",
+  "TAXI2026": "Los Santos Taxi"
+};
+
+let currentBusiness = null;
+
+async function login(){
+  const code = document.getElementById("codeInput").value.trim().toUpperCase();
+  const businessName = ACCESS_CODES[code];
+
+  if(!businessName){
+    alert("Falscher Zugangscode");
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("businesses")
+    .select("*")
+    .eq("name", businessName)
+    .single();
+
+  if(error || !data){
+    alert("Firma nicht gefunden");
+    return;
+  }
+
+  currentBusiness = data;
+
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("adminBox").classList.remove("hidden");
+
+  updateUI();
+}
+
+function updateUI(){
+  document.getElementById("businessTitle").innerText = currentBusiness.name;
+  document.getElementById("statusText").innerText =
+    "Status: " + (currentBusiness.open ? "Offen" : "Geschlossen");
+
+  document.getElementById("deliveryText").innerText =
+    "Lieferung: " + (currentBusiness.delivery ? "Ja" : "Nein");
+}
+
+async function setOpen(value){
+  currentBusiness.open = value;
+
+  if(value === false){
+    currentBusiness.delivery = false;
+  }
+
+  await saveBusiness();
+}
+
+async function setDelivery(value){
+  currentBusiness.delivery = value;
+  await saveBusiness();
+}
+
+async function saveBusiness(){
+  const { error } = await supabaseClient
+    .from("businesses")
+    .update({
+      open: currentBusiness.open,
+      delivery: currentBusiness.delivery
+    })
+    .eq("id", currentBusiness.id);
+
+  if(error){
+    alert("Fehler beim Speichern");
+    console.error(error);
+    return;
+  }
+
+  updateUI();
+}
+
+function logout(){
+  currentBusiness = null;
+  document.getElementById("codeInput").value = "";
+  document.getElementById("adminBox").classList.add("hidden");
+  document.getElementById("loginBox").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
