@@ -37,12 +37,35 @@ function setupFilter() {
 }
 
 function shuffleCards() {
+
     const grid = document.getElementById("businessGrid");
+
     if (!grid) return;
 
     const cards = Array.from(grid.querySelectorAll(".card"));
-    cards.sort(() => Math.random() - 0.5);
-    cards.forEach(card => grid.appendChild(card));
+
+    const offene = [];
+    const geschlossene = [];
+
+    cards.forEach(card => {
+
+        const status = card.querySelector(".status");
+
+        if (status.classList.contains("open")) {
+            offene.push(card);
+        } else {
+            geschlossene.push(card);
+        }
+    });
+
+    offene.sort(() => Math.random() - 0.5);
+    geschlossene.sort(() => Math.random() - 0.5);
+
+    const neueReihenfolge = [...offene, ...geschlossene];
+
+    neueReihenfolge.forEach(card => {
+        grid.appendChild(card);
+    });
 }
 
 async function ladeDaten() {
@@ -97,7 +120,8 @@ async function ladeDaten() {
         if (buttons[0]) buttons[0].href = business.website || "#";
         if (buttons[1]) buttons[1].href = business.discord || "#";
     });
-
+    
+	shuffleCards();
     filterCards();
 }
 
