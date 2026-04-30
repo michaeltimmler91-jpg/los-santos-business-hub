@@ -88,11 +88,13 @@
   <div class="status" id="statusText">Status: -</div>
   <div class="status" id="deliveryText">Lieferung: -</div>
 
-  <button class="green" onclick="setOpen(true)">Offnen</button>
+  <button class="green" onclick="setOpen(true)">Offen</button>
   <button class="red" onclick="setOpen(false)">Geschlossen</button>
 
-  <button class="blue" onclick="setDelivery(true)">Lieferung Ja</button>
-  <button class="gray" onclick="setDelivery(false)">Lieferung Nein</button>
+  <div id="deliveryButtons">
+    <button class="blue" onclick="setDelivery(true)">Lieferung Ja</button>
+    <button class="gray" onclick="setDelivery(false)">Lieferung Nein</button>
+  </div>
 
   <button class="pink" onclick="logout()">Ausloggen</button>
 </div>
@@ -136,6 +138,7 @@ async function login(){
 
   if(error || !data){
     alert("Firma nicht gefunden");
+    console.error(error);
     return;
   }
 
@@ -149,11 +152,21 @@ async function login(){
 
 function updateUI(){
   document.getElementById("businessTitle").innerText = currentBusiness.name;
+
   document.getElementById("statusText").innerText =
     "Status: " + (currentBusiness.open ? "Offen" : "Geschlossen");
 
   document.getElementById("deliveryText").innerText =
     "Lieferung: " + (currentBusiness.delivery ? "Ja" : "Nein");
+
+  const deliveryButtons = document.getElementById("deliveryButtons");
+
+  if(currentBusiness.category && currentBusiness.category.toLowerCase() === "food"){
+    deliveryButtons.style.display = "block";
+  } else {
+    deliveryButtons.style.display = "none";
+    document.getElementById("deliveryText").style.display = "none";
+  }
 }
 
 async function setOpen(value){

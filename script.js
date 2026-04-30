@@ -55,13 +55,6 @@ async function ladeDaten() {
         return;
     }
 
-    console.log("Live-Daten geladen:", data);
-
-    const taxiOnline = data.some(b =>
-        b.name.toLowerCase() === "los santos taxi" &&
-        b.open === true
-    );
-
     document.querySelectorAll(".card").forEach(card => {
         const title = card.querySelector("h3").innerText.trim().toLowerCase();
 
@@ -88,14 +81,7 @@ async function ladeDaten() {
         if (delivery) {
             const deliveryActive =
                 business.open === true &&
-                (
-                    business.delivery === true ||
-                    (
-                        taxiOnline &&
-                        business.category &&
-                        business.category.toLowerCase() === "food"
-                    )
-                );
+                business.delivery === true;
 
             if (deliveryActive) {
                 delivery.innerText = "Lieferung aktiv";
@@ -108,13 +94,8 @@ async function ladeDaten() {
             }
         }
 
-        if (buttons[0]) {
-            buttons[0].href = business.website || "#";
-        }
-
-        if (buttons[1]) {
-            buttons[1].href = business.discord || "#";
-        }
+        if (buttons[0]) buttons[0].href = business.website || "#";
+        if (buttons[1]) buttons[1].href = business.discord || "#";
     });
 
     filterCards();
