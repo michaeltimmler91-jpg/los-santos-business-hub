@@ -7,142 +7,203 @@ const supabaseClient = supabase.createClient(
     SUPABASE_KEY
 );
 
-const sheetID = "1TaVuu1Pi1a26yKTHAXQYmXxbmnGvSVleFsPG_tl1Gd8";
-const gid = "0";
+async function ladeDaten() {
 
-const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&gid=${gid}`;
+    const { data, error } = await supabaseClient
+        .from("businesses")
+        .select("*");
 
-function shuffleCards() {
-    const grid = document.getElementById("businessGrid");
-    const cards = Array.from(grid.querySelectorAll(".card"));
+    if (error) {
+        console.error("Supabase Fehler:", error);
+        return;
+    }
 
-    cards.sort(() => Math.random() - 0.5);
+    console.log("Supabase Daten:", data);
 
-    cards.forEach(card => grid.appendChild(card));
+    const taxiOnline = data.some(b =>
+        b.name.toLowerCase() === "los santos taxi" &&
+        b.open === true
+    );
+
+    document.querySelectorAll(".card").forEach(card => {
+
+        const title = card.querySelector("h3").innerText.trim().toLowerCase();
+
+        const business = data.find(b =>
+            b.name.toLowerCase() === title
+        );
+
+        if (!business) return;
+
+        const status = card.querySelector(".status");
+        const delivery = card.querySelector(".delivery");
+
+        const websiteBtn = card.querySelector(".website-btn");
+        const discordBtn = card.querySelector(".discord-btn");
+
+        /*
+        =========================
+        STATUS
+        =========================
+        */
+
+        if (business.open === true) {
+
+            status.innerText = "Offen";
+
+            status.classList.remove("closed");
+            status.classList.add("open");
+
+        } else {
+
+            status.innerText = "Geschlossen";
+
+            status.classList.remove("open");
+            status.classList.add("closed");
+        }
+
+        /*
+        =========================
+        LIEFERUNG
+        =========================
+        */
+
+        if (delivery) {
+
+            const lieferungMoeglich =
+                business.open === true &&
+                (
+                    business.delivery === true ||
+
+                    (
+                        taxiOnline &&
+                        business.category &&
+                        business.category.toLowerCase() === "food"
+                    )
+                );
+
+            if (lieferungMoeglich) {
+
+                delivery.innerText = "Lieferung aktiv";
+
+                delivery.classList.remove("no");
+                delivery.classList.add("yes");
+
+            } else {
+
+                delivery.innerText = "Keine Lieferung";
+
+                delivery.classList.remove("yes");
+                delivery.classList.add("no");
+            }
+        }
+
+        /*
+        =========================
+        WEBSITE BUTTON
+        =========================
+        */
+
+        if (websiteBtn) {
+
+            if (business.website && business.website !== "") {
+
+                websiteBtn.style.display = "inline-block";
+
+                websiteBtn.onclick = () => {
+                    window.open(business.website, "_blank");
+                };
+
+            } else {
+
+                websiteBtn.style.display = "none";
+            }
+        }
+
+        /*
+        =========================
+        DISCORD BUTTON
+        =========================
+        */
+
+        if (discordBtn) {
+
+            if (business.discord && business.discord !== "") {
+
+                discordBtn.style.display = "inline-block";
+
+                discordBtn.onclick = () => {
+                    window.open(business.discord, "_blank");
+                };
+
+            } else {
+
+                discordBtn.style.display = "none";
+            }
+        }
+    });
+
+    filterCards();
 }
 
+/*
+=========================
+FILTER
+=========================
+*/
+
 function filterCards() {
-    const activeButton = document.querySelector(".filter-bar button.active-filter");
-    const filter = activeButton ? activeButton.dataset.filter : "all";
-    const search = document.getElementById("searchInput").value.toLowerCase().trim();
+
+    const filter = document
+        .getElementById("categoryFilter")
+        ?.value?.toLowerCase() || "all";
 
     const cards = document.querySelectorAll(".card");
 
     cards.forEach(card => {
-        const category = card.dataset.category;
-        const name = card.querySelector("h3").innerText.toLowerCase();
 
-        const matchesFilter = filter === "all" || category === filter;
-        const matchesSearch = name.includes(search);
+        const category = card.dataset.category?.toLowerCase();
 
-        card.style.display = matchesFilter && matchesSearch ? "block" : "none";
+        if (filter === "all" || category === filter) {
+
+            card.style.display = "block";
+
+        } else {
+
+            card.style.display = "none";
+        }
     });
 }
 
-function setupFilter() {
-    const buttons = document.querySelectorAll(".filter-bar button");
-    const searchInput = document.getElementById("searchInput");
+/*
+=========================
+RANDOM SORT
+=========================
+*/
 
-    buttons.forEach(button => {
-        button.addEventListener("click", () => {
-            buttons.forEach(btn => btn.classList.remove("active-filter"));
-            button.classList.add("active-filter");
-            filterCards();
-        });
-    });
+function shuffleCards() {
 
-    searchInput.addEventListener("input", filterCards);
-}
+    const container = document.querySelector(".cards-container");
 
-function ladeDaten() {
-    fetch(url + "&cachebuster=" + Date.now())
-    .then(res => res.text())
-    .then(text => {
+    if (!container) return;
 
-        const start = text.indexOf("{");
-        const end = text.lastIndexOf("}") + 1;
-        const json = JSON.parse(text.substring(start, end));
+    const cards = Array.from(container.children);
 
-        const rows = json.table.rows;
+    cards.sort(() => Math.random() - 0.5);
 
-        let taxiOnline = false;
-
-        rows.forEach(row => {
-            const unternehmen = row.c[0]?.v || "";
-            const offen = row.c[1]?.v || "";
-
-            if (
-                unternehmen.toLowerCase() === "taxi" &&
-                offen.toLowerCase() === "ja"
-            ) {
-                taxiOnline = true;
-            }
-        });
-
-        rows.forEach(row => {
-            const unternehmen = row.c[0]?.v || "";
-            const offen = row.c[1]?.v || "";
-            const lieferung = row.c[2]?.v || "";
-            const website = row.c[3]?.v || "#";
-            const verteiler = row.c[4]?.v || "#";
-
-            const cards = document.querySelectorAll(".card");
-
-            cards.forEach(card => {
-                const title = card.querySelector("h3").innerText;
-
-                if (title.toLowerCase() === unternehmen.toLowerCase()) {
-                    const status = card.querySelector(".status");
-                    const delivery = card.querySelector(".delivery");
-
-                    if (offen.toLowerCase() === "ja") {
-                        status.innerText = "Offen";
-                        status.classList.remove("closed");
-                        status.classList.add("open");
-                    } else {
-                        status.innerText = "Geschlossen";
-                        status.classList.remove("open");
-                        status.classList.add("closed");
-                    }
-
-                    if (delivery) {
-                        if (
-                            offen.toLowerCase() === "ja" &&
-                            (
-                                lieferung.toLowerCase() === "ja" ||
-                                (
-                                    taxiOnline &&
-                                    unternehmen.toLowerCase() !== "taxi"
-                                )
-                            )
-                        ) {
-                            delivery.innerText = "Lieferung aktiv";
-                            delivery.classList.remove("no");
-                            delivery.classList.add("yes");
-                        } else {
-                            delivery.innerText = "Keine Lieferung";
-                            delivery.classList.remove("yes");
-                            delivery.classList.add("no");
-                        }
-                    }
-
-                    const buttons = card.querySelectorAll(".buttons a");
-
-                    if (buttons[0]) buttons[0].href = website;
-                    if (buttons[1]) buttons[1].href = verteiler;
-                }
-            });
-        });
-
-        filterCards();
-    })
-    .catch(error => {
-        console.log("Fehler beim Laden:", error);
+    cards.forEach(card => {
+        container.appendChild(card);
     });
 }
+
+/*
+=========================
+START
+=========================
+*/
 
 shuffleCards();
-setupFilter();
+
 ladeDaten();
 
-setInterval(ladeDaten, 30000);
+setInterval(ladeDaten, 5000);
