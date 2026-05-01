@@ -6,33 +6,60 @@
 
   <title>V2 Dashboard</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=2">
+  <link rel="stylesheet" href="./v2-style.css?v=20">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <div class="auth-page">
 
-  <div class="auth-box">
+  <div class="admin-wrapper">
 
-    <h1>Dashboard</h1>
+    <div class="admin-topbar">
 
-    <p id="welcomeText">L&auml;dt...</p>
+      <h1>Dashboard</h1>
 
-    <button onclick="logoutUser()">
-      Ausloggen
-    </button>
+      <button onclick="logoutUser()">
+        Ausloggen
+      </button>
 
-    <div class="auth-links">
-      <a href="index.html">Zur&uuml;ck zur alten Seite</a>
-      <a href="v2-login.html">Zum Login</a>
+    </div>
+
+    <div class="admin-box">
+
+      <h2 id="welcomeTitle">Willkommen</h2>
+
+      <p id="welcomeText">
+        L&auml;dt...
+      </p>
+
+      <div class="dashboard-actions">
+
+        <a href="v2-superadmin.html" id="superadminLink" class="dashboard-card hidden">
+          <strong>Superadmin Panel</strong>
+          <span>Firmen verwalten, Inhaber &auml;ndern und System steuern</span>
+        </a>
+
+        <a href="v2-owner.html" id="ownerLink" class="dashboard-card hidden">
+          <strong>Firmeninhaber Panel</strong>
+          <span>Eigene Firma verwalten, Mitarbeiter und Bewerbungen bearbeiten</span>
+        </a>
+
+        <a href="index.html" class="dashboard-card">
+          <strong>Zur alten Live-Seite</strong>
+          <span>Aktuelle V1-Seite &ouml;ffnen</span>
+        </a>
+
+      </div>
+
     </div>
 
   </div>
 
 </div>
 
-<script src="./v2-auth.js?v=2"></script>
+<script src="./v2-auth.js?v=20"></script>
 
 <script>
 checkDashboard();
