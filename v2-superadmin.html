@@ -6,7 +6,7 @@
 
   <title>V2 Superadmin</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=3">
+  <link rel="stylesheet" href="./v2-style.css?v=4">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -17,59 +17,51 @@
   <div class="admin-wrapper">
 
     <div class="admin-topbar">
-
       <h1>Superadmin Panel</h1>
 
       <button onclick="logoutUser()">
         Ausloggen
       </button>
-
     </div>
 
     <div class="admin-box">
 
       <h2>Neue Firma anlegen</h2>
 
-      <input
-        type="text"
-        id="businessName"
-        placeholder="Firmenname"
-      >
+      <input type="text" id="businessName" placeholder="Firmenname">
 
       <select id="businessCategory">
-
-        <option value="food">
-          Essen &amp; Lieferung
-        </option>
-
-        <option value="service">
-          Unternehmen &amp; Service
-        </option>
-
-        <option value="government">
-          Beh&ouml;rden
-        </option>
-
-        <option value="workshop">
-          Werkstatt
-        </option>
-
+        <option value="food">Essen &amp; Lieferung</option>
+        <option value="service">Unternehmen &amp; Service</option>
+        <option value="government">Beh&ouml;rden</option>
+        <option value="workshop">Werkstatt</option>
       </select>
 
-      <textarea
-        id="businessDescription"
-        placeholder="Beschreibung"
-      ></textarea>
+      <textarea id="businessDescription" placeholder="Beschreibung"></textarea>
 
-      <input
-        type="text"
-        id="businessPlz"
-        placeholder="PLZ"
-      >
+      <input type="text" id="businessPlz" placeholder="PLZ">
 
       <button onclick="createBusiness()">
         Firma erstellen
       </button>
+
+    </div>
+
+    <div class="admin-box">
+
+      <h2>Firmeninhaber zuweisen</h2>
+
+      <select id="ownerBusinessSelect"></select>
+
+      <input type="text" id="ownerLoginName" placeholder="Loginname des Users">
+
+      <button onclick="assignOwner()">
+        Als Inhaber zuweisen
+      </button>
+
+      <p class="hint">
+        Der User muss bereits registriert sein.
+      </p>
 
     </div>
 
@@ -86,7 +78,7 @@
 </div>
 
 <script src="./v2-auth.js?v=3"></script>
-<script src="./v2-superadmin.js?v=1"></script>
+<script src="./v2-superadmin.js?v=2"></script>
 
 <script>
 checkSuperadmin();

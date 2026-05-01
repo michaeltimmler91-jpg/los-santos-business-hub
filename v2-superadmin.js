@@ -10,6 +10,8 @@ supabase.createClient(
   SUPABASE_KEY
 );
 
+let businessesCache = [];
+
 async function checkSuperadmin(){
 
   const { data } =
@@ -85,12 +87,10 @@ async function createBusiness(){
   await supabaseClient
   .from("businesses_v2")
   .insert({
-
     name:name,
     category:category,
     description:description,
     plz:plz
-
   });
 
   if(error){
@@ -126,6 +126,10 @@ async function loadBusinesses(){
     return;
   }
 
+  businessesCache = data || [];
+
+  fillBusinessSelect();
+
   const list =
   document.getElementById("businessList");
 
@@ -139,7 +143,10 @@ async function loadBusinesses(){
     return;
   }
 
-  data.forEach(business => {
+  for(const business of data){
+
+    const members =
+    await loadBusinessMembers(business.id);
 
     const div =
     document.createElement("div");
@@ -163,13 +170,135 @@ async function loadBusinesses(){
           ${escapeHtml(business.plz || "-")}
         </p>
 
+        <p>
+          Mitarbeiter:
+        </p>
+
+        <div class="member-list">
+          ${
+            members.length > 0
+            ? members.map(member => `
+                <div class="member-pill">
+                  ${escapeHtml(member.profiles?.display_name || "Unbekannt")}
+                  <span>
+                    ${escapeHtml(member.member_role)}
+                  </span>
+                </div>
+              `).join("")
+            : "<span class='muted'>Noch keine Mitarbeiter</span>"
+          }
+        </div>
+
       </div>
     `;
 
     list.appendChild(div);
+  }
+}
 
+async function loadBusinessMembers(businessId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_members")
+  .select(`
+    id,
+    member_role,
+    profiles (
+      display_name,
+      login_name
+    )
+  `)
+  .eq("business_id", businessId);
+
+  if(error){
+
+    console.error(error);
+
+    return [];
+  }
+
+  return data || [];
+}
+
+function fillBusinessSelect(){
+
+  const select =
+  document.getElementById("ownerBusinessSelect");
+
+  select.innerHTML = "";
+
+  businessesCache.forEach(business => {
+
+    const option =
+    document.createElement("option");
+
+    option.value = business.id;
+
+    option.innerText = business.name;
+
+    select.appendChild(option);
+  });
+}
+
+async function assignOwner(){
+
+  const businessId =
+  document.getElementById("ownerBusinessSelect")
+  .value;
+
+  const loginName =
+  document.getElementById("ownerLoginName")
+  .value
+  .trim()
+  .toLowerCase();
+
+  if(!businessId || !loginName){
+
+    alert("Bitte Firma und Loginname angeben");
+
+    return;
+  }
+
+  const { data: profile, error: profileError } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("login_name", loginName)
+  .single();
+
+  if(profileError || !profile){
+
+    alert("User nicht gefunden");
+
+    console.error(profileError);
+
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_members")
+  .insert({
+    business_id: Number(businessId),
+    user_id: profile.user_id,
+    member_role: "inhaber"
   });
 
+  if(error){
+
+    alert("Inhaber konnte nicht zugewiesen werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  alert("Inhaber wurde zugewiesen");
+
+  document.getElementById("ownerLoginName").value = "";
+
+  loadBusinesses();
 }
 
 function escapeHtml(text){
