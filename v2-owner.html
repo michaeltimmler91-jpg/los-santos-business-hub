@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>V2 Firmeninhaber</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=5">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="admin-wrapper">
+
+    <div class="admin-topbar">
+      <h1>Firmeninhaber Panel</h1>
+
+      <button onclick="logoutUser()">
+        Ausloggen
+      </button>
+    </div>
+
+    <div class="admin-box">
+      <h2 id="businessTitle">Meine Firma</h2>
+
+      <div class="status-grid">
+        <div class="status-card">
+          <strong>Status</strong>
+          <span id="openStatus">-</span>
+        </div>
+
+        <div class="status-card">
+          <strong>Lieferung</strong>
+          <span id="deliveryStatus">-</span>
+        </div>
+      </div>
+
+      <button onclick="setOpen(true)">Firma &ouml;ffnen</button>
+      <button onclick="setOpen(false)" class="danger-btn">Firma schlie&szlig;en</button>
+
+      <div id="deliveryControls">
+        <button onclick="setDelivery(true)">Lieferung aktivieren</button>
+        <button onclick="setDelivery(false)" class="gray-btn">Lieferung deaktivieren</button>
+      </div>
+    </div>
+
+    <div class="admin-box">
+      <h2>Firmendaten bearbeiten</h2>
+
+      <input type="text" id="businessPlz" placeholder="PLZ">
+
+      <textarea id="businessDescription" placeholder="Beschreibung"></textarea>
+
+      <input type="text" id="businessWebsite" placeholder="Website-Link">
+
+      <input type="text" id="businessDiscord" placeholder="Verteiler / Discord-Link">
+
+      <button onclick="saveBusinessData()">
+        Firmendaten speichern
+      </button>
+    </div>
+
+    <div class="admin-box">
+      <h2>Mitarbeiter hinzuf&uuml;gen</h2>
+
+      <input type="text" id="employeeLoginName" placeholder="Loginname des Mitarbeiters">
+
+      <select id="employeeRole">
+        <option value="mitarbeiter">Mitarbeiter</option>
+        <option value="inhaber">Inhaber</option>
+      </select>
+
+      <button onclick="addEmployee()">
+        Mitarbeiter hinzuf&uuml;gen
+      </button>
+
+      <h3>Aktuelle Mitarbeiter</h3>
+
+      <div id="employeeList"></div>
+    </div>
+
+    <div class="admin-box">
+      <h2>Bewerbungssystem</h2>
+
+      <label class="checkbox-line">
+        <input type="checkbox" id="applicationsEnabled">
+        Bewerbungssystem nutzen
+      </label>
+
+      <label class="checkbox-line">
+        <input type="checkbox" id="applicationsOpen">
+        Bewerbungen offen
+      </label>
+
+      <textarea id="applicationNote" placeholder="Hinweistext f&uuml;r Bewerber"></textarea>
+
+      <button onclick="saveApplicationSettings()">
+        Bewerbungseinstellungen speichern
+      </button>
+    </div>
+
+    <div class="admin-box">
+      <h2>Bewerbungsfragen</h2>
+
+      <input type="text" id="questionText" placeholder="Neue Frage">
+
+      <button onclick="addQuestion()">
+        Frage hinzuf&uuml;gen
+      </button>
+
+      <div id="questionList"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="./v2-auth.js?v=3"></script>
+<script src="./v2-owner.js?v=1"></script>
+
+<script>
+checkOwner();
+</script>
+
+</body>
+</html>

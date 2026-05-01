@@ -171,3 +171,51 @@ background:#0b0b16;
 border-radius:18px;
 margin-bottom:14px;
 }
+
+.status-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+margin-bottom:18px;
+}
+
+.status-card{
+background:#0b0b16;
+padding:18px;
+border-radius:18px;
+}
+
+.status-card strong{
+display:block;
+color:#aaa;
+margin-bottom:6px;
+}
+
+.status-card span{
+font-size:22px;
+font-weight:bold;
+color:#00d9ff;
+}
+
+.danger-btn{
+background:#ff4d6d !important;
+color:white !important;
+}
+
+.gray-btn{
+background:#555 !important;
+color:white !important;
+}
+
+.checkbox-line{
+display:flex;
+gap:10px;
+align-items:center;
+margin-bottom:12px;
+color:white;
+}
+
+.checkbox-line input{
+width:auto;
+margin:0;
+}

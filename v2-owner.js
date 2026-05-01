@@ -1,0 +1,573 @@
+const SUPABASE_URL =
+"https://eulfqqkxqxjgszqdffhy.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let currentUser = null;
+let currentProfile = null;
+let currentBusiness = null;
+let currentMembership = null;
+
+async function checkOwner(){
+
+  const { data } =
+  await supabaseClient.auth.getUser();
+
+  if(!data.user){
+
+    window.location.href =
+    "v2-login.html";
+
+    return;
+  }
+
+  currentUser = data.user;
+
+  const { data: profile, error: profileError } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("user_id", currentUser.id)
+  .single();
+
+  if(profileError || !profile){
+
+    alert("Profil nicht gefunden");
+
+    window.location.href =
+    "v2-login.html";
+
+    return;
+  }
+
+  currentProfile = profile;
+
+  const { data: membership, error: memberError } =
+  await supabaseClient
+  .from("business_members")
+  .select(`
+    id,
+    business_id,
+    user_id,
+    member_role,
+    businesses_v2 (
+      id,
+      name,
+      category,
+      open,
+      delivery,
+      website,
+      discord,
+      plz,
+      description,
+      applications_enabled,
+      applications_open,
+      application_note
+    )
+  `)
+  .eq("user_id", currentUser.id)
+  .in("member_role", ["inhaber"])
+  .single();
+
+  if(memberError || !membership){
+
+    alert("Du bist kein Firmeninhaber");
+
+    window.location.href =
+    "v2-dashboard.html";
+
+    return;
+  }
+
+  currentMembership = membership;
+  currentBusiness = membership.businesses_v2;
+
+  updateUI();
+
+  loadEmployees();
+  loadQuestions();
+}
+
+function updateUI(){
+
+  document.getElementById("businessTitle").innerText =
+  currentBusiness.name;
+
+  document.getElementById("openStatus").innerText =
+  currentBusiness.open
+  ? "Offen"
+  : "Geschlossen";
+
+  document.getElementById("deliveryStatus").innerText =
+  currentBusiness.delivery
+  ? "Aktiv"
+  : "Inaktiv";
+
+  document.getElementById("businessPlz").value =
+  currentBusiness.plz || "";
+
+  document.getElementById("businessDescription").value =
+  currentBusiness.description || "";
+
+  document.getElementById("businessWebsite").value =
+  currentBusiness.website || "";
+
+  document.getElementById("businessDiscord").value =
+  currentBusiness.discord || "";
+
+  document.getElementById("applicationsEnabled").checked =
+  currentBusiness.applications_enabled === true;
+
+  document.getElementById("applicationsOpen").checked =
+  currentBusiness.applications_open === true;
+
+  document.getElementById("applicationNote").value =
+  currentBusiness.application_note || "";
+
+  const deliveryControls =
+  document.getElementById("deliveryControls");
+
+  if(
+    currentBusiness.category &&
+    currentBusiness.category.toLowerCase() === "food"
+  ){
+    deliveryControls.style.display = "block";
+  }else{
+    deliveryControls.style.display = "none";
+  }
+}
+
+async function setOpen(value){
+
+  const updates = {
+    open:value
+  };
+
+  if(value === false){
+    updates.delivery = false;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .update(updates)
+  .eq("id", currentBusiness.id);
+
+  if(error){
+
+    alert("Status konnte nicht gespeichert werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  currentBusiness.open = value;
+
+  if(value === false){
+    currentBusiness.delivery = false;
+  }
+
+  updateUI();
+}
+
+async function setDelivery(value){
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .update({
+    delivery:value
+  })
+  .eq("id", currentBusiness.id);
+
+  if(error){
+
+    alert("Lieferung konnte nicht gespeichert werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  currentBusiness.delivery = value;
+
+  updateUI();
+}
+
+async function saveBusinessData(){
+
+  const plz =
+  document.getElementById("businessPlz")
+  .value
+  .trim();
+
+  const description =
+  document.getElementById("businessDescription")
+  .value
+  .trim();
+
+  const website =
+  document.getElementById("businessWebsite")
+  .value
+  .trim();
+
+  const discord =
+  document.getElementById("businessDiscord")
+  .value
+  .trim();
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .update({
+    plz:plz,
+    description:description,
+    website:website,
+    discord:discord
+  })
+  .eq("id", currentBusiness.id);
+
+  if(error){
+
+    alert("Firmendaten konnten nicht gespeichert werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  currentBusiness.plz = plz;
+  currentBusiness.description = description;
+  currentBusiness.website = website;
+  currentBusiness.discord = discord;
+
+  alert("Firmendaten gespeichert");
+}
+
+async function addEmployee(){
+
+  const loginName =
+  document.getElementById("employeeLoginName")
+  .value
+  .trim()
+  .toLowerCase();
+
+  const role =
+  document.getElementById("employeeRole")
+  .value;
+
+  if(!loginName){
+
+    alert("Bitte Loginname eintragen");
+
+    return;
+  }
+
+  const { data: profile, error: profileError } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("login_name", loginName)
+  .single();
+
+  if(profileError || !profile){
+
+    alert("User nicht gefunden");
+
+    console.error(profileError);
+
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_members")
+  .insert({
+    business_id:currentBusiness.id,
+    user_id:profile.user_id,
+    member_role:role
+  });
+
+  if(error){
+
+    alert("Mitarbeiter konnte nicht hinzugef\u00fcgt werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  document.getElementById("employeeLoginName").value = "";
+
+  alert("Mitarbeiter hinzugef\u00fcgt");
+
+  loadEmployees();
+}
+
+async function loadEmployees(){
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_members")
+  .select(`
+    id,
+    member_role,
+    user_id,
+    profiles (
+      login_name,
+      display_name
+    )
+  `)
+  .eq("business_id", currentBusiness.id);
+
+  if(error){
+
+    console.error(error);
+
+    return;
+  }
+
+  const list =
+  document.getElementById("employeeList");
+
+  list.innerHTML = "";
+
+  if(!data || data.length === 0){
+
+    list.innerHTML =
+    "<p class='muted'>Noch keine Mitarbeiter.</p>";
+
+    return;
+  }
+
+  data.forEach(member => {
+
+    const div =
+    document.createElement("div");
+
+    div.className = "business-item";
+
+    div.innerHTML = `
+      <strong>
+        ${escapeHtml(member.profiles?.display_name || "Unbekannt")}
+      </strong>
+
+      <p>
+        Login:
+        ${escapeHtml(member.profiles?.login_name || "-")}
+      </p>
+
+      <p>
+        Rolle:
+        ${escapeHtml(member.member_role)}
+      </p>
+
+      <button
+        class="danger-btn"
+        onclick="removeEmployee(${member.id})"
+      >
+        Entfernen
+      </button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+async function removeEmployee(memberId){
+
+  if(!confirm("Mitarbeiter wirklich entfernen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_members")
+  .delete()
+  .eq("id", memberId);
+
+  if(error){
+
+    alert("Mitarbeiter konnte nicht entfernt werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  loadEmployees();
+}
+
+async function saveApplicationSettings(){
+
+  const enabled =
+  document.getElementById("applicationsEnabled")
+  .checked;
+
+  const open =
+  document.getElementById("applicationsOpen")
+  .checked;
+
+  const note =
+  document.getElementById("applicationNote")
+  .value
+  .trim();
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .update({
+    applications_enabled:enabled,
+    applications_open:open,
+    application_note:note
+  })
+  .eq("id", currentBusiness.id);
+
+  if(error){
+
+    alert("Bewerbungseinstellungen konnten nicht gespeichert werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  currentBusiness.applications_enabled = enabled;
+  currentBusiness.applications_open = open;
+  currentBusiness.application_note = note;
+
+  alert("Bewerbungseinstellungen gespeichert");
+}
+
+async function addQuestion(){
+
+  const questionText =
+  document.getElementById("questionText")
+  .value
+  .trim();
+
+  if(!questionText){
+
+    alert("Bitte Frage eintragen");
+
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("application_questions")
+  .insert({
+    business_id:currentBusiness.id,
+    question_text:questionText,
+    required:true,
+    sort_order:0
+  });
+
+  if(error){
+
+    alert("Frage konnte nicht gespeichert werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  document.getElementById("questionText").value = "";
+
+  loadQuestions();
+}
+
+async function loadQuestions(){
+
+  const { data, error } =
+  await supabaseClient
+  .from("application_questions")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .order("sort_order");
+
+  if(error){
+
+    console.error(error);
+
+    return;
+  }
+
+  const list =
+  document.getElementById("questionList");
+
+  list.innerHTML = "";
+
+  if(!data || data.length === 0){
+
+    list.innerHTML =
+    "<p class='muted'>Noch keine Bewerbungsfragen.</p>";
+
+    return;
+  }
+
+  data.forEach(question => {
+
+    const div =
+    document.createElement("div");
+
+    div.className = "business-item";
+
+    div.innerHTML = `
+      <strong>
+        ${escapeHtml(question.question_text)}
+      </strong>
+
+      <button
+        class="danger-btn"
+        onclick="deleteQuestion(${question.id})"
+      >
+        Frage l\u00f6schen
+      </button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+async function deleteQuestion(questionId){
+
+  if(!confirm("Frage wirklich l\u00f6schen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("application_questions")
+  .delete()
+  .eq("id", questionId);
+
+  if(error){
+
+    alert("Frage konnte nicht gel\u00f6scht werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  loadQuestions();
+}
+
+function escapeHtml(text){
+
+  return String(text || "")
+  .replaceAll("&", "&amp;")
+  .replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;")
+  .replaceAll("'", "&#039;");
+}
