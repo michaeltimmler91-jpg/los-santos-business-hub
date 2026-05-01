@@ -31,7 +31,18 @@ async function loadMyApplications(){
   const { data, error } =
   await supabaseClient
   .from("applications")
-  .select("*")
+  .select(`
+    id,
+    business_id,
+    user_id,
+    status,
+    message,
+    owner_reply,
+    created_at,
+    businesses_v2 (
+      name
+    )
+  `)
   .eq("user_id", currentUser.id)
   .order("created_at", {
     ascending:false
@@ -40,6 +51,9 @@ async function loadMyApplications(){
   if(error){
 
     console.error(error);
+
+    document.getElementById("applicationList").innerHTML =
+    "<p class='muted'>Bewerbungen konnten nicht geladen werden.</p>";
 
     return;
   }
@@ -58,19 +72,17 @@ async function loadMyApplications(){
     return;
   }
 
-  for(const application of data){
-
-    const { data: business } =
-    await supabaseClient
-    .from("businesses_v2")
-    .select("*")
-    .eq("id", application.business_id)
-    .maybeSingle();
+  data.forEach(application => {
 
     const created =
     application.created_at
     ? new Date(application.created_at).toLocaleString("de-DE")
     : "-";
+
+    const businessName =
+    application.businesses_v2 && application.businesses_v2.name
+    ? application.businesses_v2.name
+    : "Unbekannte Firma";
 
     const div =
     document.createElement("div");
@@ -84,7 +96,7 @@ async function loadMyApplications(){
         <div>
 
           <strong>
-            ${escapeHtml(business ? business.name : "Unbekannte Firma")}
+            ${escapeHtml(businessName)}
           </strong>
 
           <p>
@@ -126,7 +138,7 @@ async function loadMyApplications(){
     `;
 
     list.appendChild(div);
-  }
+  });
 }
 
 function goBack(){
