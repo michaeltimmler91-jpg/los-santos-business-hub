@@ -138,10 +138,8 @@ function updateUI(){
   const deliveryControls =
   document.getElementById("deliveryControls");
 
-  if(
-    currentBusiness.category &&
-    currentBusiness.category.toLowerCase() === "food"
-  ){
+  if(currentBusiness.has_delivery === true)
+  {
     deliveryControls.style.display =
     "block";
   }else{

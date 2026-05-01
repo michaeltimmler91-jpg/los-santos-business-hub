@@ -13,7 +13,6 @@ supabase.createClient(
 let businessesCache = [];
 let profilesCache = [];
 let currentEditBusiness = null;
-let currentEditMembers = [];
 
 async function checkSuperadmin(){
 
@@ -25,21 +24,14 @@ async function checkSuperadmin(){
     return;
   }
 
-  const { data: profile, error } =
+  const { data: profile } =
   await supabaseClient
   .from("profiles")
   .select("*")
   .eq("user_id", data.user.id)
   .single();
 
-  if(error || !profile){
-    alert("Profil nicht gefunden");
-    window.location.href = "v2-login.html";
-    return;
-  }
-
-  if(profile.global_role !== "superadmin"){
-    alert("Kein Zugriff");
+  if(!profile || profile.global_role !== "superadmin"){
     window.location.href = "v2-dashboard.html";
     return;
   }
@@ -50,16 +42,11 @@ async function checkSuperadmin(){
 
 async function loadProfiles(){
 
-  const { data, error } =
+  const { data } =
   await supabaseClient
   .from("profiles")
   .select("*")
   .order("display_name");
-
-  if(error){
-    console.error(error);
-    return;
-  }
 
   profilesCache = data || [];
 }
@@ -74,27 +61,22 @@ function getProfileByUserId(userId){
 async function createBusiness(){
 
   const name =
-  document.getElementById("businessName")
-  .value
-  .trim();
+  document.getElementById("businessName").value.trim();
 
   const category =
-  document.getElementById("businessCategory")
-  .value;
+  document.getElementById("businessCategory").value;
 
   const description =
-  document.getElementById("businessDescription")
-  .value
-  .trim();
+  document.getElementById("businessDescription").value.trim();
 
   const plz =
-  document.getElementById("businessPlz")
-  .value
-  .trim();
+  document.getElementById("businessPlz").value.trim();
+
+  const hasDelivery =
+  document.getElementById("businessHasDelivery").checked;
 
   const imageFile =
-  document.getElementById("businessImage")
-  .files[0];
+  document.getElementById("businessImage").files[0];
 
   if(!name){
     alert("Bitte Firmenname eingeben");
@@ -116,10 +98,9 @@ async function createBusiness(){
     description:description,
     plz:plz,
     image_url:imageUrl,
+    has_delivery:hasDelivery,
     open:false,
-    delivery:false,
-    applications_enabled:false,
-    applications_open:false
+    delivery:false
   });
 
   if(error){
@@ -130,11 +111,6 @@ async function createBusiness(){
 
   alert("Firma erstellt");
 
-  document.getElementById("businessName").value = "";
-  document.getElementById("businessDescription").value = "";
-  document.getElementById("businessPlz").value = "";
-  document.getElementById("businessImage").value = "";
-
   loadBusinesses();
 }
 
@@ -143,28 +119,19 @@ async function uploadBusinessImage(file, businessName){
   const fileExt =
   file.name.split(".").pop();
 
-  const cleanName =
-  businessName
-  .toLowerCase()
-  .replaceAll(" ", "-")
-  .replaceAll("&", "und")
-  .replaceAll("'", "")
-  .replaceAll(".", "")
-  .replaceAll("/", "-");
-
   const fileName =
-  cleanName + "-" + Date.now() + "." + fileExt;
+  businessName.toLowerCase().replaceAll(" ","-")
+  + "-"
+  + Date.now()
+  + "."
+  + fileExt;
 
   const { error } =
   await supabaseClient.storage
   .from("business-images")
-  .upload(fileName, file, {
-    cacheControl:"3600",
-    upsert:false
-  });
+  .upload(fileName, file);
 
   if(error){
-    alert("Bild konnte nicht hochgeladen werden");
     console.error(error);
     return "";
   }
@@ -179,18 +146,11 @@ async function uploadBusinessImage(file, businessName){
 
 async function loadBusinesses(){
 
-  await loadProfiles();
-
-  const { data, error } =
+  const { data } =
   await supabaseClient
   .from("businesses_v2")
   .select("*")
   .order("name");
-
-  if(error){
-    console.error(error);
-    return;
-  }
 
   businessesCache = data || [];
 
@@ -199,12 +159,7 @@ async function loadBusinesses(){
 
   list.innerHTML = "";
 
-  if(!data || data.length === 0){
-    list.innerHTML = "<p>Noch keine Firmen vorhanden.</p>";
-    return;
-  }
-
-  for(const business of data){
+  for(const business of businessesCache){
 
     const members =
     await loadBusinessMembers(business.id);
@@ -215,12 +170,15 @@ async function loadBusinesses(){
     );
 
     const ownerProfile =
-    owner ? getProfileByUserId(owner.user_id) : null;
+    owner
+    ? getProfileByUserId(owner.user_id)
+    : null;
 
     const div =
     document.createElement("div");
 
-    div.className = "business-item";
+    div.className =
+    "business-item";
 
     div.innerHTML = `
       <div class="business-row">
@@ -228,7 +186,7 @@ async function loadBusinesses(){
         <div class="business-preview">
           ${
             business.image_url
-            ? `<img src="${escapeHtml(business.image_url)}" alt="Firmenbild">`
+            ? `<img src="${escapeHtml(business.image_url)}">`
             : `<div class="no-image">Kein Bild</div>`
           }
         </div>
@@ -240,13 +198,8 @@ async function loadBusinesses(){
           </strong>
 
           <p>
-            Kategorie:
-            ${escapeHtml(business.category)}
-          </p>
-
-          <p>
-            PLZ:
-            ${escapeHtml(business.plz || "-")}
+            Lieferung erlaubt:
+            ${business.has_delivery ? "Ja" : "Nein"}
           </p>
 
           <p>
@@ -257,29 +210,6 @@ async function loadBusinesses(){
               : "Kein Inhaber"
             }
           </p>
-
-          <p>
-            Mitarbeiter:
-          </p>
-
-          <div class="member-list">
-            ${
-              members.length > 0
-              ? members.map(member => {
-                  const profile = getProfileByUserId(member.user_id);
-
-                  return `
-                    <div class="member-pill">
-                      ${escapeHtml(profile ? profile.display_name : "Unbekannt")}
-                      <span>
-                        ${escapeHtml(member.member_role)}
-                      </span>
-                    </div>
-                  `;
-                }).join("")
-              : "<span class='muted'>Noch keine Mitarbeiter</span>"
-            }
-          </div>
 
           <button onclick="openEditModal(${business.id})">
             Firma bearbeiten
@@ -296,63 +226,13 @@ async function loadBusinesses(){
 
 async function loadBusinessMembers(businessId){
 
-  const { data, error } =
+  const { data } =
   await supabaseClient
   .from("business_members")
   .select("*")
   .eq("business_id", businessId);
 
-  if(error){
-    console.error(error);
-    return [];
-  }
-
   return data || [];
-}
-
-async function openEditModal(businessId){
-
-  const business =
-  businessesCache.find(item =>
-    Number(item.id) === Number(businessId)
-  );
-
-  if(!business){
-    alert("Firma nicht gefunden");
-    return;
-  }
-
-  currentEditBusiness = business;
-  currentEditMembers = await loadBusinessMembers(business.id);
-
-  const currentOwner =
-  currentEditMembers.find(member =>
-    member.member_role === "inhaber"
-  );
-
-  document.getElementById("editBusinessId").value =
-  business.id;
-
-  document.getElementById("editBusinessName").value =
-  business.name || "";
-
-  document.getElementById("editBusinessCategory").value =
-  business.category || "service";
-
-  document.getElementById("editBusinessDescription").value =
-  business.description || "";
-
-  document.getElementById("editBusinessPlz").value =
-  business.plz || "";
-
-  fillEditOwnerSelect(
-    currentOwner ? currentOwner.user_id : ""
-  );
-
-  document
-  .getElementById("editModal")
-  .classList
-  .remove("hidden");
 }
 
 function fillEditOwnerSelect(selectedUserId){
@@ -382,12 +262,57 @@ function fillEditOwnerSelect(selectedUserId){
   });
 }
 
+async function openEditModal(businessId){
+
+  const business =
+  businessesCache.find(item =>
+    Number(item.id) === Number(businessId)
+  );
+
+  currentEditBusiness =
+  business;
+
+  const members =
+  await loadBusinessMembers(business.id);
+
+  const currentOwner =
+  members.find(member =>
+    member.member_role === "inhaber"
+  );
+
+  document.getElementById("editBusinessId").value =
+  business.id;
+
+  document.getElementById("editBusinessName").value =
+  business.name || "";
+
+  document.getElementById("editBusinessCategory").value =
+  business.category || "service";
+
+  document.getElementById("editBusinessDescription").value =
+  business.description || "";
+
+  document.getElementById("editBusinessPlz").value =
+  business.plz || "";
+
+  document.getElementById("editBusinessHasDelivery").checked =
+  business.has_delivery === true;
+
+  fillEditOwnerSelect(
+    currentOwner
+    ? currentOwner.user_id
+    : ""
+  );
+
+  document
+  .getElementById("editModal")
+  .classList
+  .remove("hidden");
+}
+
 function closeEditModal(){
 
   currentEditBusiness = null;
-  currentEditMembers = [];
-
-  document.getElementById("editBusinessImage").value = "";
 
   document
   .getElementById("editModal")
@@ -397,48 +322,32 @@ function closeEditModal(){
 
 async function saveBusinessEdit(){
 
-  if(!currentEditBusiness){
-    alert("Keine Firma ausgew\u00e4hlt");
-    return;
-  }
-
   const id =
   Number(document.getElementById("editBusinessId").value);
 
   const name =
-  document.getElementById("editBusinessName")
-  .value
-  .trim();
+  document.getElementById("editBusinessName").value.trim();
 
   const category =
-  document.getElementById("editBusinessCategory")
-  .value;
+  document.getElementById("editBusinessCategory").value;
 
   const description =
-  document.getElementById("editBusinessDescription")
-  .value
-  .trim();
+  document.getElementById("editBusinessDescription").value.trim();
 
   const plz =
-  document.getElementById("editBusinessPlz")
-  .value
-  .trim();
+  document.getElementById("editBusinessPlz").value.trim();
+
+  const hasDelivery =
+  document.getElementById("editBusinessHasDelivery").checked;
 
   const ownerUserId =
-  document.getElementById("editOwnerSelect")
-  .value;
-
-  const imageFile =
-  document.getElementById("editBusinessImage")
-  .files[0];
-
-  if(!name){
-    alert("Bitte Firmenname eingeben");
-    return;
-  }
+  document.getElementById("editOwnerSelect").value;
 
   let imageUrl =
   currentEditBusiness.image_url || "";
+
+  const imageFile =
+  document.getElementById("editBusinessImage").files[0];
 
   if(imageFile){
     imageUrl = await uploadBusinessImage(imageFile, name);
@@ -452,123 +361,54 @@ async function saveBusinessEdit(){
     category:category,
     description:description,
     plz:plz,
+    has_delivery:hasDelivery,
     image_url:imageUrl
   })
   .eq("id", id);
 
   if(error){
-    alert("Firma konnte nicht gespeichert werden");
     console.error(error);
+    alert("Fehler beim Speichern");
     return;
   }
 
-  const ownerChanged =
-  await changeOwner(id, ownerUserId);
+  await supabaseClient
+  .from("business_members")
+  .delete()
+  .eq("business_id", id)
+  .eq("member_role", "inhaber");
 
-  if(!ownerChanged){
-    return;
+  if(ownerUserId){
+
+    await supabaseClient
+    .from("business_members")
+    .insert({
+      business_id:id,
+      user_id:ownerUserId,
+      member_role:"inhaber"
+    });
   }
 
   alert("Firma gespeichert");
 
   closeEditModal();
+
   loadBusinesses();
-}
-
-async function changeOwner(businessId, ownerUserId){
-
-  const { error: deleteError } =
-  await supabaseClient
-  .from("business_members")
-  .delete()
-  .eq("business_id", businessId)
-  .eq("member_role", "inhaber");
-
-  if(deleteError){
-    alert("Alter Inhaber konnte nicht entfernt werden");
-    console.error(deleteError);
-    return false;
-  }
-
-  if(!ownerUserId){
-    return true;
-  }
-
-  const { data: existingMember, error: existingError } =
-  await supabaseClient
-  .from("business_members")
-  .select("*")
-  .eq("business_id", businessId)
-  .eq("user_id", ownerUserId)
-  .maybeSingle();
-
-  if(existingError){
-    console.error(existingError);
-  }
-
-  if(existingMember){
-
-    const { error: updateError } =
-    await supabaseClient
-    .from("business_members")
-    .update({
-      member_role:"inhaber"
-    })
-    .eq("id", existingMember.id);
-
-    if(updateError){
-      alert("Inhaber konnte nicht ge\u00e4ndert werden");
-      console.error(updateError);
-      return false;
-    }
-
-    return true;
-  }
-
-  const { error } =
-  await supabaseClient
-  .from("business_members")
-  .insert({
-    business_id:businessId,
-    user_id:ownerUserId,
-    member_role:"inhaber"
-  });
-
-  if(error){
-    alert("Inhaber konnte nicht gespeichert werden");
-    console.error(error);
-    return false;
-  }
-
-  return true;
 }
 
 async function deleteBusiness(){
 
-  if(!currentEditBusiness){
-    alert("Keine Firma ausgew\u00e4hlt");
+  if(!confirm("Firma wirklich löschen?")){
     return;
   }
 
-  if(!confirm("Firma wirklich l\u00f6schen?")){
-    return;
-  }
-
-  const { error } =
   await supabaseClient
   .from("businesses_v2")
   .delete()
   .eq("id", currentEditBusiness.id);
 
-  if(error){
-    alert("Firma konnte nicht gel\u00f6scht werden");
-    console.error(error);
-    return;
-  }
-
-  alert("Firma gel\u00f6scht");
-
   closeEditModal();
+
   loadBusinesses();
 }
 
@@ -585,7 +425,5 @@ function escapeHtml(text){
   return String(text || "")
   .replaceAll("&", "&amp;")
   .replaceAll("<", "&lt;")
-  .replaceAll(">", "&gt;")
-  .replaceAll('"', "&quot;")
-  .replaceAll("'", "&#039;");
+  .replaceAll(">", "&gt;");
 }
