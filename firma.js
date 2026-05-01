@@ -7,11 +7,8 @@ const supabaseClient = supabase.createClient(
     SUPABASE_KEY
 );
 
-const params =
-    new URLSearchParams(window.location.search);
-
-const businessId =
-    params.get("id");
+const params = new URLSearchParams(window.location.search);
+const businessId = params.get("id");
 
 let activeBusiness = null;
 
@@ -34,109 +31,79 @@ async function ladeFirma(){
 
     activeBusiness = data;
 
-    document.title =
-        data.name;
+    document.title = data.name;
 
-    document.getElementById("firmaName")
-        .innerText = data.name;
+    document.getElementById("firmaName").innerText = data.name;
 
-    document.getElementById("firmaDescription")
-        .innerText =
-            data.description ||
-            "Keine Beschreibung vorhanden.";
+    document.getElementById("firmaDescription").innerText =
+        data.description || "Keine Beschreibung vorhanden.";
 
-    document.getElementById("firmaPlz")
-        .innerText =
-            data.plz
-                ? "PLZ: " + data.plz
-                : "";
+    document.getElementById("firmaPlz").innerText =
+        data.plz ? "PLZ: " + data.plz : "";
 
-    const imageName =
-        getImageName(data.name);
+    document.getElementById("firmaImage").src =
+        "bilder/" + getImageName(data.name);
 
-    document.getElementById("firmaImage")
-        .src = "bilder/" + imageName;
-
-    const status =
-        document.getElementById("firmaStatus");
+    const status = document.getElementById("firmaStatus");
 
     if(data.open){
 
         status.innerText = "Offen";
-
         status.classList.remove("closed");
         status.classList.add("open");
 
     }else{
 
         status.innerText = "Geschlossen";
-
         status.classList.remove("open");
         status.classList.add("closed");
-
     }
 
-    const delivery =
-        document.getElementById("firmaDelivery");
+    const delivery = document.getElementById("firmaDelivery");
 
-    if(data.category.toLowerCase() === "food"){
+    if(data.category && data.category.toLowerCase() === "food"){
 
         if(data.delivery){
 
             delivery.innerText = "Lieferung aktiv";
-
             delivery.classList.remove("no");
             delivery.classList.add("yes");
 
         }else{
 
             delivery.innerText = "Keine Lieferung";
-
             delivery.classList.remove("yes");
             delivery.classList.add("no");
-
         }
 
     }else{
 
         delivery.style.display = "none";
-
     }
 
-    const websiteBtn =
-        document.getElementById("websiteBtn");
+    const websiteBtn = document.getElementById("websiteBtn");
+    const discordBtn = document.getElementById("discordBtn");
 
-    const discordBtn =
-        document.getElementById("discordBtn");
-
-    if(data.website){
-
+    if(data.website && data.website.trim() !== ""){
         websiteBtn.href = data.website;
-
+        websiteBtn.style.display = "block";
     }else{
-
         websiteBtn.style.display = "none";
-
     }
 
-    if(data.discord){
-
+    if(data.discord && data.discord.trim() !== ""){
         discordBtn.href = data.discord;
-
+        discordBtn.style.display = "block";
     }else{
-
         discordBtn.style.display = "none";
-
     }
 
     ladeKommentare();
-
 }
 
 function getImageName(name){
 
     const map = {
-
         "Burger Shot":"burgershot.png",
         "Hookies":"hookies.png",
         "Pearls":"pearls.png",
@@ -145,12 +112,12 @@ function getImageName(name){
         "Bennys":"bennys.png",
         "Smokey's Weed Shop":"smokeys.png",
         "Balkan Recordzz":"balkan-recordzz.png",
-        "Los Santos Taxi":"taxi.png"
-
+        "Los Santos Taxi":"taxi.png",
+        "Blackline Tuning":"blackline.png",
+        "Adler & Partner":"adler-partner.png"
     };
 
     return map[name] || "default.png";
-
 }
 
 async function ladeKommentare(){
@@ -169,28 +136,52 @@ async function ladeKommentare(){
         return;
     }
 
-    const list =
-        document.getElementById("commentsList");
+    const list = document.getElementById("commentsList");
+    const averageBox = document.getElementById("averageRating");
 
     list.innerHTML = "";
 
-    if(data.length === 0){
+    if(!data || data.length === 0){
 
-        list.innerHTML =
-            "<p>Noch keine Kommentare.</p>";
+        averageBox.innerHTML = "";
+        list.innerHTML = "<p>Noch keine Kommentare.</p>";
 
         return;
     }
 
+    const ratings = data
+        .map(comment => Number(comment.rating || 0))
+        .filter(rating => rating > 0);
+
+    if(ratings.length > 0){
+
+        const average =
+            ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+
+        averageBox.innerHTML = `
+            <div class="average-rating">
+                Durchschnitt: ${renderStars(Math.round(average))}
+                <span>(${average.toFixed(1)} / 5 bei ${ratings.length} Bewertungen)</span>
+            </div>
+        `;
+
+    }else{
+
+        averageBox.innerHTML = "";
+    }
+
     data.forEach(comment => {
 
-        const div =
-            document.createElement("div");
-
+        const div = document.createElement("div");
         div.className = "comment";
 
         div.innerHTML = `
             <strong>${escapeHtml(comment.author)}</strong>
+
+            <div class="comment-rating">
+                ${renderStars(Number(comment.rating || 0))}
+            </div>
+
             <p>${escapeHtml(comment.message)}</p>
 
             ${
@@ -206,9 +197,7 @@ async function ladeKommentare(){
         `;
 
         list.appendChild(div);
-
     });
-
 }
 
 async function sendComment(){
@@ -223,9 +212,12 @@ async function sendComment(){
             .value
             .trim();
 
+    const rating =
+        Number(document.getElementById("commentRating").value);
+
     if(!author || !message){
 
-        alert("Bitte alles ausfüllen");
+        alert("Bitte Name und Kommentar ausfüllen");
 
         return;
     }
@@ -234,27 +226,30 @@ async function sendComment(){
         await supabaseClient
             .from("comments")
             .insert({
-
                 business_id: businessId,
                 author: author,
-                message: message
-
+                message: message,
+                rating: rating
             });
 
     if(error){
 
         alert("Kommentar konnte nicht gespeichert werden");
-
         console.error(error);
 
         return;
     }
 
-    document.getElementById("commentMessage")
-        .value = "";
+    document.getElementById("commentMessage").value = "";
 
     ladeKommentare();
+}
 
+function renderStars(rating){
+
+    const safeRating = Math.max(0, Math.min(5, Number(rating || 0)));
+
+    return "?".repeat(safeRating);
 }
 
 function escapeHtml(text){
@@ -265,7 +260,6 @@ function escapeHtml(text){
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
-
 }
 
 ladeFirma();

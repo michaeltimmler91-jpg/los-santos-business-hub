@@ -46,6 +46,7 @@ async function loadComments(){
         id,
         author,
         message,
+        rating,
         owner_reply,
         created_at,
         businesses (
@@ -101,6 +102,10 @@ async function loadComments(){
       <div class="meta">
         Von: ${escapeHtml(comment.author)}
         · ${datum}
+      </div>
+
+      <div class="comment-rating">
+        ${renderStars(Number(comment.rating || 0))}
       </div>
 
       <p>
@@ -178,6 +183,13 @@ function logout(){
     .getElementById("loginBox")
     .classList
     .remove("hidden");
+}
+
+function renderStars(rating){
+
+  const safeRating = Math.max(0, Math.min(5, Number(rating || 0)));
+
+  return "?".repeat(safeRating);
 }
 
 function escapeHtml(text){

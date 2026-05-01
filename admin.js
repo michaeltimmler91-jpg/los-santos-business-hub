@@ -1,4 +1,5 @@
 const SUPABASE_URL = "https://eulfqqkxqxjgszqdffhy.supabase.co";
+
 const SUPABASE_KEY = "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
 
 const supabaseClient = supabase.createClient(
@@ -248,11 +249,15 @@ async function loadAdminComments(){
   data.forEach(comment => {
 
     const div = document.createElement("div");
-
     div.className = "comment";
 
     div.innerHTML = `
       <strong>${escapeHtml(comment.author)}</strong>
+
+      <div class="comment-rating">
+        ${renderStars(Number(comment.rating || 0))}
+      </div>
+
       <p>${escapeHtml(comment.message)}</p>
 
       ${
@@ -320,6 +325,13 @@ function logout(){
   document.getElementById("ownerPanel").classList.add("hidden");
   document.getElementById("commentsPanel").classList.add("hidden");
   document.getElementById("ownerLoginBox").classList.remove("hidden");
+}
+
+function renderStars(rating){
+
+  const safeRating = Math.max(0, Math.min(5, Number(rating || 0)));
+
+  return "?".repeat(safeRating);
 }
 
 function escapeHtml(text){
