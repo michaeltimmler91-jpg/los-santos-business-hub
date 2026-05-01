@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Unternehmen</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=101">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="admin-wrapper">
+
+    <div class="admin-topbar">
+
+      <h1 id="businessTitle">
+        Unternehmen
+      </h1>
+
+      <div class="topbar-actions">
+
+        <button onclick="goBack()">
+          Zur&uuml;ck
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="firma-detail-card">
+
+      <div class="firma-detail-image-wrap">
+
+        <img
+          id="businessImage"
+          class="firma-detail-image"
+          src=""
+          alt="Firmenbild"
+        >
+
+      </div>
+
+      <div class="firma-detail-content">
+
+        <div class="firma-status-row">
+
+          <span id="openBadge" class="hub-badge">
+            Status
+          </span>
+
+          <span
+            id="deliveryBadge"
+            class="hub-badge"
+          >
+            Lieferung
+          </span>
+
+        </div>
+
+        <div class="firma-location" id="businessLocation">
+          Standort
+        </div>
+
+        <div class="firma-description" id="businessDescription">
+          Beschreibung
+        </div>
+
+        <div class="hub-buttons" id="businessButtons"></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="./v2-firma.js?v=101"></script>
+
+<script>
+loadBusiness();
+</script>
+
+</body>
+</html>
