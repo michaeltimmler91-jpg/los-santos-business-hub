@@ -28,7 +28,8 @@ async function checkOwner(){
     return;
   }
 
-  currentUser = data.user;
+  currentUser =
+  data.user;
 
   const { data: profile, error: profileError } =
   await supabaseClient
@@ -47,34 +48,16 @@ async function checkOwner(){
     return;
   }
 
-  currentProfile = profile;
+  currentProfile =
+  profile;
 
   const { data: membership, error: memberError } =
   await supabaseClient
   .from("business_members")
-  .select(`
-    id,
-    business_id,
-    user_id,
-    member_role,
-    businesses_v2 (
-      id,
-      name,
-      category,
-      open,
-      delivery,
-      website,
-      discord,
-      plz,
-      description,
-      applications_enabled,
-      applications_open,
-      application_note
-    )
-  `)
+  .select("*")
   .eq("user_id", currentUser.id)
-  .in("member_role", ["inhaber"])
-  .single();
+  .eq("member_role", "inhaber")
+  .maybeSingle();
 
   if(memberError || !membership){
 
@@ -86,12 +69,33 @@ async function checkOwner(){
     return;
   }
 
-  currentMembership = membership;
-  currentBusiness = membership.businesses_v2;
+  currentMembership =
+  membership;
+
+  const { data: business, error: businessError } =
+  await supabaseClient
+  .from("businesses_v2")
+  .select("*")
+  .eq("id", membership.business_id)
+  .single();
+
+  if(businessError || !business){
+
+    alert("Firma nicht gefunden");
+
+    window.location.href =
+    "v2-dashboard.html";
+
+    return;
+  }
+
+  currentBusiness =
+  business;
 
   updateUI();
 
   loadEmployees();
+
   loadQuestions();
 }
 
@@ -138,9 +142,11 @@ function updateUI(){
     currentBusiness.category &&
     currentBusiness.category.toLowerCase() === "food"
   ){
-    deliveryControls.style.display = "block";
+    deliveryControls.style.display =
+    "block";
   }else{
-    deliveryControls.style.display = "none";
+    deliveryControls.style.display =
+    "none";
   }
 }
 
@@ -151,7 +157,8 @@ async function setOpen(value){
   };
 
   if(value === false){
-    updates.delivery = false;
+    updates.delivery =
+    false;
   }
 
   const { error } =
@@ -169,10 +176,12 @@ async function setOpen(value){
     return;
   }
 
-  currentBusiness.open = value;
+  currentBusiness.open =
+  value;
 
   if(value === false){
-    currentBusiness.delivery = false;
+    currentBusiness.delivery =
+    false;
   }
 
   updateUI();
@@ -197,7 +206,8 @@ async function setDelivery(value){
     return;
   }
 
-  currentBusiness.delivery = value;
+  currentBusiness.delivery =
+  value;
 
   updateUI();
 }
@@ -244,10 +254,17 @@ async function saveBusinessData(){
     return;
   }
 
-  currentBusiness.plz = plz;
-  currentBusiness.description = description;
-  currentBusiness.website = website;
-  currentBusiness.discord = discord;
+  currentBusiness.plz =
+  plz;
+
+  currentBusiness.description =
+  description;
+
+  currentBusiness.website =
+  website;
+
+  currentBusiness.discord =
+  discord;
 
   alert("Firmendaten gespeichert");
 }
@@ -287,6 +304,43 @@ async function addEmployee(){
     return;
   }
 
+  const { data: existingMember } =
+  await supabaseClient
+  .from("business_members")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .eq("user_id", profile.user_id)
+  .maybeSingle();
+
+  if(existingMember){
+
+    const { error: updateError } =
+    await supabaseClient
+    .from("business_members")
+    .update({
+      member_role:role
+    })
+    .eq("id", existingMember.id);
+
+    if(updateError){
+
+      alert("Mitarbeiter konnte nicht aktualisiert werden");
+
+      console.error(updateError);
+
+      return;
+    }
+
+    alert("Mitarbeiterrolle aktualisiert");
+
+    document.getElementById("employeeLoginName").value =
+    "";
+
+    loadEmployees();
+
+    return;
+  }
+
   const { error } =
   await supabaseClient
   .from("business_members")
@@ -305,7 +359,8 @@ async function addEmployee(){
     return;
   }
 
-  document.getElementById("employeeLoginName").value = "";
+  document.getElementById("employeeLoginName").value =
+  "";
 
   alert("Mitarbeiter hinzugef\u00fcgt");
 
@@ -317,15 +372,7 @@ async function loadEmployees(){
   const { data, error } =
   await supabaseClient
   .from("business_members")
-  .select(`
-    id,
-    member_role,
-    user_id,
-    profiles (
-      login_name,
-      display_name
-    )
-  `)
+  .select("*")
   .eq("business_id", currentBusiness.id);
 
   if(error){
@@ -338,7 +385,8 @@ async function loadEmployees(){
   const list =
   document.getElementById("employeeList");
 
-  list.innerHTML = "";
+  list.innerHTML =
+  "";
 
   if(!data || data.length === 0){
 
@@ -348,21 +396,25 @@ async function loadEmployees(){
     return;
   }
 
-  data.forEach(member => {
+  for(const member of data){
+
+    const profile =
+    await getProfileByUserId(member.user_id);
 
     const div =
     document.createElement("div");
 
-    div.className = "business-item";
+    div.className =
+    "business-item";
 
     div.innerHTML = `
       <strong>
-        ${escapeHtml(member.profiles?.display_name || "Unbekannt")}
+        ${escapeHtml(profile ? profile.display_name : "Unbekannt")}
       </strong>
 
       <p>
         Login:
-        ${escapeHtml(member.profiles?.login_name || "-")}
+        ${escapeHtml(profile ? profile.login_name : "-")}
       </p>
 
       <p>
@@ -379,12 +431,30 @@ async function loadEmployees(){
     `;
 
     list.appendChild(div);
-  });
+  }
+}
+
+async function getProfileByUserId(userId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("user_id", userId)
+  .maybeSingle();
+
+  if(error){
+    console.error(error);
+    return null;
+  }
+
+  return data;
 }
 
 async function removeEmployee(memberId){
 
   if(!confirm("Mitarbeiter wirklich entfernen?")){
+
     return;
   }
 
@@ -440,9 +510,14 @@ async function saveApplicationSettings(){
     return;
   }
 
-  currentBusiness.applications_enabled = enabled;
-  currentBusiness.applications_open = open;
-  currentBusiness.application_note = note;
+  currentBusiness.applications_enabled =
+  enabled;
+
+  currentBusiness.applications_open =
+  open;
+
+  currentBusiness.application_note =
+  note;
 
   alert("Bewerbungseinstellungen gespeichert");
 }
@@ -480,7 +555,8 @@ async function addQuestion(){
     return;
   }
 
-  document.getElementById("questionText").value = "";
+  document.getElementById("questionText").value =
+  "";
 
   loadQuestions();
 }
@@ -504,7 +580,8 @@ async function loadQuestions(){
   const list =
   document.getElementById("questionList");
 
-  list.innerHTML = "";
+  list.innerHTML =
+  "";
 
   if(!data || data.length === 0){
 
@@ -519,7 +596,8 @@ async function loadQuestions(){
     const div =
     document.createElement("div");
 
-    div.className = "business-item";
+    div.className =
+    "business-item";
 
     div.innerHTML = `
       <strong>
@@ -541,6 +619,7 @@ async function loadQuestions(){
 async function deleteQuestion(questionId){
 
   if(!confirm("Frage wirklich l\u00f6schen?")){
+
     return;
   }
 
@@ -560,6 +639,14 @@ async function deleteQuestion(questionId){
   }
 
   loadQuestions();
+}
+
+async function logoutUser(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+  "v2-login.html";
 }
 
 function escapeHtml(text){
