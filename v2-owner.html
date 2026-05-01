@@ -6,90 +6,126 @@
 
   <title>V2 Firmeninhaber</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=130">
+  <link rel="stylesheet" href="./v2-style.css?v=140">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="panel-page">
+<div class="owner-page">
 
-  <div class="panel-topbar">
+  <div class="owner-topbar">
 
     <div>
       <h1>Firmeninhaber Panel</h1>
       <p id="businessTitle">Meine Firma</p>
     </div>
 
-    <div class="topbar-actions">
-      <button onclick="window.location.href='v2-dashboard.html'" class="gray-btn">
+    <div class="owner-topbar-buttons">
+
+      <button
+        class="owner-gray-btn"
+        onclick="window.location.href='v2-dashboard.html'"
+      >
         Zur&uuml;ck
       </button>
 
       <button onclick="logoutUser()">
         Ausloggen
       </button>
+
     </div>
 
   </div>
 
-  <div class="panel-grid">
+  <div class="owner-grid">
 
-    <section class="panel-card">
+    <section class="owner-card">
 
       <h2>Status</h2>
 
-      <div class="status-grid">
+      <div class="owner-status-grid">
 
-        <div class="status-card">
+        <div class="owner-status-box">
           <strong>Firma</strong>
           <span id="openStatus">-</span>
         </div>
 
-        <div class="status-card" id="deliveryStatusCard">
+        <div
+          class="owner-status-box"
+          id="deliveryStatusCard"
+        >
           <strong>Lieferung</strong>
           <span id="deliveryStatus">-</span>
         </div>
 
       </div>
 
-      <div class="button-row">
+      <div class="owner-button-row">
+
         <button onclick="setOpen(true)">
           Firma &ouml;ffnen
         </button>
 
-        <button onclick="setOpen(false)" class="danger-btn">
+        <button
+          onclick="setOpen(false)"
+          class="owner-danger-btn"
+        >
           Firma schlie&szlig;en
         </button>
+
       </div>
 
-      <div id="deliveryControls" class="button-row">
+      <div
+        id="deliveryControls"
+        class="owner-button-row"
+      >
+
         <button onclick="setDelivery(true)">
           Lieferung aktivieren
         </button>
 
-        <button onclick="setDelivery(false)" class="gray-btn">
+        <button
+          onclick="setDelivery(false)"
+          class="owner-gray-btn"
+        >
           Lieferung deaktivieren
         </button>
+
       </div>
 
     </section>
 
-    <section class="panel-card">
+    <section class="owner-card">
 
       <h2>Firmendaten</h2>
 
       <label>Standort</label>
-      <input type="text" id="businessPlz" placeholder="Standort / Kartenpunkt">
+      <input
+        type="text"
+        id="businessPlz"
+        placeholder="Standort"
+      >
 
       <label>Beschreibung</label>
-      <textarea id="businessDescription" placeholder="Beschreibung"></textarea>
+      <textarea
+        id="businessDescription"
+        placeholder="Beschreibung"
+      ></textarea>
 
       <label>Website</label>
-      <input type="text" id="businessWebsite" placeholder="Website-Link">
+      <input
+        type="text"
+        id="businessWebsite"
+        placeholder="Website-Link"
+      >
 
       <label>Verteiler / Discord</label>
-      <input type="text" id="businessDiscord" placeholder="Verteiler / Discord-Link">
+      <input
+        type="text"
+        id="businessDiscord"
+        placeholder="Verteiler / Discord-Link"
+      >
 
       <button onclick="saveBusinessData()">
         Firmendaten speichern
@@ -97,17 +133,26 @@
 
     </section>
 
-    <section class="panel-card">
+    <section class="owner-card">
 
       <h2>Mitarbeiter</h2>
 
-      <div class="two-column">
+      <div class="owner-two-column">
 
-        <input type="text" id="employeeLoginName" placeholder="Loginname">
+        <input
+          type="text"
+          id="employeeLoginName"
+          placeholder="Loginname"
+        >
 
         <select id="employeeRole">
-          <option value="mitarbeiter">Mitarbeiter</option>
-          <option value="inhaber">Inhaber</option>
+          <option value="mitarbeiter">
+            Mitarbeiter
+          </option>
+
+          <option value="inhaber">
+            Inhaber
+          </option>
         </select>
 
       </div>
@@ -116,42 +161,54 @@
         Mitarbeiter hinzuf&uuml;gen
       </button>
 
-      <h3>Aktuelle Mitarbeiter</h3>
-
       <div id="employeeList"></div>
 
     </section>
 
-    <section class="panel-card">
+    <section class="owner-card">
 
       <h2>Bewerbungssystem</h2>
 
       <label class="checkbox-line">
-        <input type="checkbox" id="applicationsEnabled">
+        <input
+          type="checkbox"
+          id="applicationsEnabled"
+        >
         Bewerbungssystem nutzen
       </label>
 
       <label class="checkbox-line">
-        <input type="checkbox" id="applicationsOpen">
+        <input
+          type="checkbox"
+          id="applicationsOpen"
+        >
         Bewerbungen offen
       </label>
 
-      <label>Hinweistext f&uuml;r Bewerber</label>
-      <textarea id="applicationNote" placeholder="Hinweistext f&uuml;r Bewerber"></textarea>
+      <label>Hinweistext</label>
+
+      <textarea
+        id="applicationNote"
+        placeholder="Hinweistext f&uuml;r Bewerber"
+      ></textarea>
 
       <button onclick="saveApplicationSettings()">
-        Bewerbungseinstellungen speichern
+        Einstellungen speichern
       </button>
 
     </section>
 
-    <section class="panel-card">
+    <section class="owner-card">
 
       <h2>Bewerbungsfragen</h2>
 
-      <div class="two-column single-button-row">
+      <div class="owner-two-column">
 
-        <input type="text" id="questionText" placeholder="Neue Frage">
+        <input
+          type="text"
+          id="questionText"
+          placeholder="Neue Frage"
+        >
 
         <button onclick="addQuestion()">
           Frage hinzuf&uuml;gen
@@ -163,7 +220,7 @@
 
     </section>
 
-    <section class="panel-card wide-card">
+    <section class="owner-card owner-wide-card">
 
       <h2>Eingegangene Bewerbungen</h2>
 
