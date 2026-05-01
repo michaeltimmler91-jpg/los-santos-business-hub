@@ -13,7 +13,7 @@
 <body>
 
 <nav class="top-nav">
-  <a href="index.html">Zurück zur Übersicht</a>
+  <a href="index.html">Zur&uuml;ck zur &Uuml;bersicht</a>
   <a href="admin.html">Mitarbeiterlogin</a>
   <a href="superadmin.html">SuperAdmin</a>
 </nav>
@@ -26,7 +26,7 @@
 
     <div class="firma-content">
 
-      <h1 id="firmaName">Lädt...</h1>
+      <h1 id="firmaName">L&auml;dt...</h1>
 
       <div class="firma-badges">
         <span id="firmaStatus" class="status closed">Geschlossen</span>
@@ -46,25 +46,38 @@
       </div>
 
       <div class="comments-section">
-        <h2>Kommentare & Bewertungen</h2>
+
+        <h2>Kommentare &amp; Bewertungen</h2>
 
         <div id="averageRating"></div>
 
         <div id="commentsList"></div>
 
-        <input type="text" id="commentAuthor" placeholder="Dein Name">
+        <input
+          type="text"
+          id="commentAuthor"
+          placeholder="Dein Name"
+        >
 
-        <select id="commentRating">
-          <option value="5">????? 5 Sterne</option>
-          <option value="4">???? 4 Sterne</option>
-          <option value="3">??? 3 Sterne</option>
-          <option value="2">?? 2 Sterne</option>
-          <option value="1">? 1 Stern</option>
-        </select>
+        <div class="rating-select">
 
-        <textarea id="commentMessage" placeholder="Kommentar schreiben"></textarea>
+          <span class="star" data-value="1">?</span>
+          <span class="star" data-value="2">?</span>
+          <span class="star" data-value="3">?</span>
+          <span class="star" data-value="4">?</span>
+          <span class="star" data-value="5">?</span>
 
-        <button onclick="sendComment()">Kommentar senden</button>
+        </div>
+
+        <textarea
+          id="commentMessage"
+          placeholder="Kommentar schreiben"
+        ></textarea>
+
+        <button onclick="sendComment()">
+          Kommentar senden
+        </button>
+
       </div>
 
     </div>
@@ -73,7 +86,7 @@
 
 </div>
 
-<script src="firma.js?v=20"></script>
+<script src="firma.js?v=30"></script>
 
 </body>
 </html>
