@@ -136,7 +136,7 @@ async function loginUser(){
   window.location.href =
   "v2-dashboard.html";
 }
-}
+
 
 async function checkDashboard(){
 
