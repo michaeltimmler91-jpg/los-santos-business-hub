@@ -1,39 +1,82 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V2 Registrierung</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="./v2-style.css?v=150">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Registrieren</title>
+
+<link rel="stylesheet" href="./v2-style.css?v=900">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="auth-page">
+<div class="login-page">
 
-  <div class="auth-box">
+  <div class="login-card">
+
+    <div class="login-logo">
+      Los Santos<br>
+      <span>Business Hub</span>
+    </div>
 
     <h1>Registrieren</h1>
-    <p>Erstelle deinen Account f&uuml;r V2</p>
 
-    <input type="email" id="registerEmail" placeholder="E-Mail">
-    <input type="text" id="registerLoginName" placeholder="Loginname">
-    <input type="text" id="registerDisplayName" placeholder="Anzeigename">
-    <input type="password" id="registerPassword" placeholder="Passwort">
+    <p>
+      Erstelle deinen Account. Nach der Registrierung muss dich ein Guide oder Superadmin freischalten.
+    </p>
 
-    <button onclick="registerUser()">Registrieren</button>
+    <input
+      type="text"
+      id="registerLoginName"
+      placeholder="Loginname"
+    >
 
-    <div class="auth-links">
-      <a href="v2-login.html">Schon einen Account? Einloggen</a>
-      <a href="index.html">Zur&uuml;ck zur alten Seite</a>
+    <input
+      type="text"
+      id="registerDisplayName"
+      placeholder="Anzeigename"
+    >
+
+    <input
+      type="password"
+      id="registerPassword"
+      placeholder="Passwort"
+    >
+
+    <input
+      type="password"
+      id="registerPasswordRepeat"
+      placeholder="Passwort wiederholen"
+    >
+
+    <button onclick="registerUser()">
+      Registrieren
+    </button>
+
+    <div class="register-info">
+      <strong>Hinweis:</strong>
+      Dein Account ist nach der Registrierung noch nicht aktiv. Ein Guide oder Superadmin muss dich erst freischalten.
+    </div>
+
+    <div class="login-links">
+
+      <a href="v2-login.html">
+        Schon einen Account? Einloggen
+      </a>
+
+      <a href="index.html">
+        Zur&uuml;ck zur alten Seite
+      </a>
+
     </div>
 
   </div>
 
 </div>
 
-<script src="./v2-auth.js?v=500"></script>
+<script src="./v2-auth.js?v=900"></script>
 
 </body>
 </html>
