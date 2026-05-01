@@ -94,3 +94,80 @@ font-weight:bold;
 .auth-links a:hover{
 text-decoration:underline;
 }
+
+.admin-wrapper{
+width:100%;
+max-width:1100px;
+display:flex;
+flex-direction:column;
+gap:25px;
+}
+
+.admin-topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+}
+
+.admin-topbar h1{
+color:#ff1493;
+font-size:40px;
+}
+
+.admin-topbar button{
+padding:12px 18px;
+border:none;
+border-radius:14px;
+background:#ff1493;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.admin-box{
+background:#121225;
+padding:25px;
+border-radius:24px;
+box-shadow:0 0 30px rgba(255,20,147,0.25);
+}
+
+.admin-box h2{
+margin-bottom:20px;
+color:#ff1493;
+}
+
+.admin-box input,
+.admin-box textarea,
+.admin-box select{
+width:100%;
+padding:15px;
+border:none;
+border-radius:14px;
+background:#1b1b2e;
+color:white;
+margin-bottom:14px;
+font-size:15px;
+}
+
+.admin-box textarea{
+min-height:120px;
+resize:vertical;
+}
+
+.admin-box button{
+padding:15px 20px;
+border:none;
+border-radius:14px;
+background:#ff1493;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.business-item{
+padding:18px;
+background:#0b0b16;
+border-radius:18px;
+margin-bottom:14px;
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>V2 Superadmin</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=3">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="admin-wrapper">
+
+    <div class="admin-topbar">
+
+      <h1>Superadmin Panel</h1>
+
+      <button onclick="logoutUser()">
+        Ausloggen
+      </button>
+
+    </div>
+
+    <div class="admin-box">
+
+      <h2>Neue Firma anlegen</h2>
+
+      <input
+        type="text"
+        id="businessName"
+        placeholder="Firmenname"
+      >
+
+      <select id="businessCategory">
+
+        <option value="food">
+          Essen &amp; Lieferung
+        </option>
+
+        <option value="service">
+          Unternehmen &amp; Service
+        </option>
+
+        <option value="government">
+          Beh&ouml;rden
+        </option>
+
+        <option value="workshop">
+          Werkstatt
+        </option>
+
+      </select>
+
+      <textarea
+        id="businessDescription"
+        placeholder="Beschreibung"
+      ></textarea>
+
+      <input
+        type="text"
+        id="businessPlz"
+        placeholder="PLZ"
+      >
+
+      <button onclick="createBusiness()">
+        Firma erstellen
+      </button>
+
+    </div>
+
+    <div class="admin-box">
+
+      <h2>Alle Firmen</h2>
+
+      <div id="businessList"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="./v2-auth.js?v=3"></script>
+<script src="./v2-superadmin.js?v=1"></script>
+
+<script>
+checkSuperadmin();
+</script>
+
+</body>
+</html>
