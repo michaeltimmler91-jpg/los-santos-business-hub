@@ -97,6 +97,8 @@ async function checkOwner(){
   loadEmployees();
 
   loadQuestions();
+
+  loadApplications();
 }
 
 function updateUI(){
@@ -135,28 +137,28 @@ function updateUI(){
   document.getElementById("applicationNote").value =
   currentBusiness.application_note || "";
 
-const deliveryControls =
-document.getElementById("deliveryControls");
+  const deliveryControls =
+  document.getElementById("deliveryControls");
 
-const deliveryStatusCard =
-document.getElementById("deliveryStatusCard");
+  const deliveryStatusCard =
+  document.getElementById("deliveryStatusCard");
 
-if(currentBusiness.has_delivery === true){
+  if(currentBusiness.has_delivery === true){
 
-  deliveryControls.style.display =
-  "block";
+    deliveryControls.style.display =
+    "block";
 
-  deliveryStatusCard.style.display =
-  "block";
+    deliveryStatusCard.style.display =
+    "block";
 
-}else{
+  }else{
 
-  deliveryControls.style.display =
-  "none";
+    deliveryControls.style.display =
+    "none";
 
-  deliveryStatusCard.style.display =
-  "none";
-}
+    deliveryStatusCard.style.display =
+    "none";
+  }
 }
 
 async function setOpen(value){
@@ -617,7 +619,7 @@ async function loadQuestions(){
         class="danger-btn"
         onclick="deleteQuestion(${question.id})"
       >
-        Frage l\u00f6schen
+        Frage l&ouml;schen
       </button>
     `;
 
@@ -648,6 +650,204 @@ async function deleteQuestion(questionId){
   }
 
   loadQuestions();
+}
+
+async function loadApplications(){
+
+  const { data, error } =
+  await supabaseClient
+  .from("applications")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .order("created_at", {
+    ascending:false
+  });
+
+  if(error){
+
+    console.error(error);
+
+    return;
+  }
+
+  const list =
+  document.getElementById("applicationList");
+
+  list.innerHTML =
+  "";
+
+  if(!data || data.length === 0){
+
+    list.innerHTML =
+    "<p class='muted'>Noch keine Bewerbungen vorhanden.</p>";
+
+    return;
+  }
+
+  for(const application of data){
+
+    const applicantProfile =
+    await getProfileByUserId(application.user_id);
+
+    const answers =
+    await loadApplicationAnswers(application.id);
+
+    const created =
+    application.created_at
+    ? new Date(application.created_at).toLocaleString("de-DE")
+    : "-";
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "application-card";
+
+    div.innerHTML = `
+      <div class="application-head">
+
+        <div>
+          <strong>
+            ${escapeHtml(applicantProfile ? applicantProfile.display_name : "Unbekannter Bewerber")}
+          </strong>
+
+          <p>
+            Login:
+            ${escapeHtml(applicantProfile ? applicantProfile.login_name : "-")}
+          </p>
+
+          <p>
+            Eingegangen:
+            ${escapeHtml(created)}
+          </p>
+        </div>
+
+        <span class="application-status status-${escapeHtml(application.status)}">
+          ${escapeHtml(application.status)}
+        </span>
+
+      </div>
+
+      <div class="application-message">
+        <strong>Zus&auml;tzliche Nachricht:</strong>
+        <p>
+          ${escapeHtml(application.message || "-")}
+        </p>
+      </div>
+
+      <div class="application-answers">
+        <strong>Antworten:</strong>
+
+        ${
+          answers.length > 0
+          ? answers.map(answer => `
+              <div class="answer-box">
+                <p class="answer-question">
+                  ${escapeHtml(answer.question_text || "Frage")}
+                </p>
+
+                <p>
+                  ${escapeHtml(answer.answer_text || "-")}
+                </p>
+              </div>
+            `).join("")
+          : "<p class='muted'>Keine Antworten vorhanden.</p>"
+        }
+      </div>
+
+      <div class="application-actions">
+
+        <select id="status-${application.id}">
+          <option value="offen" ${application.status === "offen" ? "selected" : ""}>Offen</option>
+          <option value="in_bearbeitung" ${application.status === "in_bearbeitung" ? "selected" : ""}>In Bearbeitung</option>
+          <option value="angenommen" ${application.status === "angenommen" ? "selected" : ""}>Angenommen</option>
+          <option value="abgelehnt" ${application.status === "abgelehnt" ? "selected" : ""}>Abgelehnt</option>
+        </select>
+
+        <textarea
+          id="reply-${application.id}"
+          placeholder="Antwort an den Bewerber"
+        >${escapeHtml(application.owner_reply || "")}</textarea>
+
+        <button onclick="saveApplication(${application.id})">
+          Bewerbung speichern
+        </button>
+
+      </div>
+    `;
+
+    list.appendChild(div);
+  }
+}
+
+async function loadApplicationAnswers(applicationId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("application_answers")
+  .select("*")
+  .eq("application_id", applicationId);
+
+  if(error){
+
+    console.error(error);
+
+    return [];
+  }
+
+  const result = [];
+
+  for(const answer of data || []){
+
+    const { data: question } =
+    await supabaseClient
+    .from("application_questions")
+    .select("*")
+    .eq("id", answer.question_id)
+    .maybeSingle();
+
+    result.push({
+      question_text: question ? question.question_text : "Frage",
+      answer_text: answer.answer_text || ""
+    });
+  }
+
+  return result;
+}
+
+async function saveApplication(applicationId){
+
+  const status =
+  document.getElementById("status-" + applicationId)
+  .value;
+
+  const reply =
+  document.getElementById("reply-" + applicationId)
+  .value
+  .trim();
+
+  const { error } =
+  await supabaseClient
+  .from("applications")
+  .update({
+    status:status,
+    owner_reply:reply,
+    updated_at:new Date().toISOString()
+  })
+  .eq("id", applicationId);
+
+  if(error){
+
+    alert("Bewerbung konnte nicht gespeichert werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  alert("Bewerbung gespeichert");
+
+  loadApplications();
 }
 
 async function logoutUser(){
