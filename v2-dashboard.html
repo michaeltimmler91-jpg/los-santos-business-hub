@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>V2 Dashboard</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=2">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="auth-box">
+
+    <h1>Dashboard</h1>
+
+    <p id="welcomeText">L&auml;dt...</p>
+
+    <button onclick="logoutUser()">
+      Ausloggen
+    </button>
+
+    <div class="auth-links">
+      <a href="index.html">Zur&uuml;ck zur alten Seite</a>
+      <a href="v2-login.html">Zum Login</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="./v2-auth.js?v=2"></script>
+
+<script>
+checkDashboard();
+</script>
+
+</body>
+</html>

@@ -121,3 +121,40 @@ async function loginUser(){
     window.location.href = "v2-dashboard.html";
   }
 }
+async function checkDashboard(){
+
+  const { data } =
+  await supabaseClient.auth.getUser();
+
+  if(!data.user){
+
+    window.location.href = "v2-login.html";
+
+    return;
+  }
+
+  const { data: profile, error } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("user_id", data.user.id)
+  .single();
+
+  if(error || !profile){
+
+    document.getElementById("welcomeText").innerText =
+    "Eingeloggt, aber kein Profil gefunden.";
+
+    return;
+  }
+
+  document.getElementById("welcomeText").innerText =
+  "Willkommen, " + profile.display_name + "!";
+}
+
+async function logoutUser(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href = "v2-login.html";
+}
