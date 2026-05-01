@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuperOwner Admin Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:#050510;
+      color:white;
+      font-family:Arial,sans-serif;
+      padding:25px;
+    }
+
+    .box{
+      width:100%;
+      max-width:1000px;
+      margin:auto;
+      background:#121225;
+      padding:28px;
+      border-radius:24px;
+      box-shadow:0 0 35px rgba(255,20,147,0.35);
+    }
+
+    h1,h2{
+      color:#ff1493;
+      margin-bottom:18px;
+    }
+
+    input{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      background:#1b1b2e;
+      color:white;
+      font-size:15px;
+      margin-bottom:12px;
+    }
+
+    button{
+      padding:12px 16px;
+      border:none;
+      border-radius:12px;
+      font-weight:bold;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .pink{background:#ff1493;color:white;width:100%}
+    .red{background:#ff4d6d;color:white}
+    .gray{background:#555;color:white}
+    .hidden{display:none}
+
+    .comment{
+      background:#0b0b16;
+      padding:18px;
+      border-radius:18px;
+      margin-bottom:15px;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .business{
+      color:#00d9ff;
+      font-weight:bold;
+      margin-bottom:8px;
+    }
+
+    .meta{
+      color:#aaa;
+      font-size:13px;
+      margin-bottom:10px;
+    }
+
+    .reply{
+      margin-top:12px;
+      padding:12px;
+      border-left:4px solid #ff1493;
+      background:#18182a;
+      border-radius:12px;
+    }
+
+    .top-actions{
+      display:flex;
+      gap:10px;
+      margin-bottom:20px;
+      flex-wrap:wrap;
+    }
+
+    .top-actions button{
+      flex:1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box" id="loginBox">
+  <h1>SuperOwner Login</h1>
+  <input type="password" id="superCodeInput" placeholder="SuperOwner-Code">
+  <button class="pink" onclick="login()">Einloggen</button>
+</div>
+
+<div class="box hidden" id="panelBox">
+  <h1>Alle Kommentare</h1>
+
+  <div class="top-actions">
+    <button class="gray" onclick="loadComments()">Aktualisieren</button>
+    <button class="red" onclick="logout()">Ausloggen</button>
+  </div>
+
+  <div id="commentsList"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://eulfqqkxqxjgszqdffhy.supabase.co";
+const SUPABASE_KEY = "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const SUPER_OWNER_CODE = "SUPEROWNER2026";
+
+function login(){
+  const code = document
+    .getElementById("superCodeInput")
+    .value
+    .trim()
+    .toUpperCase();
+
+  if(code !== SUPER_OWNER_CODE){
+    alert("Falscher SuperOwner-Code");
+    return;
+  }
+
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("panelBox").classList.remove("hidden");
+
+  loadComments();
+}
+
+async function loadComments(){
+  const { data, error } = await supabaseClient
+    .from("comments")
+    .select(`
+      id,
+      author,
+      message,
+      owner_reply,
+      created_at,
+      businesses (
+        name
+      )
+    `)
+    .order("created_at", { ascending:false });
+
+  if(error){
+    alert("Kommentare konnten nicht geladen werden");
+    console.error(error);
+    return;
+  }
+
+  const list = document.getElementById("commentsList");
+  list.innerHTML = "";
+
+  if(!data || data.length === 0){
+    list.innerHTML = "<p>Noch keine Kommentare vorhanden.</p>";
+    return;
+  }
+
+  data.forEach(comment => {
+    const div = document.createElement("div");
+    div.className = "comment";
+
+    const firma = comment.businesses?.name || "Unbekannte Firma";
+    const datum = new Date(comment.created_at).toLocaleString("de-DE");
+
+    div.innerHTML = `
+      <div class="business">Firma: ${escapeHtml(firma)}</div>
+      <div class="meta">Von: ${escapeHtml(comment.author)} · ${datum}</div>
+      <p>${escapeHtml(comment.message)}</p>
+
+      ${
+        comment.owner_reply
+        ? `
+          <div class="reply">
+            <strong>Antwort vom Unternehmen:</strong>
+            <p>${escapeHtml(comment.owner_reply)}</p>
+          </div>
+        `
+        : ""
+      }
+
+      <button class="red" onclick="deleteComment(${comment.id})">
+        Kommentar löschen
+      </button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+async function deleteComment(commentId){
+  if(!confirm("Kommentar wirklich löschen?")){
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("comments")
+    .delete()
+    .eq("id", commentId);
+
+  if(error){
+    alert("Kommentar konnte nicht gelöscht werden");
+    console.error(error);
+    return;
+  }
+
+  loadComments();
+}
+
+function logout(){
+  document.getElementById("superCodeInput").value = "";
+  document.getElementById("panelBox").classList.add("hidden");
+  document.getElementById("loginBox").classList.remove("hidden");
+}
+
+function escapeHtml(text){
+  return String(text || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+</script>
+
+</body>
+</html>
