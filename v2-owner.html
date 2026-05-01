@@ -6,7 +6,7 @@
 
   <title>V2 Firmeninhaber</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=150">
+  <link rel="stylesheet" href="./v2-style.css?v=300">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -18,7 +18,9 @@
 
     <div>
       <h1>Firmeninhaber Panel</h1>
-      <p id="businessTitle">Meine Firma</p>
+      <p id="businessTitle">
+        Firma ausw&auml;hlen
+      </p>
     </div>
 
     <div class="owner-topbar-buttons">
@@ -38,7 +40,18 @@
 
   </div>
 
-  <div class="owner-grid">
+  <div class="owner-select-box">
+
+    <label>Firma ausw&auml;hlen</label>
+
+    <select id="businessSelect"></select>
+
+  </div>
+
+  <div
+    id="ownerContent"
+    class="owner-grid hidden"
+  >
 
     <section class="owner-card">
 
@@ -101,6 +114,7 @@
       <h2>Firmendaten</h2>
 
       <label>Standort</label>
+
       <input
         type="text"
         id="businessPlz"
@@ -108,12 +122,14 @@
       >
 
       <label>Beschreibung</label>
+
       <textarea
         id="businessDescription"
         placeholder="Beschreibung"
       ></textarea>
 
       <label>Website</label>
+
       <input
         type="text"
         id="businessWebsite"
@@ -121,6 +137,7 @@
       >
 
       <label>Verteiler / Discord</label>
+
       <input
         type="text"
         id="businessDiscord"
@@ -146,6 +163,7 @@
         >
 
         <select id="employeeRole">
+
           <option value="mitarbeiter">
             Mitarbeiter
           </option>
@@ -153,6 +171,7 @@
           <option value="inhaber">
             Inhaber
           </option>
+
         </select>
 
       </div>
@@ -170,26 +189,32 @@
       <h2>Bewerbungssystem</h2>
 
       <label class="checkbox-line">
+
         <input
           type="checkbox"
           id="applicationsEnabled"
         >
+
         Bewerbungssystem nutzen
+
       </label>
 
       <label class="checkbox-line">
+
         <input
           type="checkbox"
           id="applicationsOpen"
         >
+
         Bewerbungen offen
+
       </label>
 
       <label>Hinweistext</label>
 
       <textarea
         id="applicationNote"
-        placeholder="Hinweistext f&uuml;r Bewerber"
+        placeholder="Hinweistext"
       ></textarea>
 
       <button onclick="saveApplicationSettings()">
@@ -232,7 +257,7 @@
 
 </div>
 
-<script src="./v2-owner.js?v=71"></script>
+<script src="./v2-owner.js?v=300"></script>
 
 <script>
 checkOwner();
