@@ -6,11 +6,13 @@
 
   <title>Unternehmen</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=90">
+  <link rel="stylesheet" href="./v2-style.css?v=100">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<header class="v2-hero"></header>
 
 <div class="auth-page">
 
@@ -18,7 +20,7 @@
 
     <div class="admin-topbar">
 
-      <h1>Unternehmen</h1>
+      <h1>Aktuelle Unternehmen</h1>
 
       <div class="topbar-actions">
 
@@ -35,6 +37,10 @@
     </div>
 
     <div class="admin-box">
+
+      <p class="hub-subtitle">
+        Hier siehst du live, wer ge&ouml;ffnet hat.
+      </p>
 
       <div class="business-filter-bar">
 
@@ -55,7 +61,7 @@
 
       </div>
 
-      <div id="businessList" class="business-list-v1"></div>
+      <div id="businessList" class="hub-card-grid"></div>
 
     </div>
 
@@ -63,7 +69,7 @@
 
 </div>
 
-<script src="./v2-firmen.js?v=90"></script>
+<script src="./v2-firmen.js?v=100"></script>
 
 <script>
 loadBusinesses();

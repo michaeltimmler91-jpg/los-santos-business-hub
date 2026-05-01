@@ -69,91 +69,64 @@ function renderBusinesses(businesses){
     document.createElement("div");
 
     card.className =
-    "business-row-card";
+    "hub-card";
 
     card.innerHTML = `
-      <div class="business-row-left">
+      <a href="v2-firma.html?id=${business.id}" class="hub-image-link">
 
         ${
           business.image_url
           ? `
             <img
               src="${escapeHtml(business.image_url)}"
-              class="business-row-image"
               alt="Firmenbild"
+              class="hub-card-image"
             >
           `
           : `
-            <div class="business-row-noimage">
+            <div class="hub-card-noimage">
               Kein Bild
             </div>
           `
         }
 
-      </div>
+      </a>
 
-      <div class="business-row-middle">
+      <div class="hub-card-content">
 
-        <div class="business-row-header">
+        <h2>
+          ${escapeHtml(business.name)}
+        </h2>
 
-          <h2>
-            ${escapeHtml(business.name)}
-          </h2>
+        <div class="hub-badges">
 
-          <div class="business-badge-wrap">
+          <span class="
+            hub-badge
+            ${business.open ? "hub-open" : "hub-closed"}
+          ">
+            ${business.open ? "Offen" : "Geschlossen"}
+          </span>
 
-            <span class="
-              business-badge
-              ${business.open ? "badge-open" : "badge-closed"}
-            ">
-              ${business.open ? "Offen" : "Geschlossen"}
-            </span>
-
-            ${
-              business.has_delivery
-              ? `
-                <span class="
-                  business-badge
-                  ${business.delivery ? "badge-delivery-on" : "badge-delivery-off"}
-                ">
-                  ${
-                    business.delivery
-                    ? "Lieferung"
-                    : "Keine Lieferung"
-                  }
-                </span>
-              `
-              : ""
-            }
-
-          </div>
-
-        </div>
-
-        <div class="business-location">
-          ??
           ${
-            escapeHtml(
-              business.plz ||
-              "Kein Standort"
-            )
+            business.has_delivery
+            ? `
+              <span class="
+                hub-badge
+                ${business.delivery ? "hub-delivery-on" : "hub-delivery-off"}
+              ">
+                ${
+                  business.delivery
+                  ? "Lieferung aktiv"
+                  : "Keine Lieferung"
+                }
+              </span>
+            `
+            : ""
           }
+
         </div>
 
-        <div class="business-category-small">
-          ${formatCategory(business.category)}
-        </div>
-
-        <div class="business-description-small">
-          ${
-            escapeHtml(
-              business.description ||
-              "Keine Beschreibung vorhanden."
-            )
-          }
-        </div>
-
-        <div class="business-buttons-small">
+        <div class="hub-buttons">
 
           ${
             business.website
@@ -161,7 +134,6 @@ function renderBusinesses(businesses){
               <a
                 href="${escapeHtml(business.website)}"
                 target="_blank"
-                class="small-btn"
               >
                 Website
               </a>
@@ -175,7 +147,6 @@ function renderBusinesses(businesses){
               <a
                 href="${escapeHtml(business.discord)}"
                 target="_blank"
-                class="small-btn discord-small-btn"
               >
                 Verteiler
               </a>
@@ -187,10 +158,7 @@ function renderBusinesses(businesses){
             business.applications_enabled &&
             business.applications_open
             ? `
-              <a
-                href="v2-bewerbung.html?id=${business.id}"
-                class="small-btn apply-small-btn"
-              >
+              <a href="v2-bewerbung.html?id=${business.id}">
                 Bewerben
               </a>
             `
@@ -198,17 +166,6 @@ function renderBusinesses(businesses){
           }
 
         </div>
-
-        ${
-          business.applications_enabled &&
-          !business.applications_open
-          ? `
-            <div class="closed-text">
-              Bewerbungen geschlossen
-            </div>
-          `
-          : ""
-        }
 
       </div>
     `;
@@ -234,11 +191,7 @@ function filterBusinesses(){
 
     const matchesSearch =
     !search ||
-    business.name.toLowerCase().includes(search) ||
-    (
-      business.description &&
-      business.description.toLowerCase().includes(search)
-    );
+    business.name.toLowerCase().includes(search);
 
     const matchesCategory =
     !category ||
@@ -248,27 +201,6 @@ function filterBusinesses(){
   });
 
   renderBusinesses(filtered);
-}
-
-function formatCategory(category){
-
-  switch(category){
-
-    case "food":
-      return "Essen & Lieferung";
-
-    case "service":
-      return "Unternehmen & Service";
-
-    case "government":
-      return "Behörde";
-
-    case "workshop":
-      return "Werkstatt";
-
-    default:
-      return "Unternehmen";
-  }
 }
 
 async function logoutUser(){
