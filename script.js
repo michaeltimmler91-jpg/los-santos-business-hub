@@ -151,4 +151,4 @@ shuffleCards();
 setupFilter();
 ladeDaten();
 
-setInterval(ladeDaten, 5000);
+setInterval(ladeDaten, 300000);
