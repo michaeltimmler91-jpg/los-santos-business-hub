@@ -64,7 +64,9 @@
     .blue{background:#00e0ff;color:black;}
     .gray{background:#555;color:white;}
 
-    .hidden{display:none;}
+    .hidden{
+      display:none;
+    }
 
     .status{
       margin:15px 0;
@@ -77,56 +79,101 @@
 <body>
 
 <div class="box" id="loginBox">
+
   <h1>Business Login</h1>
+
   <input type="password" id="codeInput" placeholder="Zugangscode eingeben">
+
   <button class="pink" onclick="login()">Einloggen</button>
+
 </div>
 
 <div class="box hidden" id="adminBox">
+
   <h1 id="businessTitle">Firma</h1>
 
-  <div class="status" id="statusText">Status: -</div>
-  <div class="status" id="deliveryText">Lieferung: -</div>
-
-  <button class="green" onclick="setOpen(true)">Offen</button>
-  <button class="red" onclick="setOpen(false)">Geschlossen</button>
-
-  <div id="deliveryButtons">
-    <button class="blue" onclick="setDelivery(true)">Lieferung Ja</button>
-    <button class="gray" onclick="setDelivery(false)">Lieferung Nein</button>
+  <div class="status" id="statusText">
+    Status: -
   </div>
 
-  <button class="pink" onclick="logout()">Ausloggen</button>
+  <div class="status" id="deliveryText">
+    Lieferung: -
+  </div>
+
+  <button class="green" onclick="setOpen(true)">
+    Offen
+  </button>
+
+  <button class="red" onclick="setOpen(false)">
+    Geschlossen
+  </button>
+
+  <div id="deliveryButtons">
+
+    <button class="blue" onclick="setDelivery(true)">
+      Lieferung Ja
+    </button>
+
+    <button class="gray" onclick="setDelivery(false)">
+      Lieferung Nein
+    </button>
+
+  </div>
+
+  <button class="pink" onclick="logout()">
+    Ausloggen
+  </button>
+
 </div>
 
 <script>
-const SUPABASE_URL = "https://eulfqqkxqxjgszqdffhy.supabase.co";
-const SUPABASE_KEY = "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL = "https://eulfqqkxqxjgszqdffhy.supabase.co";
+
+const SUPABASE_KEY = "HIER_DEIN_PUBLISHABLE_KEY";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 const ACCESS_CODES = {
+
   "BURGER2026": "Burger Shot",
   "HOOKIES2026": "Hookies",
   "PEARLS2026": "Pearls",
+
   "LSMD2026": "LSMD",
   "LSPD2026": "LSPD",
+
   "BLACKLINE2026": "Blackline Tuning",
   "BENNYS2026": "Bennys",
+
   "SMOKEYS2026": "Smokey's Weed Shop",
+
   "ADLER2026": "Adler & Partner",
+
   "BALKAN2026": "Balkan Recordzz",
+
   "TAXI2026": "Los Santos Taxi"
 };
 
 let currentBusiness = null;
 
 async function login(){
-  const code = document.getElementById("codeInput").value.trim().toUpperCase();
+
+  const code = document
+    .getElementById("codeInput")
+    .value
+    .trim()
+    .toUpperCase();
+
   const businessName = ACCESS_CODES[code];
 
   if(!businessName){
+
     alert("Falscher Zugangscode");
+
     return;
   }
 
@@ -137,42 +184,74 @@ async function login(){
     .single();
 
   if(error || !data){
+
     alert("Firma nicht gefunden");
+
     console.error(error);
+
     return;
   }
 
   currentBusiness = data;
 
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("adminBox").classList.remove("hidden");
+  document
+    .getElementById("loginBox")
+    .classList
+    .add("hidden");
+
+  document
+    .getElementById("adminBox")
+    .classList
+    .remove("hidden");
 
   updateUI();
 }
 
 function updateUI(){
-  document.getElementById("businessTitle").innerText = currentBusiness.name;
+
+  document.getElementById("businessTitle").innerText =
+    currentBusiness.name;
 
   document.getElementById("statusText").innerText =
-    "Status: " + (currentBusiness.open ? "Offen" : "Geschlossen");
+    "Status: " +
+    (currentBusiness.open ? "Offen" : "Geschlossen");
 
   document.getElementById("deliveryText").innerText =
-    "Lieferung: " + (currentBusiness.delivery ? "Ja" : "Nein");
+    "Lieferung: " +
+    (currentBusiness.delivery ? "Ja" : "Nein");
 
-  const deliveryButtons = document.getElementById("deliveryButtons");
+  const foodBusinesses = [
+    "Burger Shot",
+    "Hookies",
+    "Pearls"
+  ];
 
-  if(currentBusiness.category && currentBusiness.category.toLowerCase() === "food"){
+  const deliveryButtons =
+    document.getElementById("deliveryButtons");
+
+  const deliveryText =
+    document.getElementById("deliveryText");
+
+  if(foodBusinesses.includes(currentBusiness.name)){
+
     deliveryButtons.style.display = "block";
-  } else {
+
+    deliveryText.style.display = "block";
+
+  }else{
+
     deliveryButtons.style.display = "none";
-    document.getElementById("deliveryText").style.display = "none";
+
+    deliveryText.style.display = "none";
   }
 }
 
 async function setOpen(value){
+
   currentBusiness.open = value;
 
   if(value === false){
+
     currentBusiness.delivery = false;
   }
 
@@ -180,11 +259,14 @@ async function setOpen(value){
 }
 
 async function setDelivery(value){
+
   currentBusiness.delivery = value;
+
   await saveBusiness();
 }
 
 async function saveBusiness(){
+
   const { error } = await supabaseClient
     .from("businesses")
     .update({
@@ -194,8 +276,11 @@ async function saveBusiness(){
     .eq("id", currentBusiness.id);
 
   if(error){
+
     alert("Fehler beim Speichern");
+
     console.error(error);
+
     return;
   }
 
@@ -203,11 +288,22 @@ async function saveBusiness(){
 }
 
 function logout(){
+
   currentBusiness = null;
+
   document.getElementById("codeInput").value = "";
-  document.getElementById("adminBox").classList.add("hidden");
-  document.getElementById("loginBox").classList.remove("hidden");
+
+  document
+    .getElementById("adminBox")
+    .classList
+    .add("hidden");
+
+  document
+    .getElementById("loginBox")
+    .classList
+    .remove("hidden");
 }
+
 </script>
 
 </body>
