@@ -37,9 +37,7 @@ function setupFilter() {
 }
 
 function shuffleCards() {
-
     const grid = document.getElementById("businessGrid");
-
     if (!grid) return;
 
     const cards = Array.from(grid.querySelectorAll(".card"));
@@ -48,7 +46,6 @@ function shuffleCards() {
     const geschlossene = [];
 
     cards.forEach(card => {
-
         const status = card.querySelector(".status");
 
         if (status.classList.contains("open")) {
@@ -61,9 +58,7 @@ function shuffleCards() {
     offene.sort(() => Math.random() - 0.5);
     geschlossene.sort(() => Math.random() - 0.5);
 
-    const neueReihenfolge = [...offene, ...geschlossene];
-
-    neueReihenfolge.forEach(card => {
+    [...offene, ...geschlossene].forEach(card => {
         grid.appendChild(card);
     });
 }
@@ -77,6 +72,11 @@ async function ladeDaten() {
         console.error("Supabase Fehler:", error);
         return;
     }
+
+    const taxiOnline = data.some(b =>
+        b.name.toLowerCase() === "los santos taxi" &&
+        b.open === true
+    );
 
     document.querySelectorAll(".card").forEach(card => {
         const title = card.querySelector("h3").innerText.trim().toLowerCase();
@@ -104,7 +104,14 @@ async function ladeDaten() {
         if (delivery) {
             const deliveryActive =
                 business.open === true &&
-                business.delivery === true;
+                (
+                    business.delivery === true ||
+                    (
+                        taxiOnline &&
+                        business.category &&
+                        business.category.toLowerCase() === "food"
+                    )
+                );
 
             if (deliveryActive) {
                 delivery.innerText = "Lieferung aktiv";
@@ -120,8 +127,8 @@ async function ladeDaten() {
         if (buttons[0]) buttons[0].href = business.website || "#";
         if (buttons[1]) buttons[1].href = business.discord || "#";
     });
-    
-	shuffleCards();
+
+    shuffleCards();
     filterCards();
 }
 
