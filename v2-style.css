@@ -514,3 +514,44 @@ line-height:1.4;
 .hidden{
 display:none !important;
 }
+
+.pink-link-btn{
+display:inline-block;
+padding:14px 18px;
+border-radius:14px;
+background:#ff1493;
+color:white;
+font-weight:bold;
+margin-top:12px;
+}
+
+.closed-application{
+margin-top:12px;
+color:#ff4d6d !important;
+font-weight:bold;
+}
+
+.question-box{
+background:#0b0b16;
+padding:18px;
+border-radius:18px;
+margin-bottom:15px;
+}
+
+.question-box label{
+display:block;
+font-weight:bold;
+color:#ff1493;
+margin-bottom:10px;
+}
+
+.question-box textarea{
+width:100%;
+min-height:100px;
+padding:15px;
+border:none;
+border-radius:14px;
+background:#1b1b2e;
+color:white;
+resize:vertical;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bewerbung</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=40">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="admin-wrapper">
+
+    <div class="admin-topbar">
+      <h1>Bewerbung</h1>
+
+      <button onclick="goBack()">
+        Zur&uuml;ck
+      </button>
+    </div>
+
+    <div class="admin-box">
+
+      <h2 id="businessTitle">L&auml;dt...</h2>
+
+      <p id="applicationNote" class="hint"></p>
+
+      <div id="questionsBox"></div>
+
+      <textarea id="messageText" placeholder="Zus&auml;tzliche Nachricht"></textarea>
+
+      <button onclick="sendApplication()">
+        Bewerbung absenden
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="./v2-bewerbung.js?v=1"></script>
+
+<script>
+loadApplicationPage();
+</script>
+
+</body>
+</html>
