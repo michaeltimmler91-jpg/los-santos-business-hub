@@ -22,7 +22,7 @@
 
     .box{
       width:100%;
-      max-width:480px;
+      max-width:520px;
       background:#151522;
       padding:30px;
       border-radius:22px;
@@ -43,7 +43,7 @@
       background:#222233;
       color:white;
       font-size:16px;
-      margin-bottom:15px;
+      margin-bottom:12px;
       box-sizing:border-box;
     }
 
@@ -63,6 +63,7 @@
     .red{background:#ff4d6d;color:white;}
     .blue{background:#00e0ff;color:black;}
     .gray{background:#555;color:white;}
+    .dark{background:#0b0b14;color:white;border:1px solid rgba(255,255,255,0.12);}
 
     .hidden{
       display:none;
@@ -73,6 +74,18 @@
       padding:12px;
       border-radius:12px;
       background:#0b0b14;
+    }
+
+    .owner-box{
+      margin-top:22px;
+      padding-top:18px;
+      border-top:1px solid rgba(255,255,255,0.12);
+    }
+
+    .small-text{
+      color:#aaa;
+      font-size:13px;
+      margin-top:8px;
     }
   </style>
 </head>
@@ -103,12 +116,28 @@
     <button class="gray" onclick="setDelivery(false)">Lieferung Nein</button>
   </div>
 
+  <div class="owner-box" id="ownerLoginBox">
+    <h2>Inhaberbereich</h2>
+    <input type="password" id="ownerCodeInput" placeholder="Inhaber-Code eingeben">
+    <button class="dark" onclick="unlockOwner()">Inhaberbereich freischalten</button>
+    <div class="small-text">Nur Inhaber können Website und Verteiler ändern.</div>
+  </div>
+
+  <div class="owner-box hidden" id="ownerPanel">
+    <h2>Website & Verteiler</h2>
+
+    <input type="text" id="websiteInput" placeholder="Website-Link">
+    <input type="text" id="discordInput" placeholder="Verteiler / Discord-Link">
+
+    <button class="blue" onclick="saveLinks()">Links speichern</button>
+  </div>
+
   <button class="pink" onclick="logout()">Ausloggen</button>
 </div>
 
 <script>
 const SUPABASE_URL = "https://eulfqqkxqxjgszqdffhy.supabase.co";
-const SUPABASE_KEY = "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
+const SUPABASE_KEY = "HIER_DEIN_PUBLISHABLE_KEY";
 
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
@@ -129,7 +158,22 @@ const ACCESS_CODES = {
   "TAXI2026": "Los Santos Taxi"
 };
 
+const OWNER_CODES = {
+  "BURGER-OWNER-2026": "Burger Shot",
+  "HOOKIES-OWNER-2026": "Hookies",
+  "PEARLS-OWNER-2026": "Pearls",
+  "LSMD-OWNER-2026": "LSMD",
+  "LSPD-OWNER-2026": "LSPD",
+  "BLACKLINE-OWNER-2026": "Blackline Tuning",
+  "BENNYS-OWNER-2026": "Bennys",
+  "SMOKEYS-OWNER-2026": "Smokey's Weed Shop",
+  "ADLER-OWNER-2026": "Adler & Partner",
+  "BALKAN-OWNER-2026": "Balkan Recordzz",
+  "TAXI-OWNER-2026": "Los Santos Taxi"
+};
+
 let currentBusiness = null;
+let ownerUnlocked = false;
 
 async function login(){
   const code = document
@@ -158,9 +202,12 @@ async function login(){
   }
 
   currentBusiness = data;
+  ownerUnlocked = false;
 
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("adminBox").classList.remove("hidden");
+  document.getElementById("ownerLoginBox").classList.remove("hidden");
+  document.getElementById("ownerPanel").classList.add("hidden");
 
   updateUI();
 }
@@ -174,6 +221,12 @@ function updateUI(){
 
   document.getElementById("deliveryText").innerText =
     "Lieferung: " + (currentBusiness.delivery ? "Ja" : "Nein");
+
+  document.getElementById("websiteInput").value =
+    currentBusiness.website || "";
+
+  document.getElementById("discordInput").value =
+    currentBusiness.discord || "";
 
   const foodBusinesses = [
     "Burger Shot",
@@ -200,15 +253,15 @@ async function setOpen(value){
     currentBusiness.delivery = false;
   }
 
-  await saveBusiness();
+  await saveBusinessStatus();
 }
 
 async function setDelivery(value){
   currentBusiness.delivery = value;
-  await saveBusiness();
+  await saveBusinessStatus();
 }
 
-async function saveBusiness(){
+async function saveBusinessStatus(){
   const { error } = await supabaseClient
     .from("businesses")
     .update({
@@ -226,12 +279,69 @@ async function saveBusiness(){
   updateUI();
 }
 
+function unlockOwner(){
+  const ownerCode = document
+    .getElementById("ownerCodeInput")
+    .value
+    .trim()
+    .toUpperCase();
+
+  const ownerBusiness = OWNER_CODES[ownerCode];
+
+  if(!ownerBusiness || ownerBusiness !== currentBusiness.name){
+    alert("Falscher Inhaber-Code");
+    return;
+  }
+
+  ownerUnlocked = true;
+
+  document.getElementById("ownerLoginBox").classList.add("hidden");
+  document.getElementById("ownerPanel").classList.remove("hidden");
+}
+
+async function saveLinks(){
+  if(!ownerUnlocked){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  currentBusiness.website =
+    document.getElementById("websiteInput").value.trim();
+
+  currentBusiness.discord =
+    document.getElementById("discordInput").value.trim();
+
+  const { error } = await supabaseClient
+    .from("businesses")
+    .update({
+      website: currentBusiness.website,
+      discord: currentBusiness.discord
+    })
+    .eq("id", currentBusiness.id);
+
+  if(error){
+    alert("Fehler beim Speichern der Links");
+    console.error(error);
+    return;
+  }
+
+  alert("Links gespeichert");
+  updateUI();
+}
+
 function logout(){
   currentBusiness = null;
+  ownerUnlocked = false;
+
   document.getElementById("codeInput").value = "";
+  document.getElementById("ownerCodeInput").value = "";
+  document.getElementById("websiteInput").value = "";
+  document.getElementById("discordInput").value = "";
 
   document.getElementById("adminBox").classList.add("hidden");
   document.getElementById("loginBox").classList.remove("hidden");
+  document.getElementById("ownerPanel").classList.add("hidden");
+  document.getElementById("ownerLoginBox").classList.remove("hidden");
 }
 </script>
 
