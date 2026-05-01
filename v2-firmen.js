@@ -142,7 +142,7 @@ function renderBusinesses(businesses){
             business.plz
             ? `
               <div class="business-info-item">
-                <strong>PLZ:</strong>
+                <strong>Standort:</strong>
                 <span>${escapeHtml(business.plz)}</span>
               </div>
             `
