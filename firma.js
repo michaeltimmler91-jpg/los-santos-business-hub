@@ -381,7 +381,7 @@ async function sendComment(){
     if(selectedRating < 1){
 
         alert(
-        "Bitte mindestens 1 Stern ausw&auml;hlen"
+        "Bitte mindestens 1 Stern auswählen"
         );
 
         return;
