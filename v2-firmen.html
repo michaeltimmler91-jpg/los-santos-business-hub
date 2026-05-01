@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V2 Firmen</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=40">
+  <title>Unternehmen</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=80">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -15,24 +17,53 @@
   <div class="admin-wrapper">
 
     <div class="admin-topbar">
-      <h1>Firmen</h1>
 
-      <button onclick="logoutUser()">
-        Ausloggen
-      </button>
+      <h1>Unternehmen</h1>
+
+      <div class="topbar-actions">
+
+        <button onclick="goDashboard()">
+          Dashboard
+        </button>
+
+        <button onclick="logoutUser()">
+          Ausloggen
+        </button>
+
+      </div>
+
     </div>
 
     <div class="admin-box">
-      <h2>Alle Unternehmen</h2>
 
-      <div id="businessList"></div>
+      <div class="business-filter-bar">
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Unternehmen suchen..."
+          oninput="filterBusinesses()"
+        >
+
+        <select id="categoryFilter" onchange="filterBusinesses()">
+          <option value="">Alle Kategorien</option>
+          <option value="food">Essen &amp; Lieferung</option>
+          <option value="service">Unternehmen &amp; Service</option>
+          <option value="government">Beh&ouml;rden</option>
+          <option value="workshop">Werkstatt</option>
+        </select>
+
+      </div>
+
+      <div id="businessList" class="business-grid"></div>
+
     </div>
 
   </div>
 
 </div>
 
-<script src="./v2-firmen.js?v=1"></script>
+<script src="./v2-firmen.js?v=80"></script>
 
 <script>
 loadBusinesses();
