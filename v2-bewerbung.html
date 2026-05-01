@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bewerbung</title>
 
-  <title>Meine Bewerbungen</title>
-
-  <link rel="stylesheet" href="./v2-style.css?v=60">
-
+  <link rel="stylesheet" href="./v2-style.css?v=40">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -17,20 +15,26 @@
   <div class="admin-wrapper">
 
     <div class="admin-topbar">
-
-      <h1>Meine Bewerbungen</h1>
+      <h1>Bewerbung</h1>
 
       <button onclick="goBack()">
         Zur&uuml;ck
       </button>
-
     </div>
 
     <div class="admin-box">
 
-      <h2>Gesendete Bewerbungen</h2>
+      <h2 id="businessTitle">L&auml;dt...</h2>
 
-      <div id="applicationList"></div>
+      <p id="applicationNote" class="hint"></p>
+
+      <div id="questionsBox"></div>
+
+      <textarea id="messageText" placeholder="Zus&auml;tzliche Nachricht"></textarea>
+
+      <button onclick="sendApplication()">
+        Bewerbung absenden
+      </button>
 
     </div>
 
@@ -38,10 +42,10 @@
 
 </div>
 
-<script src="./v2-meine-bewerbungen.js?v=1"></script>
+<script src="./v2-bewerbung.js?v=1"></script>
 
 <script>
-loadMyApplications();
+loadApplicationPage();
 </script>
 
 </body>
