@@ -16,6 +16,14 @@
 
   <div class="firma-card">
 
+    <div class="firma-topbar">
+
+      <a href="index.html" class="back-btn">
+        ? Zurück zur Übersicht
+      </a>
+
+    </div>
+
     <img id="firmaImage" src="" alt="Firma">
 
     <div class="firma-content">
@@ -23,15 +31,25 @@
       <h1 id="firmaName">Lädt...</h1>
 
       <div class="firma-badges">
-        <span id="firmaStatus" class="status closed">Geschlossen</span>
-        <span id="firmaDelivery" class="delivery no">Keine Lieferung</span>
+
+        <span id="firmaStatus" class="status closed">
+          Geschlossen
+        </span>
+
+        <span id="firmaDelivery" class="delivery no">
+          Keine Lieferung
+        </span>
+
       </div>
 
       <p id="firmaPlz"></p>
 
       <div class="firma-description">
+
         <h2>Beschreibung</h2>
+
         <p id="firmaDescription"></p>
+
       </div>
 
       <div class="firma-buttons">
@@ -52,9 +70,16 @@
 
         <div id="commentsList"></div>
 
-        <input type="text" id="commentAuthor" placeholder="Dein Name">
+        <input
+          type="text"
+          id="commentAuthor"
+          placeholder="Dein Name"
+        >
 
-        <textarea id="commentMessage" placeholder="Kommentar schreiben"></textarea>
+        <textarea
+          id="commentMessage"
+          placeholder="Kommentar schreiben"
+        ></textarea>
 
         <button onclick="sendComment()">
           Kommentar senden
@@ -68,7 +93,7 @@
 
 </div>
 
-<script src="firma.js?v=10"></script>
+<script src="firma.js?v=12"></script>
 
 </body>
 </html>
