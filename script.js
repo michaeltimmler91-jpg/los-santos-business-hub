@@ -124,8 +124,23 @@ async function ladeDaten() {
             }
         }
 
-        if (buttons[0]) buttons[0].href = business.website || "#";
-        if (buttons[1]) buttons[1].href = business.discord || "#";
+if (buttons[0]) {
+    if (business.website && business.website.trim() !== "") {
+        buttons[0].style.display = "block";
+        buttons[0].href = business.website;
+    } else {
+        buttons[0].style.display = "none";
+    }
+}
+
+if (buttons[1]) {
+    if (business.discord && business.discord.trim() !== "") {
+        buttons[1].style.display = "block";
+        buttons[1].href = business.discord;
+    } else {
+        buttons[1].style.display = "none";
+    }
+}
     });
 
     shuffleCards();
