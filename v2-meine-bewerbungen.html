@@ -6,39 +6,38 @@
 
   <title>Meine Bewerbungen</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=150">
+  <link rel="stylesheet" href="./v2-style.css?v=260">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="auth-page">
+<div class="myapps-page">
 
-  <div class="admin-wrapper">
+  <div class="myapps-topbar">
 
-    <div class="admin-topbar">
-
+    <div>
       <h1>Meine Bewerbungen</h1>
-
-      <button onclick="goBack()">
-        Zur&uuml;ck
-      </button>
-
+      <p>Status und Nachrichten deiner Bewerbungen</p>
     </div>
 
-    <div class="admin-box">
+    <button onclick="goBack()">
+      Zur&uuml;ck
+    </button>
 
-      <h2>Gesendete Bewerbungen</h2>
+  </div>
 
-      <div id="applicationList"></div>
+  <div class="myapps-wrapper">
 
-    </div>
+    <h2>Gesendete Bewerbungen</h2>
+
+    <div id="applicationList"></div>
 
   </div>
 
 </div>
 
-<script src="./v2-meine-bewerbungen.js?v=10"></script>
+<script src="./v2-meine-bewerbungen.js?v=260"></script>
 
 <script>
 loadMyApplications();

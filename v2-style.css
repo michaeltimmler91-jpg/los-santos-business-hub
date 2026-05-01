@@ -604,3 +604,166 @@ margin-bottom:18px;
 width:auto;
 margin:0;
 }
+
+.myapps-page{
+min-height:100vh;
+background:#050510;
+padding:35px 20px 60px;
+}
+
+.myapps-topbar{
+width:95%;
+max-width:1400px;
+margin:0 auto 30px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.myapps-topbar h1{
+font-size:42px;
+color:white;
+}
+
+.myapps-topbar p{
+color:#ff1493;
+font-weight:bold;
+margin-top:6px;
+}
+
+.myapps-wrapper{
+width:95%;
+max-width:1400px;
+margin:0 auto;
+background:#121225;
+border-radius:28px;
+padding:28px;
+border:1px solid rgba(255,20,147,0.16);
+box-shadow:0 0 30px rgba(255,20,147,0.14);
+}
+
+.myapps-wrapper h2{
+font-size:30px;
+color:#ff1493;
+margin-bottom:22px;
+}
+
+.application-card{
+background:#0d0d1d;
+padding:22px;
+border-radius:24px;
+margin-bottom:22px;
+border:1px solid rgba(255,20,147,0.14);
+}
+
+.application-head{
+display:flex;
+justify-content:space-between;
+gap:15px;
+align-items:flex-start;
+margin-bottom:18px;
+flex-wrap:wrap;
+}
+
+.application-head strong{
+font-size:24px;
+color:white;
+}
+
+.application-head p{
+color:#aaa;
+margin-top:6px;
+}
+
+.application-status{
+padding:9px 15px;
+border-radius:999px;
+font-weight:bold;
+font-size:13px;
+}
+
+.status-offen{
+background:#00d9ff;
+color:black;
+}
+
+.status-in_bearbeitung{
+background:#ffc107;
+color:black;
+}
+
+.status-angenommen{
+background:#00ff99;
+color:black;
+}
+
+.status-abgelehnt{
+background:#ff4d6d;
+color:white;
+}
+
+.application-message,
+.application-thread,
+.application-actions{
+margin-top:18px;
+}
+
+.application-message strong,
+.application-thread strong{
+color:#ff1493;
+display:block;
+margin-bottom:8px;
+}
+
+.thread-message{
+padding:14px;
+border-radius:16px;
+margin-top:12px;
+max-width:85%;
+}
+
+.thread-own{
+background:#ff1493;
+margin-left:auto;
+}
+
+.thread-other{
+background:#1b1b2e;
+margin-right:auto;
+}
+
+.thread-meta{
+font-size:12px;
+opacity:0.75;
+margin-bottom:8px;
+}
+
+.thread-text{
+line-height:1.5;
+white-space:pre-wrap;
+word-break:break-word;
+}
+
+.application-actions textarea{
+width:100%;
+min-height:100px;
+margin-top:12px;
+}
+
+@media(max-width:700px){
+
+.myapps-topbar h1{
+font-size:32px;
+}
+
+.myapps-wrapper{
+padding:20px;
+}
+
+.thread-message{
+max-width:100%;
+}
+
+}
