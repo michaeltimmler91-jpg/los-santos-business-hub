@@ -90,7 +90,11 @@ async function createBusiness(){
     name:name,
     category:category,
     description:description,
-    plz:plz
+    plz:plz,
+    open:false,
+    delivery:false,
+    applications_enabled:false,
+    applications_open:false
   });
 
   if(error){
@@ -233,9 +237,11 @@ function fillBusinessSelect(){
     const option =
     document.createElement("option");
 
-    option.value = business.id;
+    option.value =
+    business.id;
 
-    option.innerText = business.name;
+    option.innerText =
+    business.name;
 
     select.appendChild(option);
   });
@@ -280,9 +286,9 @@ async function assignOwner(){
   await supabaseClient
   .from("business_members")
   .insert({
-    business_id: Number(businessId),
-    user_id: profile.user_id,
-    member_role: "inhaber"
+    business_id:Number(businessId),
+    user_id:profile.user_id,
+    member_role:"inhaber"
   });
 
   if(error){
@@ -299,6 +305,14 @@ async function assignOwner(){
   document.getElementById("ownerLoginName").value = "";
 
   loadBusinesses();
+}
+
+async function logoutUser(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+  "v2-login.html";
 }
 
 function escapeHtml(text){
