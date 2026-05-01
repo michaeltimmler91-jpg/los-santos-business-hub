@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>E-Mail bestätigt</title>
+
+<link rel="stylesheet" href="./v2-style.css?v=400">
+
+<style>
+
+.confirm-page{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+background:
+radial-gradient(circle at top, rgba(255,20,147,0.15), transparent 30%),
+#050510;
+}
+
+.confirm-card{
+width:100%;
+max-width:500px;
+background:#121225;
+border-radius:30px;
+padding:40px;
+text-align:center;
+border:1px solid rgba(255,20,147,0.25);
+box-shadow:0 0 40px rgba(255,20,147,0.2);
+}
+
+.confirm-icon{
+font-size:70px;
+margin-bottom:20px;
+}
+
+.confirm-card h1{
+font-size:38px;
+margin-bottom:15px;
+}
+
+.confirm-card p{
+color:#aaa;
+font-size:18px;
+line-height:1.5;
+}
+
+.confirm-loader{
+margin-top:25px;
+font-size:14px;
+color:#ff1493;
+font-weight:bold;
+}
+
+</style>
+</head>
+<body>
+
+<div class="confirm-page">
+
+  <div class="confirm-card">
+
+    <div class="confirm-icon">
+      ?
+    </div>
+
+    <h1>
+      E-Mail bestätigt
+    </h1>
+
+    <p>
+      Dein Account wurde erfolgreich bestätigt.<br>
+      Du wirst jetzt automatisch zum Login weitergeleitet.
+    </p>
+
+    <div class="confirm-loader">
+      Weiterleitung läuft...
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+setTimeout(() => {
+
+  window.location.href =
+  "./v2-login.html";
+
+}, 3000);
+
+</script>
+
+</body>
+</html>
