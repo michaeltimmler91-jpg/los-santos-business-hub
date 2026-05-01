@@ -121,6 +121,7 @@ async function loadBusiness(businessId){
   toggleDeliveryArea();
 
   await loadEmployees();
+  await loadAvailableUsers();
   await loadQuestions();
   await loadApplications();
 }
@@ -305,20 +306,76 @@ async function loadEmployees(){
 
 async function addEmployee(){
 
-  const loginName =
-  document.getElementById("employeeLoginName")
-  .value
-  .trim()
-  .toLowerCase();
+  const userId =
+  document.getElementById("employeeUserSelect")
+  .value;
 
   const role =
   document.getElementById("employeeRole")
   .value;
 
-  if(!loginName){
-    alert("Loginname fehlt");
+  if(!userId){
+
+    alert("Bitte User auswählen");
+
     return;
   }
+
+  const { data: existingMember } =
+  await supabaseClient
+  .from("business_members")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .eq("user_id", userId)
+  .maybeSingle();
+
+  if(existingMember){
+
+    const { error } =
+    await supabaseClient
+    .from("business_members")
+    .update({
+      member_role: role
+    })
+    .eq("id", existingMember.id);
+
+    if(error){
+
+      alert("Mitarbeiter konnte nicht aktualisiert werden");
+
+      console.error(error);
+
+      return;
+    }
+
+  }else{
+
+    const { error } =
+    await supabaseClient
+    .from("business_members")
+    .insert({
+      business_id: currentBusiness.id,
+      user_id: userId,
+      member_role: role
+    });
+
+    if(error){
+
+      alert("Mitarbeiter konnte nicht hinzugefügt werden");
+
+      console.error(error);
+
+      return;
+    }
+  }
+
+  document.getElementById("employeeUserSelect").value =
+  "";
+
+  await loadEmployees();
+
+  alert("Mitarbeiter gespeichert");
+}
 
   const { data: profile, error: profileError } =
   await supabaseClient
@@ -379,6 +436,54 @@ async function addEmployee(){
   await loadEmployees();
 
   alert("Mitarbeiter gespeichert");
+}
+
+async function loadAvailableUsers(){
+
+  const select =
+  document.getElementById("employeeUserSelect");
+
+  if(!select){
+    return;
+  }
+
+  select.innerHTML = `
+    <option value="">
+      User auswählen
+    </option>
+  `;
+
+  const { data, error } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("approved", true)
+  .eq("blocked", false)
+  .order("display_name");
+
+  if(error){
+
+    console.error(error);
+
+    return;
+  }
+
+  (data || []).forEach(profile => {
+
+    const option =
+    document.createElement("option");
+
+    option.value =
+    profile.user_id;
+
+    option.innerText =
+    profile.display_name +
+    " (" +
+    profile.login_name +
+    ")";
+
+    select.appendChild(option);
+  });
 }
 
 async function loadQuestions(){
