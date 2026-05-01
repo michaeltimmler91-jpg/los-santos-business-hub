@@ -14,23 +14,17 @@ let currentUser = null;
 let currentBusiness = null;
 let ownerBusinesses = [];
 
-/* START */
-
 async function checkOwner(){
 
   const { data } =
   await supabaseClient.auth.getUser();
 
   if(!data.user){
-
-    window.location.href =
-    "v2-login.html";
-
+    window.location.href = "v2-login.html";
     return;
   }
 
-  currentUser =
-  data.user;
+  currentUser = data.user;
 
   const { data: memberships, error } =
   await supabaseClient
@@ -43,12 +37,8 @@ async function checkOwner(){
   .eq("member_role", "inhaber");
 
   if(error || !memberships || memberships.length === 0){
-
     alert("Keine Firmen gefunden");
-
-    window.location.href =
-    "v2-dashboard.html";
-
+    window.location.href = "v2-dashboard.html";
     return;
   }
 
@@ -59,50 +49,33 @@ async function checkOwner(){
 
   fillBusinessSelect();
 
-  if(ownerBusinesses.length > 0){
-
-    await loadBusiness(
-      ownerBusinesses[0].id
-    );
-  }
-
   document
   .getElementById("businessSelect")
-  .addEventListener(
-    "change",
-    async function(){
+  .addEventListener("change", async function(){
+    await loadBusiness(this.value);
+  });
 
-      await loadBusiness(this.value);
-    }
-  );
+  await loadBusiness(ownerBusinesses[0].id);
 }
-
-/* FIRMEN DROPDOWN */
 
 function fillBusinessSelect(){
 
   const select =
   document.getElementById("businessSelect");
 
-  select.innerHTML =
-  "";
+  select.innerHTML = "";
 
   ownerBusinesses.forEach(business => {
 
     const option =
     document.createElement("option");
 
-    option.value =
-    business.id;
-
-    option.innerText =
-    business.name;
+    option.value = business.id;
+    option.innerText = business.name;
 
     select.appendChild(option);
   });
 }
-
-/* FIRMA LADEN */
 
 async function loadBusiness(businessId){
 
@@ -111,17 +84,11 @@ async function loadBusiness(businessId){
     Number(item.id) === Number(businessId)
   );
 
-  if(!business){
-    return;
-  }
+  if(!business) return;
 
-  currentBusiness =
-  business;
+  currentBusiness = business;
 
-  document
-  .getElementById("ownerContent")
-  .classList
-  .remove("hidden");
+  document.getElementById("ownerContent").classList.remove("hidden");
 
   document.getElementById("businessTitle").innerText =
   business.name;
@@ -151,29 +118,20 @@ async function loadBusiness(businessId){
   business.application_note || "";
 
   updateStatus();
-
   toggleDeliveryArea();
 
   await loadEmployees();
-
   await loadQuestions();
-
   await loadApplications();
 }
-
-/* STATUS */
 
 function updateStatus(){
 
   document.getElementById("openStatus").innerText =
-  currentBusiness.open
-  ? "Geöffnet"
-  : "Geschlossen";
+  currentBusiness.open ? "Geöffnet" : "Geschlossen";
 
   document.getElementById("deliveryStatus").innerText =
-  currentBusiness.delivery
-  ? "Aktiv"
-  : "Inaktiv";
+  currentBusiness.delivery ? "Aktiv" : "Inaktiv";
 }
 
 function toggleDeliveryArea(){
@@ -185,12 +143,9 @@ function toggleDeliveryArea(){
   document.getElementById("deliveryStatusCard");
 
   if(currentBusiness.has_delivery){
-
     controls.classList.remove("hidden");
     card.classList.remove("hidden");
-
   }else{
-
     controls.classList.add("hidden");
     card.classList.add("hidden");
   }
@@ -198,23 +153,27 @@ function toggleDeliveryArea(){
 
 async function setOpen(state){
 
+  const updateData = {
+    open: state
+  };
+
+  if(state === false){
+    updateData.delivery = false;
+  }
+
   const { error } =
   await supabaseClient
   .from("businesses_v2")
-  .update({
-    open:state
-  })
+  .update(updateData)
   .eq("id", currentBusiness.id);
 
   if(error){
-
-    alert("Fehler");
-
+    alert("Status konnte nicht gespeichert werden");
+    console.error(error);
     return;
   }
 
-  currentBusiness.open =
-  state;
+  Object.assign(currentBusiness, updateData);
 
   updateStatus();
 }
@@ -225,40 +184,28 @@ async function setDelivery(state){
   await supabaseClient
   .from("businesses_v2")
   .update({
-    delivery:state
+    delivery: state
   })
   .eq("id", currentBusiness.id);
 
   if(error){
-
-    alert("Fehler");
-
+    alert("Lieferung konnte nicht gespeichert werden");
+    console.error(error);
     return;
   }
 
-  currentBusiness.delivery =
-  state;
+  currentBusiness.delivery = state;
 
   updateStatus();
 }
 
-/* FIRMENDATEN */
-
 async function saveBusinessData(){
 
   const updateData = {
-
-    plz:
-    document.getElementById("businessPlz").value.trim(),
-
-    description:
-    document.getElementById("businessDescription").value.trim(),
-
-    website:
-    document.getElementById("businessWebsite").value.trim(),
-
-    discord:
-    document.getElementById("businessDiscord").value.trim()
+    plz: document.getElementById("businessPlz").value.trim(),
+    description: document.getElementById("businessDescription").value.trim(),
+    website: document.getElementById("businessWebsite").value.trim(),
+    discord: document.getElementById("businessDiscord").value.trim()
   };
 
   const { error } =
@@ -268,34 +215,22 @@ async function saveBusinessData(){
   .eq("id", currentBusiness.id);
 
   if(error){
-
-    alert("Fehler");
-
+    alert("Firmendaten konnten nicht gespeichert werden");
+    console.error(error);
     return;
   }
 
-  Object.assign(
-    currentBusiness,
-    updateData
-  );
+  Object.assign(currentBusiness, updateData);
 
   alert("Gespeichert");
 }
-
-/* BEWERBUNGSEINSTELLUNGEN */
 
 async function saveApplicationSettings(){
 
   const updateData = {
-
-    applications_enabled:
-    document.getElementById("applicationsEnabled").checked,
-
-    applications_open:
-    document.getElementById("applicationsOpen").checked,
-
-    application_note:
-    document.getElementById("applicationNote").value.trim()
+    applications_enabled: document.getElementById("applicationsEnabled").checked,
+    applications_open: document.getElementById("applicationsOpen").checked,
+    application_note: document.getElementById("applicationNote").value.trim()
   };
 
   const { error } =
@@ -305,140 +240,168 @@ async function saveApplicationSettings(){
   .eq("id", currentBusiness.id);
 
   if(error){
-
-    alert("Fehler");
-
+    alert("Bewerbungseinstellungen konnten nicht gespeichert werden");
+    console.error(error);
     return;
   }
 
-  Object.assign(
-    currentBusiness,
-    updateData
-  );
+  Object.assign(currentBusiness, updateData);
 
   alert("Gespeichert");
 }
-
-/* MITARBEITER */
 
 async function loadEmployees(){
 
   const list =
   document.getElementById("employeeList");
 
-  list.innerHTML =
-  "";
+  list.innerHTML = "";
 
   const { data, error } =
   await supabaseClient
   .from("business_members")
-  .select(`
-    *,
-    profiles(*)
-  `)
+  .select("*")
   .eq("business_id", currentBusiness.id);
 
   if(error){
+    console.error(error);
     return;
   }
 
-  data.forEach(member => {
+  if(!data || data.length === 0){
+    list.innerHTML = "<p class='muted'>Noch keine Mitarbeiter.</p>";
+    return;
+  }
+
+  for(const member of data){
+
+    const profile =
+    await getProfileByUserId(member.user_id);
 
     const div =
     document.createElement("div");
 
-    div.className =
-    "member-pill";
+    div.className = "business-item";
 
     div.innerHTML = `
-      ${escapeHtml(
-        member.profiles?.display_name ||
-        "Unbekannt"
-      )}
+      <strong>
+        ${escapeHtml(profile ? profile.display_name : "Unbekannt")}
+      </strong>
 
-      <span>
+      <p>
+        Login:
+        ${escapeHtml(profile ? profile.login_name : "-")}
+      </p>
+
+      <p>
+        Rolle:
         ${escapeHtml(member.member_role)}
-      </span>
+      </p>
     `;
 
     list.appendChild(div);
-  });
+  }
 }
 
 async function addEmployee(){
 
   const loginName =
-  document
-  .getElementById("employeeLoginName")
+  document.getElementById("employeeLoginName")
   .value
-  .trim();
+  .trim()
+  .toLowerCase();
 
   const role =
-  document
-  .getElementById("employeeRole")
+  document.getElementById("employeeRole")
   .value;
 
   if(!loginName){
-
     alert("Loginname fehlt");
-
     return;
   }
 
-  const { data: profile } =
+  const { data: profile, error: profileError } =
   await supabaseClient
   .from("profiles")
   .select("*")
   .eq("login_name", loginName)
   .maybeSingle();
 
-  if(!profile){
-
+  if(profileError || !profile){
     alert("User nicht gefunden");
-
     return;
   }
 
-  const { error } =
+  const { data: existingMember } =
   await supabaseClient
   .from("business_members")
-  .insert({
-    business_id:currentBusiness.id,
-    user_id:profile.user_id,
-    member_role:role
-  });
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .eq("user_id", profile.user_id)
+  .maybeSingle();
 
-  if(error){
+  if(existingMember){
 
-    alert("Fehler");
+    const { error } =
+    await supabaseClient
+    .from("business_members")
+    .update({
+      member_role: role
+    })
+    .eq("id", existingMember.id);
 
-    return;
+    if(error){
+      alert("Mitarbeiter konnte nicht aktualisiert werden");
+      console.error(error);
+      return;
+    }
+
+  }else{
+
+    const { error } =
+    await supabaseClient
+    .from("business_members")
+    .insert({
+      business_id: currentBusiness.id,
+      user_id: profile.user_id,
+      member_role: role
+    });
+
+    if(error){
+      alert("Mitarbeiter konnte nicht hinzugefügt werden");
+      console.error(error);
+      return;
+    }
   }
 
-  document.getElementById("employeeLoginName").value =
-  "";
+  document.getElementById("employeeLoginName").value = "";
 
   await loadEmployees();
-}
 
-/* FRAGEN */
+  alert("Mitarbeiter gespeichert");
+}
 
 async function loadQuestions(){
 
   const list =
   document.getElementById("questionList");
 
-  list.innerHTML =
-  "";
+  list.innerHTML = "";
 
   const { data, error } =
   await supabaseClient
-  .from("business_application_questions")
+  .from("application_questions")
   .select("*")
   .eq("business_id", currentBusiness.id)
-  .order("id");
+  .order("sort_order");
 
   if(error){
+    console.error(error);
+    return;
+  }
+
+  if(!data || data.length === 0){
+    list.innerHTML = "<p class='muted'>Noch keine Bewerbungsfragen.</p>";
     return;
   }
 
@@ -447,19 +410,18 @@ async function loadQuestions(){
     const div =
     document.createElement("div");
 
-    div.className =
-    "question-box";
+    div.className = "question-box";
 
     div.innerHTML = `
       <label>
-        ${escapeHtml(question.question)}
+        ${escapeHtml(question.question_text)}
       </label>
 
       <button
         class="danger-btn"
         onclick="deleteQuestion(${question.id})"
       >
-        Löschen
+        L&ouml;schen
       </button>
     `;
 
@@ -469,161 +431,182 @@ async function loadQuestions(){
 
 async function addQuestion(){
 
-  const question =
-  document
-  .getElementById("questionText")
+  const questionText =
+  document.getElementById("questionText")
   .value
   .trim();
 
-  if(!question){
-
+  if(!questionText){
     alert("Frage fehlt");
-
     return;
   }
+
+  const { data: existingQuestions } =
+  await supabaseClient
+  .from("application_questions")
+  .select("*")
+  .eq("business_id", currentBusiness.id);
+
+  const nextOrder =
+  existingQuestions ? existingQuestions.length + 1 : 1;
 
   const { error } =
   await supabaseClient
-  .from("business_application_questions")
+  .from("application_questions")
   .insert({
-    business_id:currentBusiness.id,
-    question:question
+    business_id: currentBusiness.id,
+    question_text: questionText,
+    required: true,
+    sort_order: nextOrder
   });
 
   if(error){
-
-    alert("Fehler");
-
+    alert("Frage konnte nicht gespeichert werden");
+    console.error(error);
     return;
   }
 
-  document.getElementById("questionText").value =
-  "";
+  document.getElementById("questionText").value = "";
 
   await loadQuestions();
 }
 
 async function deleteQuestion(questionId){
 
+  if(!confirm("Frage wirklich löschen?")){
+    return;
+  }
+
+  const { error } =
   await supabaseClient
-  .from("business_application_questions")
+  .from("application_questions")
   .delete()
   .eq("id", questionId);
 
+  if(error){
+    alert("Frage konnte nicht gelöscht werden");
+    console.error(error);
+    return;
+  }
+
   await loadQuestions();
 }
-
-/* BEWERBUNGEN */
 
 async function loadApplications(){
 
   const list =
   document.getElementById("applicationList");
 
-  list.innerHTML =
-  "";
+  list.innerHTML = "";
 
   const { data, error } =
   await supabaseClient
-  .from("business_applications")
-  .select(`
-    *,
-    profiles(*)
-  `)
+  .from("applications")
+  .select("*")
   .eq("business_id", currentBusiness.id)
   .order("created_at", {
-    ascending:false
+    ascending: false
   });
 
   if(error){
-
     console.error(error);
-
+    list.innerHTML = "<p class='muted'>Bewerbungen konnten nicht geladen werden.</p>";
     return;
   }
 
   if(!data || data.length === 0){
-
-    list.innerHTML =
-    "<p class='muted'>Keine Bewerbungen vorhanden.</p>";
-
+    list.innerHTML = "<p class='muted'>Keine Bewerbungen vorhanden.</p>";
     return;
   }
 
   for(const application of data){
 
-    const card =
+    const applicantProfile =
+    await getProfileByUserId(application.user_id);
+
+    const answers =
+    await loadApplicationAnswers(application.id);
+
+    const messages =
+    await loadApplicationMessages(application.id);
+
+    const created =
+    application.created_at
+    ? new Date(application.created_at).toLocaleString("de-DE")
+    : "-";
+
+    const div =
     document.createElement("div");
 
-    card.className =
-    "application-card";
+    div.className = "application-card";
 
-    card.innerHTML = `
+    div.innerHTML = `
       <div class="application-head">
 
         <div>
-
           <strong>
-            ${
-              escapeHtml(
-                application.profiles?.display_name ||
-                "Unbekannt"
-              )
-            }
+            ${escapeHtml(applicantProfile ? applicantProfile.display_name : "Unbekannter Bewerber")}
           </strong>
 
           <p>
-            ${
-              escapeHtml(
-                application.profiles?.login_name ||
-                "-"
-              )
-            }
+            Login:
+            ${escapeHtml(applicantProfile ? applicantProfile.login_name : "-")}
           </p>
 
+          <p>
+            Eingegangen:
+            ${escapeHtml(created)}
+          </p>
         </div>
 
-        <div class="
-          application-status
-          status-${application.status}
-        ">
+        <span class="application-status status-${escapeHtml(application.status)}">
           ${formatStatus(application.status)}
-        </div>
+        </span>
 
       </div>
 
       <div class="application-message">
+        <strong>Zus&auml;tzliche Nachricht:</strong>
+        <p>${escapeHtml(application.message || "-")}</p>
+      </div>
 
-        <strong>Nachricht</strong>
+      <div class="application-answers">
+        <strong>Antworten:</strong>
 
-        <p>
-          ${escapeHtml(application.message || "-")}
-        </p>
+        ${
+          answers.length > 0
+          ? answers.map(answer => `
+              <div class="answer-box">
+                <p class="answer-question">
+                  ${escapeHtml(answer.question_text || "Frage")}
+                </p>
 
+                <p>
+                  ${escapeHtml(answer.answer_text || "-")}
+                </p>
+              </div>
+            `).join("")
+          : "<p class='muted'>Keine Antworten vorhanden.</p>"
+        }
+      </div>
+
+      <div class="application-thread">
+        <strong>Nachrichtenverlauf:</strong>
+
+        ${
+          messages.length > 0
+          ? messages.map(message => renderOwnerMessage(message)).join("")
+          : "<p class='muted'>Noch keine Nachrichten im Verlauf.</p>"
+        }
       </div>
 
       <div class="application-actions">
 
-        <select
-          id="status-${application.id}"
-        >
-
-          <option value="offen">
-            Offen
-          </option>
-
-          <option value="in_bearbeitung">
-            In Bearbeitung
-          </option>
-
-          <option value="angenommen">
-            Angenommen
-          </option>
-
-          <option value="abgelehnt">
-            Abgelehnt
-          </option>
-
+        <select id="status-${application.id}">
+          <option value="offen" ${application.status === "offen" ? "selected" : ""}>Offen</option>
+          <option value="in_bearbeitung" ${application.status === "in_bearbeitung" ? "selected" : ""}>In Bearbeitung</option>
+          <option value="angenommen" ${application.status === "angenommen" ? "selected" : ""}>Angenommen</option>
+          <option value="abgelehnt" ${application.status === "abgelehnt" ? "selected" : ""}>Abgelehnt</option>
         </select>
 
         <textarea
@@ -631,129 +614,176 @@ async function loadApplications(){
           placeholder="Antwort schreiben..."
         ></textarea>
 
-        <button
-          onclick="saveApplicationStatus(${application.id})"
-        >
-          Speichern
+        <button onclick="sendOwnerMessage(${application.id})">
+          Nachricht senden
+        </button>
+
+        <button onclick="saveApplicationStatus(${application.id})">
+          Status speichern
         </button>
 
       </div>
     `;
 
-    list.appendChild(card);
-
-    document.getElementById(
-      `status-${application.id}`
-    ).value =
-    application.status || "offen";
-
-    await loadApplicationThread(application.id);
+    list.appendChild(div);
   }
 }
 
-async function loadApplicationThread(applicationId){
-
-  const card =
-  [...document.querySelectorAll(".application-card")]
-  .find(item =>
-    item.innerHTML.includes(`reply-${applicationId}`)
-  );
-
-  if(!card){
-    return;
-  }
-
-  const threadBox =
-  document.createElement("div");
-
-  threadBox.className =
-  "application-thread";
-
-  threadBox.innerHTML =
-  "<strong>Nachrichten</strong>";
+async function loadApplicationAnswers(applicationId){
 
   const { data, error } =
   await supabaseClient
-  .from("business_application_messages")
-  .select(`
-    *,
-    profiles(*)
-  `)
-  .eq("application_id", applicationId)
-  .order("created_at");
+  .from("application_answers")
+  .select("*")
+  .eq("application_id", applicationId);
 
-  if(!error && data){
+  if(error){
+    console.error(error);
+    return [];
+  }
 
-    data.forEach(message => {
+  const result = [];
 
-      const div =
-      document.createElement("div");
+  for(const answer of data || []){
 
-      div.className =
-      "thread-message " +
-      (
-        message.user_id === currentUser.id
-        ? "thread-own"
-        : "thread-other"
-      );
+    const { data: question } =
+    await supabaseClient
+    .from("application_questions")
+    .select("*")
+    .eq("id", answer.question_id)
+    .maybeSingle();
 
-      div.innerHTML = `
-        <div class="thread-meta">
-          ${
-            escapeHtml(
-              message.profiles?.display_name ||
-              "Unbekannt"
-            )
-          }
-        </div>
-
-        <div class="thread-text">
-          ${escapeHtml(message.message)}
-        </div>
-      `;
-
-      threadBox.appendChild(div);
+    result.push({
+      question_text: question ? question.question_text : "Frage",
+      answer_text: answer.answer_text || ""
     });
   }
 
-  card.appendChild(threadBox);
+  return result;
+}
+
+async function loadApplicationMessages(applicationId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("application_messages")
+  .select("*")
+  .eq("application_id", applicationId)
+  .order("created_at", {
+    ascending: true
+  });
+
+  if(error){
+    console.error(error);
+    return [];
+  }
+
+  return data || [];
+}
+
+function renderOwnerMessage(message){
+
+  const created =
+  message.created_at
+  ? new Date(message.created_at).toLocaleString("de-DE")
+  : "-";
+
+  const isMine =
+  currentUser &&
+  message.sender_user_id === currentUser.id;
+
+  return `
+    <div class="thread-message ${isMine ? "thread-own" : "thread-other"}">
+
+      <div class="thread-meta">
+        ${isMine ? "Du" : "Bewerber"}
+        &middot;
+        ${escapeHtml(created)}
+      </div>
+
+      <div class="thread-text">
+        ${escapeHtml(message.message_text)}
+      </div>
+
+    </div>
+  `;
+}
+
+async function sendOwnerMessage(applicationId){
+
+  const field =
+  document.getElementById("reply-" + applicationId);
+
+  const messageText =
+  field.value.trim();
+
+  if(!messageText){
+    alert("Bitte Nachricht eingeben");
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("application_messages")
+  .insert({
+    application_id: applicationId,
+    sender_user_id: currentUser.id,
+    message_text: messageText
+  });
+
+  if(error){
+    alert("Nachricht konnte nicht gesendet werden");
+    console.error(error);
+    return;
+  }
+
+  field.value = "";
+
+  await loadApplications();
 }
 
 async function saveApplicationStatus(applicationId){
 
   const status =
-  document.getElementById(
-    `status-${applicationId}`
-  ).value;
+  document.getElementById("status-" + applicationId)
+  .value;
 
-  const reply =
-  document.getElementById(
-    `reply-${applicationId}`
-  ).value
-  .trim();
-
+  const { error } =
   await supabaseClient
-  .from("business_applications")
+  .from("applications")
   .update({
-    status:status
+    status: status,
+    updated_at: new Date().toISOString()
   })
   .eq("id", applicationId);
 
-  if(reply){
-
-    await supabaseClient
-    .from("business_application_messages")
-    .insert({
-      application_id:applicationId,
-      user_id:currentUser.id,
-      message:reply
-    });
+  if(error){
+    alert("Status konnte nicht gespeichert werden");
+    console.error(error);
+    return;
   }
+
+  alert("Status gespeichert");
 
   await loadApplications();
 }
 
-/* STATUS TEXT */
+async function getProfileByUserId(userId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("user_id", userId)
+  .maybeSingle();
+
+  if(error){
+    console.error(error);
+    return null;
+  }
+
+  return data;
+}
 
 function formatStatus(status){
 
@@ -772,11 +802,9 @@ function formatStatus(status){
       return "Abgelehnt";
 
     default:
-      return status;
+      return status || "Offen";
   }
 }
-
-/* LOGOUT */
 
 async function logoutUser(){
 
@@ -785,8 +813,6 @@ async function logoutUser(){
   window.location.href =
   "v2-login.html";
 }
-
-/* ESCAPE */
 
 function escapeHtml(text){
 
