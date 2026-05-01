@@ -192,6 +192,11 @@ height:280px;
 font-size:30px;
 }
 
+.card h3.long-name{
+font-size:26px;
+line-height:1.15;
+}
+
 .buttons{
 flex-direction:column;
 }
