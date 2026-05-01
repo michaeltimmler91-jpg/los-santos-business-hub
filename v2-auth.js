@@ -30,8 +30,7 @@ async function registerUser(){
 
   const password =
   document.getElementById("registerPassword")
-  .value
-  .trim();
+  .value;
 
   if(!email || !loginName || !displayName || !password){
 
@@ -42,8 +41,8 @@ async function registerUser(){
 
   const { data, error } =
   await supabaseClient.auth.signUp({
-    email: email,
-    password: password
+    email:email,
+    password:password
   });
 
   if(error){
@@ -60,13 +59,15 @@ async function registerUser(){
     const { error: profileError } =
     await supabaseClient
     .from("profiles")
-.insert({
-  user_id: data.user.id,
-  email: email,
-  login_name: loginName,
-  display_name: displayName,
-  global_role: "user"
-});
+    .insert({
+      user_id:data.user.id,
+      email:email,
+      login_name:loginName,
+      display_name:displayName,
+      global_role:"user",
+      approved:false,
+      blocked:false
+    });
 
     if(profileError){
 
@@ -78,7 +79,7 @@ async function registerUser(){
     }
   }
 
-  alert("Registrierung erfolgreich. Bitte best\u00e4tige deine E-Mail.");
+  alert("Registrierung erfolgreich. Bitte warte auf Freischaltung durch einen Guide oder Superadmin.");
 
   window.location.href =
   "v2-login.html";
@@ -87,20 +88,18 @@ async function registerUser(){
 async function loginUser(){
 
   const loginName =
-  document
-  .getElementById("loginLoginname")
+  document.getElementById("loginLoginname")
   .value
   .trim()
   .toLowerCase();
 
   const password =
-  document
-  .getElementById("loginPassword")
+  document.getElementById("loginPassword")
   .value;
 
   if(!loginName || !password){
 
-    alert("Bitte alles ausfüllen");
+    alert("Bitte Loginname und Passwort eingeben");
 
     return;
   }
@@ -119,10 +118,31 @@ async function loginUser(){
     return;
   }
 
+  if(profile.blocked === true){
+
+    alert("Dein Account wurde gesperrt.");
+
+    return;
+  }
+
+  if(profile.approved !== true){
+
+    alert("Dein Account wurde noch nicht freigeschaltet.");
+
+    return;
+  }
+
+  if(!profile.email){
+
+    alert("Bei diesem Account fehlt die E-Mail im Profil.");
+
+    return;
+  }
+
   const { error } =
   await supabaseClient.auth.signInWithPassword({
-    email: profile.email,
-    password: password
+    email:profile.email,
+    password:password
   });
 
   if(error){
@@ -137,7 +157,6 @@ async function loginUser(){
   window.location.href =
   "v2-dashboard.html";
 }
-
 
 async function checkDashboard(){
 
@@ -167,13 +186,51 @@ async function checkDashboard(){
     return;
   }
 
+  if(profile.blocked === true){
+
+    await supabaseClient.auth.signOut();
+
+    alert("Dein Account wurde gesperrt.");
+
+    window.location.href =
+    "v2-login.html";
+
+    return;
+  }
+
+  if(profile.approved !== true){
+
+    await supabaseClient.auth.signOut();
+
+    alert("Dein Account ist noch nicht freigeschaltet.");
+
+    window.location.href =
+    "v2-login.html";
+
+    return;
+  }
+
   document.getElementById("welcomeTitle").innerText =
   "Willkommen, " + profile.display_name + "!";
 
   document.getElementById("welcomeText").innerText =
-  "Loginname: " + profile.login_name + " | Rolle: " + profile.global_role;
+  "Loginname: " + profile.login_name;
 
-  if(profile.global_role === "superadmin"){
+  const { data: roles } =
+  await supabaseClient
+  .from("user_roles")
+  .select("*")
+  .eq("user_id", data.user.id);
+
+  const roleNames =
+  roles
+  ? roles.map(role => role.role_name)
+  : [];
+
+  if(
+    profile.global_role === "superadmin" ||
+    roleNames.includes("superadmin")
+  ){
 
     document
     .getElementById("superadminLink")
