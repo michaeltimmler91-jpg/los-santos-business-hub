@@ -12,17 +12,15 @@
 </head>
 <body>
 
+<nav class="top-nav">
+  <a href="index.html">Zurück zur Übersicht</a>
+  <a href="admin.html">Mitarbeiterlogin</a>
+  <a href="superadmin.html">SuperAdmin</a>
+</nav>
+
 <div class="firma-page">
 
   <div class="firma-card">
-
-    <div class="firma-topbar">
-
-      <a href="index.html" class="back-btn">
-         Zur&uuml;ck zur &Uuml;bersicht
-      </a>
-
-    </div>
 
     <img id="firmaImage" src="" alt="Firma">
 
@@ -31,60 +29,32 @@
       <h1 id="firmaName">Lädt...</h1>
 
       <div class="firma-badges">
-
-        <span id="firmaStatus" class="status closed">
-          Geschlossen
-        </span>
-
-        <span id="firmaDelivery" class="delivery no">
-          Keine Lieferung
-        </span>
-
+        <span id="firmaStatus" class="status closed">Geschlossen</span>
+        <span id="firmaDelivery" class="delivery no">Keine Lieferung</span>
       </div>
 
       <p id="firmaPlz"></p>
 
       <div class="firma-description">
-
         <h2>Beschreibung</h2>
-
         <p id="firmaDescription"></p>
-
       </div>
 
       <div class="firma-buttons">
-
-        <a id="websiteBtn" href="#" target="_blank">
-          Website
-        </a>
-
-        <a id="discordBtn" href="#" target="_blank">
-          Verteiler
-        </a>
-
+        <a id="websiteBtn" href="#" target="_blank">Website</a>
+        <a id="discordBtn" href="#" target="_blank">Verteiler</a>
       </div>
 
       <div class="comments-section">
-
         <h2>Kommentare</h2>
 
         <div id="commentsList"></div>
 
-        <input
-          type="text"
-          id="commentAuthor"
-          placeholder="Dein Name"
-        >
+        <input type="text" id="commentAuthor" placeholder="Dein Name">
 
-        <textarea
-          id="commentMessage"
-          placeholder="Kommentar schreiben"
-        ></textarea>
+        <textarea id="commentMessage" placeholder="Kommentar schreiben"></textarea>
 
-        <button onclick="sendComment()">
-          Kommentar senden
-        </button>
-
+        <button onclick="sendComment()">Kommentar senden</button>
       </div>
 
     </div>
@@ -93,7 +63,7 @@
 
 </div>
 
-<script src="firma.js?v=12"></script>
+<script src="firma.js?v=13"></script>
 
 </body>
 </html>

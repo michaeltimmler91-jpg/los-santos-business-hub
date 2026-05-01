@@ -18,6 +18,41 @@
       background:#050510;
       color:white;
       font-family:Arial,sans-serif;
+      padding:0;
+    }
+
+    .top-nav{
+      width:100%;
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:16px;
+      background:#0b0b16;
+      border-bottom:1px solid rgba(255,20,147,0.25);
+      box-shadow:0 0 18px rgba(255,20,147,0.15);
+      position:sticky;
+      top:0;
+      z-index:999;
+    }
+
+    .top-nav a{
+      padding:11px 16px;
+      border-radius:14px;
+      background:#161629;
+      color:white;
+      text-decoration:none;
+      font-weight:bold;
+      transition:0.2s;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .top-nav a:hover{
+      background:#ff1493;
+      box-shadow:0 0 18px rgba(255,20,147,0.45);
+    }
+
+    .wrapper{
       padding:25px;
     }
 
@@ -120,6 +155,17 @@
     }
 
     @media(max-width:700px){
+
+      .top-nav{
+        justify-content:flex-start;
+        overflow-x:auto;
+        flex-wrap:nowrap;
+      }
+
+      .top-nav a{
+        white-space:nowrap;
+      }
+
       .row{
         grid-template-columns:1fr;
       }
@@ -128,482 +174,111 @@
 </head>
 <body>
 
+<nav class="top-nav">
+  <a href="index.html">Übersicht</a>
+  <a href="admin.html">Mitarbeiterlogin</a>
+  <a href="superadmin.html">SuperAdmin</a>
+</nav>
+
+<div class="wrapper">
+
 <div class="box" id="loginBox">
+
   <h1>Business Login</h1>
 
   <input type="password" id="codeInput" placeholder="Zugangscode eingeben">
 
-  <button class="pink" onclick="login()">Einloggen</button>
+  <button class="pink" onclick="login()">
+    Einloggen
+  </button>
+
 </div>
 
 <div class="box hidden" id="adminBox">
 
   <h1 id="businessTitle">Firma</h1>
 
-  <div class="status-box" id="statusText">Status: -</div>
-  <div class="status-box" id="deliveryText">Lieferung: -</div>
+  <div class="status-box" id="statusText">
+    Status: -
+  </div>
+
+  <div class="status-box" id="deliveryText">
+    Lieferung: -
+  </div>
 
   <div class="row">
-    <button class="green" onclick="setOpen(true)">Offen</button>
-    <button class="red" onclick="setOpen(false)">Geschlossen</button>
+    <button class="green" onclick="setOpen(true)">
+      Offen
+    </button>
+
+    <button class="red" onclick="setOpen(false)">
+      Geschlossen
+    </button>
   </div>
 
   <div id="deliveryButtons" class="row">
-    <button class="blue" onclick="setDelivery(true)">Lieferung Ja</button>
-    <button class="gray" onclick="setDelivery(false)">Lieferung Nein</button>
+
+    <button class="blue" onclick="setDelivery(true)">
+      Lieferung Ja
+    </button>
+
+    <button class="gray" onclick="setDelivery(false)">
+      Lieferung Nein
+    </button>
+
   </div>
 
   <div class="section" id="ownerLoginBox">
+
     <h2>Inhaberbereich</h2>
 
     <input type="password" id="ownerCodeInput" placeholder="Inhaber-Code eingeben">
 
-    <button class="dark" onclick="unlockOwner()">Inhaberbereich freischalten</button>
+    <button class="dark" onclick="unlockOwner()">
+      Inhaberbereich freischalten
+    </button>
 
     <div class="small">
-      Nur Inhaber können Beschreibung, PLZ, Website und Verteiler ändern.
+      Nur Inhaber können Firmendaten ändern.
     </div>
+
   </div>
 
   <div class="section hidden" id="ownerPanel">
+
     <h2>Firmendaten bearbeiten</h2>
 
     <input type="text" id="plzInput" placeholder="PLZ / Standort">
 
-    <textarea id="descriptionInput" placeholder="Kurze Beschreibung zur Firma"></textarea>
+    <textarea id="descriptionInput" placeholder="Beschreibung"></textarea>
 
     <input type="text" id="websiteInput" placeholder="Website-Link">
 
     <input type="text" id="discordInput" placeholder="Verteiler / Discord-Link">
 
-    <button class="blue" onclick="saveOwnerData()">Firmendaten speichern</button>
+    <button class="blue" onclick="saveOwnerData()">
+      Firmendaten speichern
+    </button>
+
   </div>
 
   <div class="section hidden" id="commentsPanel">
+
     <h2>Kommentare</h2>
 
     <div id="adminCommentsList"></div>
+
   </div>
 
-  <div class="section" id="superOwnerLoginBox">
-    <h2>SuperOwner</h2>
-
-    <input type="password" id="superOwnerCodeInput" placeholder="SuperOwner-Code">
-
-    <button class="dark" onclick="unlockSuperOwner()">SuperOwner freischalten</button>
-
-    <div class="small">
-      SuperOwner kann Kommentare löschen.
-    </div>
-  </div>
-
-  <button class="pink" onclick="logout()">Ausloggen</button>
+  <button class="pink" onclick="logout()">
+    Ausloggen
+  </button>
 
 </div>
 
-<script>
-const SUPABASE_URL = "https://eulfqqkxqxjgszqdffhy.supabase.co";
-const SUPABASE_KEY = "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
+</div>
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-const ACCESS_CODES = {
-  "BURGER2026": "Burger Shot",
-  "HOOKIES2026": "Hookies",
-  "PEARLS2026": "Pearls",
-  "LSMD2026": "LSMD",
-  "LSPD2026": "LSPD",
-  "BLACKLINE2026": "Blackline Tuning",
-  "BENNYS2026": "Bennys",
-  "SMOKEYS2026": "Smokey's Weed Shop",
-  "ADLER2026": "Adler & Partner",
-  "BALKAN2026": "Balkan Recordzz",
-  "TAXI2026": "Los Santos Taxi"
-};
-
-const OWNER_CODES = {
-  "BURGER-OWNER-2026": "Burger Shot",
-  "HOOKIES-OWNER-2026": "Hookies",
-  "PEARLS-OWNER-2026": "Pearls",
-  "LSMD-OWNER-2026": "LSMD",
-  "LSPD-OWNER-2026": "LSPD",
-  "BLACKLINE-OWNER-2026": "Blackline Tuning",
-  "BENNYS-OWNER-2026": "Bennys",
-  "SMOKEYS-OWNER-2026": "Smokey's Weed Shop",
-  "ADLER-OWNER-2026": "Adler & Partner",
-  "BALKAN-OWNER-2026": "Balkan Recordzz",
-  "TAXI-OWNER-2026": "Los Santos Taxi"
-};
-
-const SUPER_OWNER_CODE = "SUPEROWNER2026";
-
-const FOOD_BUSINESSES = [
-  "Burger Shot",
-  "Hookies",
-  "Pearls"
-];
-
-let currentBusiness = null;
-let ownerUnlocked = false;
-let superOwnerUnlocked = false;
-
-async function login(){
-
-  const code = document
-    .getElementById("codeInput")
-    .value
-    .trim()
-    .toUpperCase();
-
-  const businessName = ACCESS_CODES[code];
-
-  if(!businessName){
-    alert("Falscher Zugangscode");
-    return;
-  }
-
-  const { data, error } = await supabaseClient
-    .from("businesses")
-    .select("*")
-    .eq("name", businessName)
-    .single();
-
-  if(error || !data){
-    alert("Firma nicht gefunden");
-    console.error(error);
-    return;
-  }
-
-  currentBusiness = data;
-  ownerUnlocked = false;
-  superOwnerUnlocked = false;
-
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("adminBox").classList.remove("hidden");
-
-  document.getElementById("ownerLoginBox").classList.remove("hidden");
-  document.getElementById("ownerPanel").classList.add("hidden");
-  document.getElementById("commentsPanel").classList.add("hidden");
-
-  updateUI();
-}
-
-function updateUI(){
-
-  document.getElementById("businessTitle").innerText =
-    currentBusiness.name;
-
-  document.getElementById("statusText").innerText =
-    "Status: " + (currentBusiness.open ? "Offen" : "Geschlossen");
-
-  document.getElementById("deliveryText").innerText =
-    "Lieferung: " + (currentBusiness.delivery ? "Ja" : "Nein");
-
-  document.getElementById("plzInput").value =
-    currentBusiness.plz || "";
-
-  document.getElementById("descriptionInput").value =
-    currentBusiness.description || "";
-
-  document.getElementById("websiteInput").value =
-    currentBusiness.website || "";
-
-  document.getElementById("discordInput").value =
-    currentBusiness.discord || "";
-
-  const deliveryButtons =
-    document.getElementById("deliveryButtons");
-
-  const deliveryText =
-    document.getElementById("deliveryText");
-
-  if(FOOD_BUSINESSES.includes(currentBusiness.name)){
-    deliveryButtons.style.display = "grid";
-    deliveryText.style.display = "block";
-  }else{
-    deliveryButtons.style.display = "none";
-    deliveryText.style.display = "none";
-  }
-}
-
-async function setOpen(value){
-
-  currentBusiness.open = value;
-
-  if(value === false){
-    currentBusiness.delivery = false;
-  }
-
-  await saveStatus();
-}
-
-async function setDelivery(value){
-
-  currentBusiness.delivery = value;
-
-  await saveStatus();
-}
-
-async function saveStatus(){
-
-  const { error } = await supabaseClient
-    .from("businesses")
-    .update({
-      open: currentBusiness.open,
-      delivery: currentBusiness.delivery
-    })
-    .eq("id", currentBusiness.id);
-
-  if(error){
-    alert("Fehler beim Speichern");
-    console.error(error);
-    return;
-  }
-
-  updateUI();
-}
-
-function unlockOwner(){
-
-  const ownerCode = document
-    .getElementById("ownerCodeInput")
-    .value
-    .trim()
-    .toUpperCase();
-
-  const ownerBusiness = OWNER_CODES[ownerCode];
-
-  if(
-    !ownerBusiness ||
-    ownerBusiness.trim().toLowerCase() !== currentBusiness.name.trim().toLowerCase()
-  ){
-    alert("Falscher Inhaber-Code");
-    return;
-  }
-
-  ownerUnlocked = true;
-
-  document.getElementById("ownerLoginBox").classList.add("hidden");
-  document.getElementById("ownerPanel").classList.remove("hidden");
-  document.getElementById("commentsPanel").classList.remove("hidden");
-
-  loadAdminComments();
-}
-
-async function saveOwnerData(){
-
-  if(!ownerUnlocked){
-    alert("Keine Berechtigung");
-    return;
-  }
-
-  currentBusiness.plz =
-    document.getElementById("plzInput").value.trim();
-
-  currentBusiness.description =
-    document.getElementById("descriptionInput").value.trim();
-
-  currentBusiness.website =
-    document.getElementById("websiteInput").value.trim();
-
-  currentBusiness.discord =
-    document.getElementById("discordInput").value.trim();
-
-  const { error } = await supabaseClient
-    .from("businesses")
-    .update({
-      plz: currentBusiness.plz,
-      description: currentBusiness.description,
-      website: currentBusiness.website,
-      discord: currentBusiness.discord
-    })
-    .eq("id", currentBusiness.id);
-
-  if(error){
-    alert("Fehler beim Speichern der Firmendaten");
-    console.error(error);
-    return;
-  }
-
-  alert("Firmendaten gespeichert");
-  updateUI();
-}
-
-function unlockSuperOwner(){
-
-  const code = document
-    .getElementById("superOwnerCodeInput")
-    .value
-    .trim()
-    .toUpperCase();
-
-  if(code !== SUPER_OWNER_CODE){
-    alert("Falscher SuperOwner-Code");
-    return;
-  }
-
-  superOwnerUnlocked = true;
-
-  alert("SuperOwner freigeschaltet");
-
-  if(ownerUnlocked){
-    loadAdminComments();
-  }
-}
-
-async function loadAdminComments(){
-
-  if(!currentBusiness) return;
-
-  const { data, error } = await supabaseClient
-    .from("comments")
-    .select("*")
-    .eq("business_id", currentBusiness.id)
-    .order("created_at", { ascending:false });
-
-  if(error){
-    console.error(error);
-    return;
-  }
-
-  const list =
-    document.getElementById("adminCommentsList");
-
-  list.innerHTML = "";
-
-  if(data.length === 0){
-    list.innerHTML = "<p>Noch keine Kommentare.</p>";
-    return;
-  }
-
-  data.forEach(comment => {
-
-    const div =
-      document.createElement("div");
-
-    div.className = "comment";
-
-    div.innerHTML = `
-      <strong>${escapeHtml(comment.author)}</strong>
-      <p>${escapeHtml(comment.message)}</p>
-
-      ${
-        comment.owner_reply
-        ? `
-          <div class="reply">
-            <strong>Antwort:</strong>
-            <p>${escapeHtml(comment.owner_reply)}</p>
-          </div>
-        `
-        : ""
-      }
-
-      <textarea id="reply-${comment.id}" placeholder="Antwort schreiben">${comment.owner_reply || ""}</textarea>
-
-      <button class="blue" onclick="saveReply(${comment.id})">
-        Antwort speichern
-      </button>
-
-      ${
-        superOwnerUnlocked
-        ? `
-          <button class="red" onclick="deleteComment(${comment.id})">
-            Kommentar löschen
-          </button>
-        `
-        : ""
-      }
-    `;
-
-    list.appendChild(div);
-  });
-}
-
-async function saveReply(commentId){
-
-  if(!ownerUnlocked){
-    alert("Keine Berechtigung");
-    return;
-  }
-
-  const reply =
-    document.getElementById("reply-" + commentId)
-      .value
-      .trim();
-
-  const { error } = await supabaseClient
-    .from("comments")
-    .update({
-      owner_reply: reply
-    })
-    .eq("id", commentId);
-
-  if(error){
-    alert("Antwort konnte nicht gespeichert werden");
-    console.error(error);
-    return;
-  }
-
-  alert("Antwort gespeichert");
-  loadAdminComments();
-}
-
-async function deleteComment(commentId){
-
-  if(!superOwnerUnlocked){
-    alert("Nur SuperOwner darf Kommentare löschen");
-    return;
-  }
-
-  if(!confirm("Kommentar wirklich löschen?")){
-    return;
-  }
-
-  const { error } = await supabaseClient
-    .from("comments")
-    .delete()
-    .eq("id", commentId);
-
-  if(error){
-    alert("Kommentar konnte nicht gelöscht werden");
-    console.error(error);
-    return;
-  }
-
-  loadAdminComments();
-}
-
-function logout(){
-
-  currentBusiness = null;
-  ownerUnlocked = false;
-  superOwnerUnlocked = false;
-
-  document.getElementById("codeInput").value = "";
-  document.getElementById("ownerCodeInput").value = "";
-  document.getElementById("superOwnerCodeInput").value = "";
-
-  document.getElementById("adminBox").classList.add("hidden");
-  document.getElementById("loginBox").classList.remove("hidden");
-
-  document.getElementById("ownerPanel").classList.add("hidden");
-  document.getElementById("commentsPanel").classList.add("hidden");
-  document.getElementById("ownerLoginBox").classList.remove("hidden");
-}
-
-function escapeHtml(text){
-
-  return String(text || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-</script>
+<script src="admin.js?v=1"></script>
 
 </body>
 </html>
