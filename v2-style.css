@@ -861,4 +861,93 @@ padding:20px 12px 40px;
 padding:20px;
 }
 
+
+.superadmin-page{
+min-height:100vh;
+background:#050510;
+padding:34px 20px 60px;
+}
+
+.superadmin-topbar{
+width:95%;
+max-width:1500px;
+margin:0 auto 28px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.superadmin-topbar h1{
+font-size:40px;
+color:white;
+margin-bottom:6px;
+}
+
+.superadmin-topbar p{
+color:#ff1493;
+font-weight:bold;
+font-size:18px;
+}
+
+.superadmin-topbar-buttons{
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+}
+
+.superadmin-grid{
+width:95%;
+max-width:1500px;
+margin:0 auto;
+display:grid;
+grid-template-columns:420px 1fr;
+gap:24px;
+}
+
+.superadmin-card{
+background:#121225;
+border:1px solid rgba(255,20,147,0.16);
+border-radius:26px;
+padding:26px;
+box-shadow:0 0 28px rgba(255,20,147,0.16);
+}
+
+.superadmin-card h2{
+font-size:28px;
+color:#ff1493;
+margin-bottom:20px;
+}
+
+.superadmin-card label{
+display:block;
+font-weight:bold;
+color:#cbd5e1;
+margin-bottom:8px;
+}
+
+.superadmin-card input,
+.superadmin-card textarea,
+.superadmin-card select{
+background:#1b1b2e;
+border:1px solid rgba(255,255,255,0.06);
+}
+
+.superadmin-wide-card{
+min-width:0;
+}
+
+@media(max-width:1000px){
+
+.superadmin-grid{
+grid-template-columns:1fr;
+}
+
+.superadmin-topbar h1{
+font-size:32px;
+}
+
+}
+
 }
