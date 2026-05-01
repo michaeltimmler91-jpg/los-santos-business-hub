@@ -8,43 +8,48 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+    *{
+      box-sizing:border-box;
+    }
+
     body{
       margin:0;
       min-height:100vh;
-      background:#0b0b14;
+      background:#050510;
       color:white;
-      font-family:Arial, sans-serif;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:20px;
+      font-family:Arial,sans-serif;
+      padding:25px;
     }
 
     .box{
       width:100%;
-      max-width:520px;
-      background:#151522;
-      padding:30px;
-      border-radius:22px;
-      box-shadow:0 0 30px rgba(255,20,147,0.35);
-      text-align:center;
+      max-width:760px;
+      margin:auto;
+      background:#121225;
+      padding:28px;
+      border-radius:24px;
+      box-shadow:0 0 35px rgba(255,20,147,0.35);
     }
 
-    h1{
+    h1,h2{
       color:#ff1493;
-      margin-bottom:20px;
+      margin-bottom:18px;
     }
 
-    input{
+    input,textarea{
       width:100%;
-      padding:15px;
-      border-radius:14px;
+      padding:14px;
       border:none;
-      background:#222233;
+      border-radius:14px;
+      background:#1b1b2e;
       color:white;
-      font-size:16px;
+      font-size:15px;
       margin-bottom:12px;
-      box-sizing:border-box;
+    }
+
+    textarea{
+      min-height:110px;
+      resize:vertical;
     }
 
     button{
@@ -55,37 +60,69 @@
       border-radius:14px;
       font-weight:bold;
       cursor:pointer;
-      font-size:16px;
+      font-size:15px;
     }
 
     .pink{background:#ff1493;color:white;}
     .green{background:#00ff88;color:black;}
     .red{background:#ff4d6d;color:white;}
-    .blue{background:#00e0ff;color:black;}
+    .blue{background:#00d9ff;color:black;}
     .gray{background:#555;color:white;}
-    .dark{background:#0b0b14;color:white;border:1px solid rgba(255,255,255,0.12);}
+    .dark{background:#0b0b16;color:white;border:1px solid rgba(255,255,255,0.15);}
 
     .hidden{
       display:none;
     }
 
-    .status{
-      margin:15px 0;
-      padding:12px;
-      border-radius:12px;
-      background:#0b0b14;
+    .status-box{
+      background:#0b0b16;
+      padding:14px;
+      border-radius:14px;
+      margin-bottom:12px;
     }
 
-    .owner-box{
-      margin-top:22px;
-      padding-top:18px;
+    .section{
+      margin-top:28px;
+      padding-top:22px;
       border-top:1px solid rgba(255,255,255,0.12);
     }
 
-    .small-text{
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .comment{
+      background:#0b0b16;
+      padding:16px;
+      border-radius:16px;
+      margin-bottom:14px;
+    }
+
+    .comment strong{
+      color:#00d9ff;
+    }
+
+    .reply{
+      margin-top:10px;
+      padding:10px;
+      background:#18182a;
+      border-left:4px solid #ff1493;
+      border-radius:10px;
+    }
+
+    .small{
       color:#aaa;
       font-size:13px;
-      margin-top:8px;
+      margin-top:6px;
+      margin-bottom:12px;
+    }
+
+    @media(max-width:700px){
+      .row{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
@@ -93,46 +130,75 @@
 
 <div class="box" id="loginBox">
   <h1>Business Login</h1>
+
   <input type="password" id="codeInput" placeholder="Zugangscode eingeben">
+
   <button class="pink" onclick="login()">Einloggen</button>
 </div>
 
 <div class="box hidden" id="adminBox">
+
   <h1 id="businessTitle">Firma</h1>
 
-  <div class="status" id="statusText">
-    Status: -
+  <div class="status-box" id="statusText">Status: -</div>
+  <div class="status-box" id="deliveryText">Lieferung: -</div>
+
+  <div class="row">
+    <button class="green" onclick="setOpen(true)">Offen</button>
+    <button class="red" onclick="setOpen(false)">Geschlossen</button>
   </div>
 
-  <div class="status" id="deliveryText">
-    Lieferung: -
-  </div>
-
-  <button class="green" onclick="setOpen(true)">Offen</button>
-  <button class="red" onclick="setOpen(false)">Geschlossen</button>
-
-  <div id="deliveryButtons">
+  <div id="deliveryButtons" class="row">
     <button class="blue" onclick="setDelivery(true)">Lieferung Ja</button>
     <button class="gray" onclick="setDelivery(false)">Lieferung Nein</button>
   </div>
 
-  <div class="owner-box" id="ownerLoginBox">
+  <div class="section" id="ownerLoginBox">
     <h2>Inhaberbereich</h2>
+
     <input type="password" id="ownerCodeInput" placeholder="Inhaber-Code eingeben">
+
     <button class="dark" onclick="unlockOwner()">Inhaberbereich freischalten</button>
-    <div class="small-text">Nur Inhaber können Website und Verteiler ändern.</div>
+
+    <div class="small">
+      Nur Inhaber können Beschreibung, PLZ, Website und Verteiler ändern.
+    </div>
   </div>
 
-  <div class="owner-box hidden" id="ownerPanel">
-    <h2>Website & Verteiler</h2>
+  <div class="section hidden" id="ownerPanel">
+    <h2>Firmendaten bearbeiten</h2>
+
+    <input type="text" id="plzInput" placeholder="PLZ / Standort">
+
+    <textarea id="descriptionInput" placeholder="Kurze Beschreibung zur Firma"></textarea>
 
     <input type="text" id="websiteInput" placeholder="Website-Link">
+
     <input type="text" id="discordInput" placeholder="Verteiler / Discord-Link">
 
-    <button class="blue" onclick="saveLinks()">Links speichern</button>
+    <button class="blue" onclick="saveOwnerData()">Firmendaten speichern</button>
+  </div>
+
+  <div class="section hidden" id="commentsPanel">
+    <h2>Kommentare</h2>
+
+    <div id="adminCommentsList"></div>
+  </div>
+
+  <div class="section" id="superOwnerLoginBox">
+    <h2>SuperOwner</h2>
+
+    <input type="password" id="superOwnerCodeInput" placeholder="SuperOwner-Code">
+
+    <button class="dark" onclick="unlockSuperOwner()">SuperOwner freischalten</button>
+
+    <div class="small">
+      SuperOwner kann Kommentare löschen.
+    </div>
   </div>
 
   <button class="pink" onclick="logout()">Ausloggen</button>
+
 </div>
 
 <script>
@@ -172,10 +238,20 @@ const OWNER_CODES = {
   "TAXI-OWNER-2026": "Los Santos Taxi"
 };
 
+const SUPER_OWNER_CODE = "SUPEROWNER2026";
+
+const FOOD_BUSINESSES = [
+  "Burger Shot",
+  "Hookies",
+  "Pearls"
+];
+
 let currentBusiness = null;
 let ownerUnlocked = false;
+let superOwnerUnlocked = false;
 
 async function login(){
+
   const code = document
     .getElementById("codeInput")
     .value
@@ -203,16 +279,20 @@ async function login(){
 
   currentBusiness = data;
   ownerUnlocked = false;
+  superOwnerUnlocked = false;
 
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("adminBox").classList.remove("hidden");
+
   document.getElementById("ownerLoginBox").classList.remove("hidden");
   document.getElementById("ownerPanel").classList.add("hidden");
+  document.getElementById("commentsPanel").classList.add("hidden");
 
   updateUI();
 }
 
 function updateUI(){
+
   document.getElementById("businessTitle").innerText =
     currentBusiness.name;
 
@@ -222,23 +302,26 @@ function updateUI(){
   document.getElementById("deliveryText").innerText =
     "Lieferung: " + (currentBusiness.delivery ? "Ja" : "Nein");
 
+  document.getElementById("plzInput").value =
+    currentBusiness.plz || "";
+
+  document.getElementById("descriptionInput").value =
+    currentBusiness.description || "";
+
   document.getElementById("websiteInput").value =
     currentBusiness.website || "";
 
   document.getElementById("discordInput").value =
     currentBusiness.discord || "";
 
-  const foodBusinesses = [
-    "Burger Shot",
-    "Hookies",
-    "Pearls"
-  ];
+  const deliveryButtons =
+    document.getElementById("deliveryButtons");
 
-  const deliveryButtons = document.getElementById("deliveryButtons");
-  const deliveryText = document.getElementById("deliveryText");
+  const deliveryText =
+    document.getElementById("deliveryText");
 
-  if(foodBusinesses.includes(currentBusiness.name)){
-    deliveryButtons.style.display = "block";
+  if(FOOD_BUSINESSES.includes(currentBusiness.name)){
+    deliveryButtons.style.display = "grid";
     deliveryText.style.display = "block";
   }else{
     deliveryButtons.style.display = "none";
@@ -247,21 +330,25 @@ function updateUI(){
 }
 
 async function setOpen(value){
+
   currentBusiness.open = value;
 
   if(value === false){
     currentBusiness.delivery = false;
   }
 
-  await saveBusinessStatus();
+  await saveStatus();
 }
 
 async function setDelivery(value){
+
   currentBusiness.delivery = value;
-  await saveBusinessStatus();
+
+  await saveStatus();
 }
 
-async function saveBusinessStatus(){
+async function saveStatus(){
+
   const { error } = await supabaseClient
     .from("businesses")
     .update({
@@ -280,6 +367,7 @@ async function saveBusinessStatus(){
 }
 
 function unlockOwner(){
+
   const ownerCode = document
     .getElementById("ownerCodeInput")
     .value
@@ -288,7 +376,10 @@ function unlockOwner(){
 
   const ownerBusiness = OWNER_CODES[ownerCode];
 
-  if(!ownerBusiness || ownerBusiness !== currentBusiness.name){
+  if(
+    !ownerBusiness ||
+    ownerBusiness.trim().toLowerCase() !== currentBusiness.name.trim().toLowerCase()
+  ){
     alert("Falscher Inhaber-Code");
     return;
   }
@@ -297,13 +388,23 @@ function unlockOwner(){
 
   document.getElementById("ownerLoginBox").classList.add("hidden");
   document.getElementById("ownerPanel").classList.remove("hidden");
+  document.getElementById("commentsPanel").classList.remove("hidden");
+
+  loadAdminComments();
 }
 
-async function saveLinks(){
+async function saveOwnerData(){
+
   if(!ownerUnlocked){
     alert("Keine Berechtigung");
     return;
   }
+
+  currentBusiness.plz =
+    document.getElementById("plzInput").value.trim();
+
+  currentBusiness.description =
+    document.getElementById("descriptionInput").value.trim();
 
   currentBusiness.website =
     document.getElementById("websiteInput").value.trim();
@@ -314,34 +415,193 @@ async function saveLinks(){
   const { error } = await supabaseClient
     .from("businesses")
     .update({
+      plz: currentBusiness.plz,
+      description: currentBusiness.description,
       website: currentBusiness.website,
       discord: currentBusiness.discord
     })
     .eq("id", currentBusiness.id);
 
   if(error){
-    alert("Fehler beim Speichern der Links");
+    alert("Fehler beim Speichern der Firmendaten");
     console.error(error);
     return;
   }
 
-  alert("Links gespeichert");
+  alert("Firmendaten gespeichert");
   updateUI();
 }
 
+function unlockSuperOwner(){
+
+  const code = document
+    .getElementById("superOwnerCodeInput")
+    .value
+    .trim()
+    .toUpperCase();
+
+  if(code !== SUPER_OWNER_CODE){
+    alert("Falscher SuperOwner-Code");
+    return;
+  }
+
+  superOwnerUnlocked = true;
+
+  alert("SuperOwner freigeschaltet");
+
+  if(ownerUnlocked){
+    loadAdminComments();
+  }
+}
+
+async function loadAdminComments(){
+
+  if(!currentBusiness) return;
+
+  const { data, error } = await supabaseClient
+    .from("comments")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending:false });
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  const list =
+    document.getElementById("adminCommentsList");
+
+  list.innerHTML = "";
+
+  if(data.length === 0){
+    list.innerHTML = "<p>Noch keine Kommentare.</p>";
+    return;
+  }
+
+  data.forEach(comment => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "comment";
+
+    div.innerHTML = `
+      <strong>${escapeHtml(comment.author)}</strong>
+      <p>${escapeHtml(comment.message)}</p>
+
+      ${
+        comment.owner_reply
+        ? `
+          <div class="reply">
+            <strong>Antwort:</strong>
+            <p>${escapeHtml(comment.owner_reply)}</p>
+          </div>
+        `
+        : ""
+      }
+
+      <textarea id="reply-${comment.id}" placeholder="Antwort schreiben">${comment.owner_reply || ""}</textarea>
+
+      <button class="blue" onclick="saveReply(${comment.id})">
+        Antwort speichern
+      </button>
+
+      ${
+        superOwnerUnlocked
+        ? `
+          <button class="red" onclick="deleteComment(${comment.id})">
+            Kommentar löschen
+          </button>
+        `
+        : ""
+      }
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+async function saveReply(commentId){
+
+  if(!ownerUnlocked){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  const reply =
+    document.getElementById("reply-" + commentId)
+      .value
+      .trim();
+
+  const { error } = await supabaseClient
+    .from("comments")
+    .update({
+      owner_reply: reply
+    })
+    .eq("id", commentId);
+
+  if(error){
+    alert("Antwort konnte nicht gespeichert werden");
+    console.error(error);
+    return;
+  }
+
+  alert("Antwort gespeichert");
+  loadAdminComments();
+}
+
+async function deleteComment(commentId){
+
+  if(!superOwnerUnlocked){
+    alert("Nur SuperOwner darf Kommentare löschen");
+    return;
+  }
+
+  if(!confirm("Kommentar wirklich löschen?")){
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("comments")
+    .delete()
+    .eq("id", commentId);
+
+  if(error){
+    alert("Kommentar konnte nicht gelöscht werden");
+    console.error(error);
+    return;
+  }
+
+  loadAdminComments();
+}
+
 function logout(){
+
   currentBusiness = null;
   ownerUnlocked = false;
+  superOwnerUnlocked = false;
 
   document.getElementById("codeInput").value = "";
   document.getElementById("ownerCodeInput").value = "";
-  document.getElementById("websiteInput").value = "";
-  document.getElementById("discordInput").value = "";
+  document.getElementById("superOwnerCodeInput").value = "";
 
   document.getElementById("adminBox").classList.add("hidden");
   document.getElementById("loginBox").classList.remove("hidden");
+
   document.getElementById("ownerPanel").classList.add("hidden");
+  document.getElementById("commentsPanel").classList.add("hidden");
   document.getElementById("ownerLoginBox").classList.remove("hidden");
+}
+
+function escapeHtml(text){
+
+  return String(text || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 </script>
 

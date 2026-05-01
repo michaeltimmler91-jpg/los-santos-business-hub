@@ -4,12 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Los Santos Business Hub</title>
+
   <link rel="stylesheet" href="style.css">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<header class="hero"></header>
+<header class="hero">
+  <div class="hero-overlay">
+    <h1>Los Santos Business Hub</h1>
+    <p>Alle Unternehmen live auf einen Blick</p>
+  </div>
+</header>
 
 <main class="container">
 
@@ -19,6 +26,7 @@
   </section>
 
   <div class="filter-box">
+
     <input type="text" id="searchInput" placeholder="Unternehmen suchen ...">
 
     <div class="filter-bar">
@@ -28,243 +36,248 @@
       <button data-filter="werkstatt">Tuning & Werkstatt</button>
       <button data-filter="service">Unternehmen & Service</button>
     </div>
+
   </div>
 
   <section class="business-grid" id="businessGrid">
 
     <div class="card" data-category="essen">
-      <div class="image-box">
+
+      <a href="firma.html?id=1" class="image-link">
         <img src="bilder/burgershot.png" alt="Burger Shot">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
+      </a>
+
       <div class="card-content">
+
         <h3>Burger Shot</h3>
+
         <p class="plz-text"></p>
+
         <div class="badges">
           <span class="status closed">Geschlossen</span>
           <span class="delivery no">Keine Lieferung</span>
         </div>
+
         <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
         </div>
-        <button class="comment-btn" onclick="openComments('Burger Shot')">Kommentare</button>
+
       </div>
+
     </div>
 
     <div class="card" data-category="essen">
-      <div class="image-box">
+
+      <a href="firma.html?id=2" class="image-link">
         <img src="bilder/hookies.png" alt="Hookies">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
+      </a>
+
       <div class="card-content">
+
         <h3>Hookies</h3>
+
         <p class="plz-text"></p>
+
         <div class="badges">
           <span class="status closed">Geschlossen</span>
           <span class="delivery no">Keine Lieferung</span>
         </div>
+
         <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
         </div>
-        <button class="comment-btn" onclick="openComments('Hookies')">Kommentare</button>
+
       </div>
+
     </div>
 
     <div class="card" data-category="essen">
-      <div class="image-box">
+
+      <a href="firma.html?id=3" class="image-link">
         <img src="bilder/pearls.png" alt="Pearls">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
+      </a>
+
       <div class="card-content">
+
         <h3>Pearls</h3>
+
         <p class="plz-text"></p>
+
         <div class="badges">
           <span class="status closed">Geschlossen</span>
           <span class="delivery no">Keine Lieferung</span>
         </div>
-        <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
-        </div>
-        <button class="comment-btn" onclick="openComments('Pearls')">Kommentare</button>
-      </div>
-    </div>
 
-    <div class="card" data-category="service">
-      <div class="image-box">
-        <img src="bilder/taxi.png" alt="Los Santos Taxi">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
-      <div class="card-content">
-        <h3>Los Santos Taxi</h3>
-        <p class="plz-text"></p>
-        <div class="badges">
-          <span class="status closed">Geschlossen</span>
-        </div>
         <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
         </div>
-        <button class="comment-btn" onclick="openComments('Los Santos Taxi')">Kommentare</button>
+
       </div>
+
     </div>
 
     <div class="card" data-category="behoerden">
-      <div class="image-box">
+
+      <a href="firma.html?id=4" class="image-link">
         <img src="bilder/lsmd.png" alt="LSMD">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
+      </a>
+
       <div class="card-content">
+
         <h3>LSMD</h3>
+
         <p class="plz-text"></p>
+
         <div class="badges">
           <span class="status closed">Geschlossen</span>
         </div>
+
         <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
         </div>
-        <button class="comment-btn" onclick="openComments('LSMD')">Kommentare</button>
+
       </div>
+
     </div>
 
     <div class="card" data-category="behoerden">
-      <div class="image-box">
+
+      <a href="firma.html?id=5" class="image-link">
         <img src="bilder/lspd.png" alt="LSPD">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
+      </a>
+
       <div class="card-content">
+
         <h3>LSPD</h3>
+
         <p class="plz-text"></p>
+
         <div class="badges">
           <span class="status closed">Geschlossen</span>
         </div>
+
         <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
         </div>
-        <button class="comment-btn" onclick="openComments('LSPD')">Kommentare</button>
+
       </div>
+
     </div>
 
     <div class="card" data-category="werkstatt">
-      <div class="image-box">
-        <img src="bilder/blackline.png" alt="Blackline Tuning">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
-      <div class="card-content">
-        <h3>Blackline Tuning</h3>
-        <p class="plz-text"></p>
-        <div class="badges">
-          <span class="status closed">Geschlossen</span>
-        </div>
-        <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
-        </div>
-        <button class="comment-btn" onclick="openComments('Blackline Tuning')">Kommentare</button>
-      </div>
-    </div>
 
-    <div class="card" data-category="werkstatt">
-      <div class="image-box">
+      <a href="firma.html?id=6" class="image-link">
         <img src="bilder/bennys.png" alt="Bennys">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
+      </a>
+
       <div class="card-content">
+
         <h3>Bennys</h3>
+
         <p class="plz-text"></p>
+
         <div class="badges">
           <span class="status closed">Geschlossen</span>
         </div>
+
         <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
         </div>
-        <button class="comment-btn" onclick="openComments('Bennys')">Kommentare</button>
+
       </div>
+
     </div>
 
     <div class="card" data-category="service">
-      <div class="image-box">
+
+      <a href="firma.html?id=7" class="image-link">
         <img src="bilder/smokeys.png" alt="Smokey's Weed Shop">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
+      </a>
+
       <div class="card-content">
+
         <h3 class="long-name">Smokey's Weed Shop</h3>
+
         <p class="plz-text"></p>
+
         <div class="badges">
           <span class="status closed">Geschlossen</span>
         </div>
+
         <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
         </div>
-        <button class="comment-btn" onclick="openComments('Smokey\\'s Weed Shop')">Kommentare</button>
+
       </div>
+
     </div>
 
     <div class="card" data-category="service">
-      <div class="image-box">
-        <img src="bilder/adler-partner.png" alt="Adler & Partner">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
-      <div class="card-content">
-        <h3>Adler & Partner</h3>
-        <p class="plz-text"></p>
-        <div class="badges">
-          <span class="status closed">Geschlossen</span>
-        </div>
-        <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
-        </div>
-        <button class="comment-btn" onclick="openComments('Adler & Partner')">Kommentare</button>
-      </div>
-    </div>
 
-    <div class="card" data-category="service">
-      <div class="image-box">
+      <a href="firma.html?id=8" class="image-link">
         <img src="bilder/balkan-recordzz.png" alt="Balkan Recordzz">
-        <div class="image-info">Keine Beschreibung vorhanden.</div>
-      </div>
+      </a>
+
       <div class="card-content">
+
         <h3>Balkan Recordzz</h3>
+
         <p class="plz-text"></p>
+
         <div class="badges">
           <span class="status closed">Geschlossen</span>
         </div>
+
         <div class="buttons">
-          <a href="#">Website</a>
-          <a href="#">Verteiler</a>
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
         </div>
-        <button class="comment-btn" onclick="openComments('Balkan Recordzz')">Kommentare</button>
+
       </div>
+
+    </div>
+
+    <div class="card" data-category="service">
+
+      <a href="firma.html?id=9" class="image-link">
+        <img src="bilder/taxi.png" alt="Los Santos Taxi">
+      </a>
+
+      <div class="card-content">
+
+        <h3>Los Santos Taxi</h3>
+
+        <p class="plz-text"></p>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a class="website-btn" href="#">Website</a>
+          <a class="discord-btn" href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
   </section>
 
 </main>
 
-<div class="modal hidden" id="commentModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeComments()">X</button>
-    <h2 id="modalBusinessName">Kommentare</h2>
-
-    <div id="commentsList"></div>
-
-    <input type="text" id="commentAuthor" placeholder="Dein Name">
-    <textarea id="commentMessage" placeholder="Kommentar schreiben"></textarea>
-    <button class="comment-send" onclick="sendComment()">Kommentar senden</button>
-  </div>
-</div>
-
 <footer>
   Diese Website dient ausschlieﬂlich dem Roleplay auf Verdano City.
 </footer>
 
-<script src="script.js?v=30"></script>
+<script src="script.js?v=50"></script>
+
 </body>
 </html>
