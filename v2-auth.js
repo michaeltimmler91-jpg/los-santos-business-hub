@@ -237,6 +237,16 @@ async function checkDashboard(){
     .classList
     .remove("hidden");
   }
+  if(
+  roleNames.includes("guide") ||
+  roleNames.includes("superadmin")
+){
+
+  document
+  .getElementById("userManagementLink")
+  .classList
+  .remove("hidden");
+}
 
   const { data: memberships, error: memberError } =
   await supabaseClient
