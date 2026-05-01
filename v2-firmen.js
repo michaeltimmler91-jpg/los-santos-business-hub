@@ -29,6 +29,9 @@ async function loadBusinesses(){
   await supabaseClient
   .from("businesses_v2")
   .select("*")
+  .order("open", {
+    ascending:false
+  })
   .order("name");
 
   if(error){
@@ -66,92 +69,91 @@ function renderBusinesses(businesses){
     document.createElement("div");
 
     card.className =
-    "business-modern-card";
+    "business-row-card";
 
     card.innerHTML = `
-      <div class="business-image-wrap">
+      <div class="business-row-left">
 
         ${
           business.image_url
           ? `
             <img
               src="${escapeHtml(business.image_url)}"
+              class="business-row-image"
               alt="Firmenbild"
-              class="business-modern-image"
             >
           `
           : `
-            <div class="business-modern-noimage">
+            <div class="business-row-noimage">
               Kein Bild
             </div>
           `
         }
 
-        <div class="business-status-wrap">
+      </div>
 
-          <span class="
-            business-status
-            ${business.open ? "status-open" : "status-closed"}
-          ">
-            ${business.open ? "Offen" : "Geschlossen"}
-          </span>
+      <div class="business-row-middle">
 
-          ${
-            business.has_delivery
-            ? `
-              <span class="
-                business-status
-                ${business.delivery ? "status-delivery-on" : "status-delivery-off"}
-              ">
-                ${
-                  business.delivery
-                  ? "Lieferung aktiv"
-                  : "Keine Lieferung"
-                }
-              </span>
-            `
-            : ""
-          }
+        <div class="business-row-header">
+
+          <h2>
+            ${escapeHtml(business.name)}
+          </h2>
+
+          <div class="business-badge-wrap">
+
+            <span class="
+              business-badge
+              ${business.open ? "badge-open" : "badge-closed"}
+            ">
+              ${business.open ? "Offen" : "Geschlossen"}
+            </span>
+
+            ${
+              business.has_delivery
+              ? `
+                <span class="
+                  business-badge
+                  ${business.delivery ? "badge-delivery-on" : "badge-delivery-off"}
+                ">
+                  ${
+                    business.delivery
+                    ? "Lieferung"
+                    : "Keine Lieferung"
+                  }
+                </span>
+              `
+              : ""
+            }
+
+          </div>
 
         </div>
 
-      </div>
+        <div class="business-location">
+          ??
+          ${
+            escapeHtml(
+              business.plz ||
+              "Kein Standort"
+            )
+          }
+        </div>
 
-      <div class="business-modern-content">
-
-        <h2>
-          ${escapeHtml(business.name)}
-        </h2>
-
-        <p class="business-category">
+        <div class="business-category-small">
           ${formatCategory(business.category)}
-        </p>
+        </div>
 
-        <p class="business-description">
+        <div class="business-description-small">
           ${
             escapeHtml(
               business.description ||
               "Keine Beschreibung vorhanden."
             )
           }
-        </p>
-
-        <div class="business-info-list">
-
-          ${
-            business.plz
-            ? `
-              <div class="business-info-item">
-                <strong>Standort:</strong>
-                <span>${escapeHtml(business.plz)}</span>
-              </div>
-            `
-            : ""
-          }
-
         </div>
 
-        <div class="business-button-row">
+        <div class="business-buttons-small">
 
           ${
             business.website
@@ -159,7 +161,7 @@ function renderBusinesses(businesses){
               <a
                 href="${escapeHtml(business.website)}"
                 target="_blank"
-                class="business-link-btn"
+                class="small-btn"
               >
                 Website
               </a>
@@ -173,7 +175,7 @@ function renderBusinesses(businesses){
               <a
                 href="${escapeHtml(business.discord)}"
                 target="_blank"
-                class="business-link-btn discord-btn"
+                class="small-btn discord-small-btn"
               >
                 Verteiler
               </a>
@@ -187,7 +189,7 @@ function renderBusinesses(businesses){
             ? `
               <a
                 href="v2-bewerbung.html?id=${business.id}"
-                class="business-apply-btn"
+                class="small-btn apply-small-btn"
               >
                 Bewerben
               </a>
@@ -201,8 +203,8 @@ function renderBusinesses(businesses){
           business.applications_enabled &&
           !business.applications_open
           ? `
-            <div class="applications-closed">
-              Bewerbungen aktuell geschlossen
+            <div class="closed-text">
+              Bewerbungen geschlossen
             </div>
           `
           : ""
