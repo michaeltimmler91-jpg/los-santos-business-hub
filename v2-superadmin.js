@@ -12,6 +12,7 @@ supabase.createClient(
 
 let businessesCache = [];
 let profilesCache = [];
+let currentEditBusiness = null;
 
 async function checkSuperadmin(){
 
@@ -75,30 +76,6 @@ async function loadProfiles(){
 
   profilesCache =
   data || [];
-
-  fillUserSelect();
-}
-
-function fillUserSelect(){
-
-  const select =
-  document.getElementById("ownerUserSelect");
-
-  select.innerHTML = "";
-
-  profilesCache.forEach(profile => {
-
-    const option =
-    document.createElement("option");
-
-    option.value =
-    profile.user_id;
-
-    option.innerText =
-    profile.display_name + " (" + profile.login_name + ")";
-
-    select.appendChild(option);
-  });
 }
 
 async function createBusiness(){
@@ -122,11 +99,23 @@ async function createBusiness(){
   .value
   .trim();
 
+  const imageFile =
+  document.getElementById("businessImage")
+  .files[0];
+
   if(!name){
 
     alert("Bitte Firmenname eingeben");
 
     return;
+  }
+
+  let imageUrl = "";
+
+  if(imageFile){
+
+    imageUrl =
+    await uploadBusinessImage(imageFile, name);
   }
 
   const { error } =
@@ -137,6 +126,7 @@ async function createBusiness(){
     category:category,
     description:description,
     plz:plz,
+    image_url:imageUrl,
     open:false,
     delivery:false,
     applications_enabled:false,
@@ -157,8 +147,51 @@ async function createBusiness(){
   document.getElementById("businessName").value = "";
   document.getElementById("businessDescription").value = "";
   document.getElementById("businessPlz").value = "";
+  document.getElementById("businessImage").value = "";
 
   loadBusinesses();
+}
+
+async function uploadBusinessImage(file, businessName){
+
+  const fileExt =
+  file.name.split(".").pop();
+
+  const cleanName =
+  businessName
+  .toLowerCase()
+  .replaceAll(" ", "-")
+  .replaceAll("&", "und")
+  .replaceAll("'", "")
+  .replaceAll(".", "")
+  .replaceAll("/", "-");
+
+  const fileName =
+  cleanName + "-" + Date.now() + "." + fileExt;
+
+  const { error } =
+  await supabaseClient.storage
+  .from("business-images")
+  .upload(fileName, file, {
+    cacheControl:"3600",
+    upsert:false
+  });
+
+  if(error){
+
+    alert("Bild konnte nicht hochgeladen werden");
+
+    console.error(error);
+
+    return "";
+  }
+
+  const { data } =
+  supabaseClient.storage
+  .from("business-images")
+  .getPublicUrl(fileName);
+
+  return data.publicUrl;
 }
 
 async function loadBusinesses(){
@@ -176,9 +209,8 @@ async function loadBusinesses(){
     return;
   }
 
-  businessesCache = data || [];
-
-  fillBusinessSelect();
+  businessesCache =
+  data || [];
 
   const list =
   document.getElementById("businessList");
@@ -198,45 +230,72 @@ async function loadBusinesses(){
     const members =
     await loadBusinessMembers(business.id);
 
+    const owner =
+    members.find(member =>
+      member.member_role === "inhaber"
+    );
+
     const div =
     document.createElement("div");
 
-    div.className = "business-item";
+    div.className =
+    "business-item";
 
     div.innerHTML = `
-      <div>
+      <div class="business-row">
 
-        <strong>
-          ${escapeHtml(business.name)}
-        </strong>
-
-        <p>
-          Kategorie:
-          ${escapeHtml(business.category)}
-        </p>
-
-        <p>
-          PLZ:
-          ${escapeHtml(business.plz || "-")}
-        </p>
-
-        <p>
-          Mitarbeiter:
-        </p>
-
-        <div class="member-list">
+        <div class="business-preview">
           ${
-            members.length > 0
-            ? members.map(member => `
-                <div class="member-pill">
-                  ${escapeHtml(member.profiles?.display_name || "Unbekannt")}
-                  <span>
-                    ${escapeHtml(member.member_role)}
-                  </span>
-                </div>
-              `).join("")
-            : "<span class='muted'>Noch keine Mitarbeiter</span>"
+            business.image_url
+            ? `<img src="${escapeHtml(business.image_url)}" alt="Firmenbild">`
+            : `<div class="no-image">Kein Bild</div>`
           }
+        </div>
+
+        <div class="business-info">
+
+          <strong>
+            ${escapeHtml(business.name)}
+          </strong>
+
+          <p>
+            Kategorie:
+            ${escapeHtml(business.category)}
+          </p>
+
+          <p>
+            PLZ:
+            ${escapeHtml(business.plz || "-")}
+          </p>
+
+          <p>
+            Inhaber:
+            ${owner ? escapeHtml(owner.profiles?.display_name || "Unbekannt") : "Kein Inhaber"}
+          </p>
+
+          <p>
+            Mitarbeiter:
+          </p>
+
+          <div class="member-list">
+            ${
+              members.length > 0
+              ? members.map(member => `
+                  <div class="member-pill">
+                    ${escapeHtml(member.profiles?.display_name || "Unbekannt")}
+                    <span>
+                      ${escapeHtml(member.member_role)}
+                    </span>
+                  </div>
+                `).join("")
+              : "<span class='muted'>Noch keine Mitarbeiter</span>"
+            }
+          </div>
+
+          <button onclick="openEditModal(${business.id})">
+            Firma bearbeiten
+          </button>
+
         </div>
 
       </div>
@@ -254,6 +313,7 @@ async function loadBusinessMembers(businessId){
   .select(`
     id,
     member_role,
+    user_id,
     profiles (
       display_name,
       login_name
@@ -271,42 +331,184 @@ async function loadBusinessMembers(businessId){
   return data || [];
 }
 
-function fillBusinessSelect(){
+function openEditModal(businessId){
+
+  const business =
+  businessesCache.find(item =>
+    Number(item.id) === Number(businessId)
+  );
+
+  if(!business){
+
+    alert("Firma nicht gefunden");
+
+    return;
+  }
+
+  currentEditBusiness =
+  business;
+
+  document.getElementById("editBusinessId").value =
+  business.id;
+
+  document.getElementById("editBusinessName").value =
+  business.name || "";
+
+  document.getElementById("editBusinessCategory").value =
+  business.category || "service";
+
+  document.getElementById("editBusinessDescription").value =
+  business.description || "";
+
+  document.getElementById("editBusinessPlz").value =
+  business.plz || "";
+
+  fillEditOwnerSelect();
+
+  document
+  .getElementById("editModal")
+  .classList
+  .remove("hidden");
+}
+
+function fillEditOwnerSelect(){
 
   const select =
-  document.getElementById("ownerBusinessSelect");
+  document.getElementById("editOwnerSelect");
 
-  select.innerHTML = "";
+  select.innerHTML =
+  "<option value=''>Kein Inhaber</option>";
 
-  businessesCache.forEach(business => {
+  profilesCache.forEach(profile => {
 
     const option =
     document.createElement("option");
 
     option.value =
-    business.id;
+    profile.user_id;
 
     option.innerText =
-    business.name;
+    profile.display_name + " (" + profile.login_name + ")";
 
     select.appendChild(option);
   });
 }
 
-async function assignOwner(){
+function closeEditModal(){
 
-  const businessId =
-  document.getElementById("ownerBusinessSelect")
+  currentEditBusiness =
+  null;
+
+  document.getElementById("editBusinessImage").value = "";
+
+  document
+  .getElementById("editModal")
+  .classList
+  .add("hidden");
+}
+
+async function saveBusinessEdit(){
+
+  if(!currentEditBusiness){
+
+    alert("Keine Firma ausgew\u00e4hlt");
+
+    return;
+  }
+
+  const id =
+  Number(document.getElementById("editBusinessId").value);
+
+  const name =
+  document.getElementById("editBusinessName")
+  .value
+  .trim();
+
+  const category =
+  document.getElementById("editBusinessCategory")
   .value;
 
-  const userId =
-  document.getElementById("ownerUserSelect")
+  const description =
+  document.getElementById("editBusinessDescription")
+  .value
+  .trim();
+
+  const plz =
+  document.getElementById("editBusinessPlz")
+  .value
+  .trim();
+
+  const ownerUserId =
+  document.getElementById("editOwnerSelect")
   .value;
 
-  if(!businessId || !userId){
+  const imageFile =
+  document.getElementById("editBusinessImage")
+  .files[0];
 
-    alert("Bitte Firma und User ausw\u00e4hlen");
+  if(!name){
 
+    alert("Bitte Firmenname eingeben");
+
+    return;
+  }
+
+  let imageUrl =
+  currentEditBusiness.image_url || "";
+
+  if(imageFile){
+
+    imageUrl =
+    await uploadBusinessImage(imageFile, name);
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .update({
+    name:name,
+    category:category,
+    description:description,
+    plz:plz,
+    image_url:imageUrl
+  })
+  .eq("id", id);
+
+  if(error){
+
+    alert("Firma konnte nicht gespeichert werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  await changeOwner(id, ownerUserId);
+
+  alert("Firma gespeichert");
+
+  closeEditModal();
+
+  loadBusinesses();
+}
+
+async function changeOwner(businessId, ownerUserId){
+
+  const { error: deleteError } =
+  await supabaseClient
+  .from("business_members")
+  .delete()
+  .eq("business_id", businessId)
+  .eq("member_role", "inhaber");
+
+  if(deleteError){
+
+    console.error(deleteError);
+
+    return;
+  }
+
+  if(!ownerUserId){
     return;
   }
 
@@ -314,21 +516,50 @@ async function assignOwner(){
   await supabaseClient
   .from("business_members")
   .insert({
-    business_id:Number(businessId),
-    user_id:userId,
+    business_id:businessId,
+    user_id:ownerUserId,
     member_role:"inhaber"
   });
 
   if(error){
 
-    alert("Inhaber konnte nicht zugewiesen werden");
+    alert("Inhaber konnte nicht ge\u00e4ndert werden");
+
+    console.error(error);
+  }
+}
+
+async function deleteBusiness(){
+
+  if(!currentEditBusiness){
+
+    alert("Keine Firma ausgew\u00e4hlt");
+
+    return;
+  }
+
+  if(!confirm("Firma wirklich l\u00f6schen? Alle Mitarbeiter-Zuweisungen und Bewerbungen k\u00f6nnen dadurch betroffen sein.")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .delete()
+  .eq("id", currentEditBusiness.id);
+
+  if(error){
+
+    alert("Firma konnte nicht gel\u00f6scht werden");
 
     console.error(error);
 
     return;
   }
 
-  alert("Inhaber wurde zugewiesen");
+  alert("Firma gel\u00f6scht");
+
+  closeEditModal();
 
   loadBusinesses();
 }

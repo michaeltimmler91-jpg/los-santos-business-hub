@@ -6,7 +6,7 @@
 
   <title>V2 Superadmin</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=7">
+  <link rel="stylesheet" href="./v2-style.css?v=8">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -41,27 +41,14 @@
 
       <input type="text" id="businessPlz" placeholder="PLZ">
 
+      <label class="file-label">
+        Firmenfoto hochladen
+        <input type="file" id="businessImage" accept="image/*">
+      </label>
+
       <button onclick="createBusiness()">
         Firma erstellen
       </button>
-
-    </div>
-
-    <div class="admin-box">
-
-      <h2>Firmeninhaber zuweisen</h2>
-
-      <select id="ownerBusinessSelect"></select>
-
-      <select id="ownerUserSelect"></select>
-
-      <button onclick="assignOwner()">
-        Als Inhaber zuweisen
-      </button>
-
-      <p class="hint">
-        Der User muss bereits registriert sein.
-      </p>
 
     </div>
 
@@ -77,7 +64,53 @@
 
 </div>
 
-<script src="./v2-superadmin.js?v=4"></script>
+<div class="edit-modal hidden" id="editModal">
+
+  <div class="edit-box">
+
+    <h2>Firma bearbeiten</h2>
+
+    <input type="hidden" id="editBusinessId">
+
+    <input type="text" id="editBusinessName" placeholder="Firmenname">
+
+    <select id="editBusinessCategory">
+      <option value="food">Essen &amp; Lieferung</option>
+      <option value="service">Unternehmen &amp; Service</option>
+      <option value="government">Beh&ouml;rden</option>
+      <option value="workshop">Werkstatt</option>
+    </select>
+
+    <textarea id="editBusinessDescription" placeholder="Beschreibung"></textarea>
+
+    <input type="text" id="editBusinessPlz" placeholder="PLZ">
+
+    <label class="file-label">
+      Neues Firmenfoto hochladen
+      <input type="file" id="editBusinessImage" accept="image/*">
+    </label>
+
+    <h3>Inhaber &auml;ndern</h3>
+
+    <select id="editOwnerSelect"></select>
+
+    <button onclick="saveBusinessEdit()">
+      Speichern
+    </button>
+
+    <button class="danger-btn" onclick="deleteBusiness()">
+      Firma l&ouml;schen
+    </button>
+
+    <button class="gray-btn" onclick="closeEditModal()">
+      Abbrechen
+    </button>
+
+  </div>
+
+</div>
+
+<script src="./v2-superadmin.js?v=5"></script>
 
 <script>
 checkSuperadmin();
