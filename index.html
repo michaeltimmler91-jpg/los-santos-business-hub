@@ -3,112 +3,291 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title>
+  <title>Los Santos Business Hub</title>
+
   <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<header class="hero"></header>
+<header class="hero">
+  <div class="hero-overlay">
+    <h1>Los Santos Business Hub</h1>
+    <p>Alle Unternehmen live auf einen Blick</p>
+  </div>
+</header>
 
 <main class="container">
 
   <section class="intro">
     <h2>Aktuelle Unternehmen</h2>
-    <p>Hier siehst du, wer ge√∂ffnet hat und ob Lieferung m√∂glich ist.</p>
+    <p>Hier siehst du live, wer geˆffnet hat.</p>
   </section>
 
   <div class="filter-box">
-    <input type="text" id="searchInput" placeholder="Unternehmen suchen ...">
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Unternehmen suchen ..."
+    >
 
     <div class="filter-bar">
       <button class="active-filter" data-filter="all">Alle</button>
       <button data-filter="essen">Essen & Lieferung</button>
-      <button data-filter="behoerden">Beh√∂rden & Medizin</button>
+      <button data-filter="behoerden">Behˆrden & Medizin</button>
       <button data-filter="werkstatt">Tuning & Werkstatt</button>
       <button data-filter="service">Unternehmen & Service</button>
     </div>
+
   </div>
 
   <section class="business-grid" id="businessGrid">
 
+    <!-- Burger Shot -->
     <div class="card" data-category="essen">
+
       <img src="bilder/burgershot.png" alt="Burger Shot">
-      <h3>Burger Shot</h3>
-      <span class="status closed">Geschlossen</span>
-      <span class="delivery no">Keine Lieferung</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>Burger Shot</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+          <span class="delivery no">Keine Lieferung</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- Hookies -->
     <div class="card" data-category="essen">
+
       <img src="bilder/hookies.png" alt="Hookies">
-      <h3>Hookies</h3>
-      <span class="status closed">Geschlossen</span>
-      <span class="delivery no">Keine Lieferung</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>Hookies</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+          <span class="delivery no">Keine Lieferung</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- Pearls -->
     <div class="card" data-category="essen">
+
       <img src="bilder/pearls.png" alt="Pearls">
-      <h3>Pearls</h3>
-      <span class="status closed">Geschlossen</span>
-      <span class="delivery no">Keine Lieferung</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>Pearls</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+          <span class="delivery no">Keine Lieferung</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="card" data-category="service">
-      <img src="bilder/taxi.png" alt="Los Santos Taxi">
-      <h3>Los Santos Taxi</h3>
-      <span class="status closed">Geschlossen</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
-    </div>
-
+    <!-- LSMD -->
     <div class="card" data-category="behoerden">
+
       <img src="bilder/lsmd.png" alt="LSMD">
-      <h3>LSMD</h3>
-      <span class="status closed">Geschlossen</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>LSMD</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- LSPD -->
     <div class="card" data-category="behoerden">
+
       <img src="bilder/lspd.png" alt="LSPD">
-      <h3>LSPD</h3>
-      <span class="status closed">Geschlossen</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>LSPD</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- Blackline -->
     <div class="card" data-category="werkstatt">
+
       <img src="bilder/blackline.png" alt="Blackline Tuning">
-      <h3>Blackline Tuning</h3>
-      <span class="status closed">Geschlossen</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>Blackline Tuning</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- Bennys -->
     <div class="card" data-category="werkstatt">
+
       <img src="bilder/bennys.png" alt="Bennys">
-      <h3>Bennys</h3>
-      <span class="status closed">Geschlossen</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>Bennys</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- Smokeys -->
     <div class="card" data-category="service">
+
       <img src="bilder/smokeys.png" alt="Smokey's Weed Shop">
-      <h3 class="long-name">Smokey's Weed Shop</h3>
-      <span class="status closed">Geschlossen</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3 class="long-name">Smokey's Weed Shop</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- Adler -->
     <div class="card" data-category="service">
+
       <img src="bilder/adler-partner.png" alt="Adler & Partner">
-      <h3>Adler & Partner</h3>
-      <span class="status closed">Geschlossen</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>Adler & Partner</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- Balkan -->
     <div class="card" data-category="service">
+
       <img src="bilder/balkan-recordzz.png" alt="Balkan Recordzz">
-      <h3>Balkan Recordzz</h3>
-      <span class="status closed">Geschlossen</span>
-      <div class="buttons"><a href="#">Website</a><a href="#">Verteiler</a></div>
+
+      <div class="card-content">
+
+        <h3>Balkan Recordzz</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Taxi -->
+    <div class="card" data-category="service">
+
+      <img src="bilder/taxi.png" alt="Los Santos Taxi">
+
+      <div class="card-content">
+
+        <h3>Los Santos Taxi</h3>
+
+        <div class="badges">
+          <span class="status closed">Geschlossen</span>
+        </div>
+
+        <div class="buttons">
+          <a href="#">Website</a>
+          <a href="#">Verteiler</a>
+        </div>
+
+      </div>
+
     </div>
 
   </section>
@@ -116,10 +295,10 @@
 </main>
 
 <footer>
-  Diese Website dient ausschlie√ülich dem Roleplay auf dem GTA-/FiveM-Server Verdano City. Alle Unternehmen, Personen und Dienstleistungen sind rein fiktiv und geh√∂ren zum RP-Konzept des Servers.
+  Diese Website dient ausschlieﬂlich dem Roleplay auf Verdano City.
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=26"></script>
+<script src="script.js?v=27"></script>
+
 </body>
 </html>
