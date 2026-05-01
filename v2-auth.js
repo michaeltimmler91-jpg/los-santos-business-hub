@@ -60,12 +60,13 @@ async function registerUser(){
     const { error: profileError } =
     await supabaseClient
     .from("profiles")
-    .insert({
-      user_id: data.user.id,
-      login_name: loginName,
-      display_name: displayName,
-      global_role: "user"
-    });
+.insert({
+  user_id: data.user.id,
+  email: email,
+  login_name: loginName,
+  display_name: displayName,
+  global_role: "user"
+});
 
     if(profileError){
 
