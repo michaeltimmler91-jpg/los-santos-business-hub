@@ -304,140 +304,6 @@ async function loadEmployees(){
   }
 }
 
-async function addEmployee(){
-
-  const userId =
-  document.getElementById("employeeUserSelect")
-  .value;
-
-  const role =
-  document.getElementById("employeeRole")
-  .value;
-
-  if(!userId){
-
-    alert("Bitte User auswählen");
-
-    return;
-  }
-
-  const { data: existingMember } =
-  await supabaseClient
-  .from("business_members")
-  .select("*")
-  .eq("business_id", currentBusiness.id)
-  .eq("user_id", userId)
-  .maybeSingle();
-
-  if(existingMember){
-
-    const { error } =
-    await supabaseClient
-    .from("business_members")
-    .update({
-      member_role: role
-    })
-    .eq("id", existingMember.id);
-
-    if(error){
-
-      alert("Mitarbeiter konnte nicht aktualisiert werden");
-
-      console.error(error);
-
-      return;
-    }
-
-  }else{
-
-    const { error } =
-    await supabaseClient
-    .from("business_members")
-    .insert({
-      business_id: currentBusiness.id,
-      user_id: userId,
-      member_role: role
-    });
-
-    if(error){
-
-      alert("Mitarbeiter konnte nicht hinzugefügt werden");
-
-      console.error(error);
-
-      return;
-    }
-  }
-
-  document.getElementById("employeeUserSelect").value =
-  "";
-
-  await loadEmployees();
-
-  alert("Mitarbeiter gespeichert");
-}
-
-  const { data: profile, error: profileError } =
-  await supabaseClient
-  .from("profiles")
-  .select("*")
-  .eq("login_name", loginName)
-  .maybeSingle();
-
-  if(profileError || !profile){
-    alert("User nicht gefunden");
-    return;
-  }
-
-  const { data: existingMember } =
-  await supabaseClient
-  .from("business_members")
-  .select("*")
-  .eq("business_id", currentBusiness.id)
-  .eq("user_id", profile.user_id)
-  .maybeSingle();
-
-  if(existingMember){
-
-    const { error } =
-    await supabaseClient
-    .from("business_members")
-    .update({
-      member_role: role
-    })
-    .eq("id", existingMember.id);
-
-    if(error){
-      alert("Mitarbeiter konnte nicht aktualisiert werden");
-      console.error(error);
-      return;
-    }
-
-  }else{
-
-    const { error } =
-    await supabaseClient
-    .from("business_members")
-    .insert({
-      business_id: currentBusiness.id,
-      user_id: profile.user_id,
-      member_role: role
-    });
-
-    if(error){
-      alert("Mitarbeiter konnte nicht hinzugefügt werden");
-      console.error(error);
-      return;
-    }
-  }
-
-  document.getElementById("employeeLoginName").value = "";
-
-  await loadEmployees();
-
-  alert("Mitarbeiter gespeichert");
-}
-
 async function loadAvailableUsers(){
 
   const select =
@@ -462,9 +328,7 @@ async function loadAvailableUsers(){
   .order("display_name");
 
   if(error){
-
     console.error(error);
-
     return;
   }
 
@@ -484,6 +348,70 @@ async function loadAvailableUsers(){
 
     select.appendChild(option);
   });
+}
+
+async function addEmployee(){
+
+  const userId =
+  document.getElementById("employeeUserSelect")
+  .value;
+
+  const role =
+  document.getElementById("employeeRole")
+  .value;
+
+  if(!userId){
+    alert("Bitte User auswählen");
+    return;
+  }
+
+  const { data: existingMember } =
+  await supabaseClient
+  .from("business_members")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .eq("user_id", userId)
+  .maybeSingle();
+
+  if(existingMember){
+
+    const { error } =
+    await supabaseClient
+    .from("business_members")
+    .update({
+      member_role: role
+    })
+    .eq("id", existingMember.id);
+
+    if(error){
+      alert("Mitarbeiter konnte nicht aktualisiert werden");
+      console.error(error);
+      return;
+    }
+
+  }else{
+
+    const { error } =
+    await supabaseClient
+    .from("business_members")
+    .insert({
+      business_id: currentBusiness.id,
+      user_id: userId,
+      member_role: role
+    });
+
+    if(error){
+      alert("Mitarbeiter konnte nicht hinzugefügt werden");
+      console.error(error);
+      return;
+    }
+  }
+
+  document.getElementById("employeeUserSelect").value = "";
+
+  await loadEmployees();
+
+  alert("Mitarbeiter gespeichert");
 }
 
 async function loadQuestions(){
@@ -726,9 +654,11 @@ async function loadApplications(){
         <button onclick="saveApplicationStatus(${application.id})">
           Status speichern
         </button>
-		<button class="danger-btn" onclick="deleteApplication(${application.id})">
-  		  Bewerbung löschen
-		</button>
+
+        <button class="danger-btn" onclick="deleteApplication(${application.id})">
+          Bewerbung l&ouml;schen
+        </button>
+
       </div>
     `;
 
@@ -875,6 +805,39 @@ async function saveApplicationStatus(applicationId){
   await loadApplications();
 }
 
+async function deleteApplication(applicationId){
+
+  if(!confirm("Bewerbung wirklich löschen?")){
+    return;
+  }
+
+  await supabaseClient
+  .from("application_messages")
+  .delete()
+  .eq("application_id", applicationId);
+
+  await supabaseClient
+  .from("application_answers")
+  .delete()
+  .eq("application_id", applicationId);
+
+  const { error } =
+  await supabaseClient
+  .from("applications")
+  .delete()
+  .eq("id", applicationId);
+
+  if(error){
+    alert("Bewerbung konnte nicht gelöscht werden");
+    console.error(error);
+    return;
+  }
+
+  alert("Bewerbung gelöscht");
+
+  await loadApplications();
+}
+
 async function getProfileByUserId(userId){
 
   const { data, error } =
@@ -911,42 +874,6 @@ function formatStatus(status){
     default:
       return status || "Offen";
   }
-}
-
-async function deleteApplication(applicationId){
-
-  if(!confirm("Bewerbung wirklich löschen?")){
-    return;
-  }
-
-  await supabaseClient
-  .from("application_messages")
-  .delete()
-  .eq("application_id", applicationId);
-
-  await supabaseClient
-  .from("application_answers")
-  .delete()
-  .eq("application_id", applicationId);
-
-  const { error } =
-  await supabaseClient
-  .from("applications")
-  .delete()
-  .eq("id", applicationId);
-
-  if(error){
-
-    alert("Bewerbung konnte nicht gelöscht werden");
-
-    console.error(error);
-
-    return;
-  }
-
-  alert("Bewerbung gelöscht");
-
-  await loadApplications();
 }
 
 async function logoutUser(){
