@@ -135,17 +135,28 @@ function updateUI(){
   document.getElementById("applicationNote").value =
   currentBusiness.application_note || "";
 
-  const deliveryControls =
-  document.getElementById("deliveryControls");
+const deliveryControls =
+document.getElementById("deliveryControls");
 
-  if(currentBusiness.has_delivery === true)
-  {
-    deliveryControls.style.display =
-    "block";
-  }else{
-    deliveryControls.style.display =
-    "none";
-  }
+const deliveryStatusCard =
+document.getElementById("deliveryStatusCard");
+
+if(currentBusiness.has_delivery === true){
+
+  deliveryControls.style.display =
+  "block";
+
+  deliveryStatusCard.style.display =
+  "block";
+
+}else{
+
+  deliveryControls.style.display =
+  "none";
+
+  deliveryStatusCard.style.display =
+  "none";
+}
 }
 
 async function setOpen(value){
