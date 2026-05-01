@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V2 Login</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=1">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="auth-box">
+
+    <h1>Login</h1>
+    <p>Los Santos Business Hub V2</p>
+
+    <input type="email" id="loginEmail" placeholder="E-Mail">
+    <input type="password" id="loginPassword" placeholder="Passwort">
+
+    <button onclick="loginUser()">Einloggen</button>
+
+    <div class="auth-links">
+      <a href="v2-register.html">Noch keinen Account? Registrieren</a>
+      <a href="index.html">Zur&uuml;ck zur alten Seite</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="./v2-auth.js?v=1"></script>
+
+</body>
+</html>

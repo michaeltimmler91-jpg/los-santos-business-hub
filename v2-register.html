@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V2 Registrierung</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=1">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="auth-page">
+
+  <div class="auth-box">
+
+    <h1>Registrieren</h1>
+    <p>Erstelle deinen Account f&uuml;r V2</p>
+
+    <input type="email" id="registerEmail" placeholder="E-Mail">
+    <input type="text" id="registerLoginName" placeholder="Loginname">
+    <input type="text" id="registerDisplayName" placeholder="Anzeigename">
+    <input type="password" id="registerPassword" placeholder="Passwort">
+
+    <button onclick="registerUser()">Registrieren</button>
+
+    <div class="auth-links">
+      <a href="v2-login.html">Schon einen Account? Einloggen</a>
+      <a href="index.html">Zur&uuml;ck zur alten Seite</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="./v2-auth.js?v=1"></script>
+
+</body>
+</html>
