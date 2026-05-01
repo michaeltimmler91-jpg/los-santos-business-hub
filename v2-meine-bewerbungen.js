@@ -11,6 +11,7 @@ supabase.createClient(
 );
 
 let currentUser = null;
+let profilesCache = [];
 
 async function loadMyApplications(){
 
@@ -27,6 +28,8 @@ async function loadMyApplications(){
 
   currentUser =
   userData.user;
+
+  await loadProfiles();
 
   const { data, error } =
   await supabaseClient
@@ -72,7 +75,10 @@ async function loadMyApplications(){
     return;
   }
 
-  data.forEach(application => {
+  for(const application of data){
+
+    const messages =
+    await loadApplicationMessages(application.id);
 
     const created =
     application.created_at
@@ -115,7 +121,7 @@ async function loadMyApplications(){
       <div class="application-message">
 
         <strong>
-          Deine Nachricht:
+          Deine urspr&uuml;ngliche Nachricht:
         </strong>
 
         <p>
@@ -124,21 +130,160 @@ async function loadMyApplications(){
 
       </div>
 
-      <div class="application-message">
+      <div class="application-thread">
 
         <strong>
-          Antwort der Firma:
+          Nachrichtenverlauf:
         </strong>
 
-        <p>
-          ${escapeHtml(application.owner_reply || "Noch keine Antwort")}
-        </p>
+        ${
+          messages.length > 0
+          ? messages.map(message => renderMessage(message)).join("")
+          : "<p class='muted'>Noch keine Nachrichten im Verlauf.</p>"
+        }
+
+      </div>
+
+      <div class="application-actions">
+
+        <textarea
+          id="message-${application.id}"
+          placeholder="Antwort schreiben"
+        ></textarea>
+
+        <button onclick="sendApplicantMessage(${application.id})">
+          Antwort senden
+        </button>
 
       </div>
     `;
 
     list.appendChild(div);
+  }
+}
+
+async function loadProfiles(){
+
+  const { data, error } =
+  await supabaseClient
+  .from("profiles")
+  .select("*");
+
+  if(error){
+
+    console.error(error);
+
+    profilesCache =
+    [];
+
+    return;
+  }
+
+  profilesCache =
+  data || [];
+}
+
+function getProfileByUserId(userId){
+
+  return profilesCache.find(profile =>
+    profile.user_id === userId
+  );
+}
+
+async function loadApplicationMessages(applicationId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("application_messages")
+  .select("*")
+  .eq("application_id", applicationId)
+  .order("created_at", {
+    ascending:true
   });
+
+  if(error){
+
+    console.error(error);
+
+    return [];
+  }
+
+  return data || [];
+}
+
+function renderMessage(message){
+
+  const profile =
+  getProfileByUserId(message.sender_user_id);
+
+  const senderName =
+  profile
+  ? profile.display_name
+  : "Unbekannt";
+
+  const created =
+  message.created_at
+  ? new Date(message.created_at).toLocaleString("de-DE")
+  : "-";
+
+  const isMine =
+  currentUser &&
+  message.sender_user_id === currentUser.id;
+
+  return `
+    <div class="thread-message ${isMine ? "thread-own" : "thread-other"}">
+
+      <div class="thread-meta">
+        ${escapeHtml(senderName)}
+        &middot;
+        ${escapeHtml(created)}
+      </div>
+
+      <div class="thread-text">
+        ${escapeHtml(message.message_text)}
+      </div>
+
+    </div>
+  `;
+}
+
+async function sendApplicantMessage(applicationId){
+
+  const field =
+  document.getElementById("message-" + applicationId);
+
+  const messageText =
+  field.value.trim();
+
+  if(!messageText){
+
+    alert("Bitte eine Nachricht eingeben");
+
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("application_messages")
+  .insert({
+    application_id:applicationId,
+    sender_user_id:currentUser.id,
+    message_text:messageText
+  });
+
+  if(error){
+
+    alert("Nachricht konnte nicht gesendet werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  field.value =
+  "";
+
+  await loadMyApplications();
 }
 
 function goBack(){
