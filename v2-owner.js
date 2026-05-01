@@ -621,7 +621,9 @@ async function loadApplications(){
         <button onclick="saveApplicationStatus(${application.id})">
           Status speichern
         </button>
-
+		<button class="danger-btn" onclick="deleteApplication(${application.id})">
+  		  Bewerbung löschen
+		</button>
       </div>
     `;
 
@@ -804,6 +806,42 @@ function formatStatus(status){
     default:
       return status || "Offen";
   }
+}
+
+async function deleteApplication(applicationId){
+
+  if(!confirm("Bewerbung wirklich löschen?")){
+    return;
+  }
+
+  await supabaseClient
+  .from("application_messages")
+  .delete()
+  .eq("application_id", applicationId);
+
+  await supabaseClient
+  .from("application_answers")
+  .delete()
+  .eq("application_id", applicationId);
+
+  const { error } =
+  await supabaseClient
+  .from("applications")
+  .delete()
+  .eq("id", applicationId);
+
+  if(error){
+
+    alert("Bewerbung konnte nicht gelöscht werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  alert("Bewerbung gelöscht");
+
+  await loadApplications();
 }
 
 async function logoutUser(){
