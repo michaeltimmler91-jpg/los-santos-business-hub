@@ -3,35 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V2 Login</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=150">
+  <title>Login</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=310">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="auth-page">
+<div class="login-page">
 
-  <div class="auth-box">
+  <div class="login-card">
+
+    <div class="login-logo">
+      Los Santos<br>
+      <span>Business Hub</span>
+    </div>
 
     <h1>Login</h1>
-    <p>Los Santos Business Hub V2</p>
 
-    <input type="email" id="loginEmail" placeholder="E-Mail">
-    <input type="password" id="loginPassword" placeholder="Passwort">
+    <p>
+      Melde dich an, um dein Dashboard zu &ouml;ffnen.
+    </p>
 
-    <button onclick="loginUser()">Einloggen</button>
+    <input
+      type="email"
+      id="loginEmail"
+      placeholder="E-Mail"
+    >
 
-    <div class="auth-links">
-      <a href="v2-register.html">Noch keinen Account? Registrieren</a>
-      <a href="index.html">Zur&uuml;ck zur alten Seite</a>
+    <input
+      type="password"
+      id="loginPassword"
+      placeholder="Passwort"
+    >
+
+    <button onclick="loginUser()">
+      Einloggen
+    </button>
+
+    <div class="login-links">
+
+      <a href="v2-register.html">
+        Noch keinen Account? Registrieren
+      </a>
+
+      <a href="index.html">
+        Zur&uuml;ck zur alten Seite
+      </a>
+
     </div>
 
   </div>
 
 </div>
 
-<script src="./v2-auth.js?v=1"></script>
+<script src="./v2-auth.js?v=310"></script>
 
 </body>
 </html>
