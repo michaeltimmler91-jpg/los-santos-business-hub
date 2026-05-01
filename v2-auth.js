@@ -79,7 +79,8 @@ async function registerUser(){
 
   alert("Registrierung erfolgreich. Bitte best\u00e4tige deine E-Mail.");
 
-  window.location.href = "v2-login.html";
+  window.location.href =
+  "v2-login.html";
 }
 
 async function loginUser(){
@@ -118,9 +119,11 @@ async function loginUser(){
 
   if(data.user){
 
-    window.location.href = "v2-dashboard.html";
+    window.location.href =
+    "v2-dashboard.html";
   }
 }
+
 async function checkDashboard(){
 
   const { data } =
@@ -128,7 +131,8 @@ async function checkDashboard(){
 
   if(!data.user){
 
-    window.location.href = "v2-login.html";
+    window.location.href =
+    "v2-login.html";
 
     return;
   }
@@ -148,13 +152,40 @@ async function checkDashboard(){
     return;
   }
 
-  document.getElementById("welcomeText").innerText =
+  document.getElementById("welcomeTitle").innerText =
   "Willkommen, " + profile.display_name + "!";
+
+  document.getElementById("welcomeText").innerText =
+  "Loginname: " + profile.login_name + " | Rolle: " + profile.global_role;
+
+  if(profile.global_role === "superadmin"){
+
+    document
+    .getElementById("superadminLink")
+    .classList
+    .remove("hidden");
+  }
+
+  const { data: memberships, error: memberError } =
+  await supabaseClient
+  .from("business_members")
+  .select("*")
+  .eq("user_id", data.user.id)
+  .eq("member_role", "inhaber");
+
+  if(!memberError && memberships && memberships.length > 0){
+
+    document
+    .getElementById("ownerLink")
+    .classList
+    .remove("hidden");
+  }
 }
 
 async function logoutUser(){
 
   await supabaseClient.auth.signOut();
 
-  window.location.href = "v2-login.html";
+  window.location.href =
+  "v2-login.html";
 }
