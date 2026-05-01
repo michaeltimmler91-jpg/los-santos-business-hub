@@ -21,15 +21,11 @@ async function checkOwner(){
   await supabaseClient.auth.getUser();
 
   if(!data.user){
-
-    window.location.href =
-    "v2-login.html";
-
+    window.location.href = "v2-login.html";
     return;
   }
 
-  currentUser =
-  data.user;
+  currentUser = data.user;
 
   const { data: profile, error: profileError } =
   await supabaseClient
@@ -39,17 +35,12 @@ async function checkOwner(){
   .single();
 
   if(profileError || !profile){
-
     alert("Profil nicht gefunden");
-
-    window.location.href =
-    "v2-login.html";
-
+    window.location.href = "v2-login.html";
     return;
   }
 
-  currentProfile =
-  profile;
+  currentProfile = profile;
 
   const { data: membership, error: memberError } =
   await supabaseClient
@@ -60,17 +51,12 @@ async function checkOwner(){
   .maybeSingle();
 
   if(memberError || !membership){
-
     alert("Du bist kein Firmeninhaber");
-
-    window.location.href =
-    "v2-dashboard.html";
-
+    window.location.href = "v2-dashboard.html";
     return;
   }
 
-  currentMembership =
-  membership;
+  currentMembership = membership;
 
   const { data: business, error: businessError } =
   await supabaseClient
@@ -80,24 +66,16 @@ async function checkOwner(){
   .single();
 
   if(businessError || !business){
-
     alert("Firma nicht gefunden");
-
-    window.location.href =
-    "v2-dashboard.html";
-
+    window.location.href = "v2-dashboard.html";
     return;
   }
 
-  currentBusiness =
-  business;
+  currentBusiness = business;
 
   updateUI();
-
   loadEmployees();
-
   loadQuestions();
-
   loadApplications();
 }
 
@@ -107,14 +85,10 @@ function updateUI(){
   currentBusiness.name;
 
   document.getElementById("openStatus").innerText =
-  currentBusiness.open
-  ? "Offen"
-  : "Geschlossen";
+  currentBusiness.open ? "Offen" : "Geschlossen";
 
   document.getElementById("deliveryStatus").innerText =
-  currentBusiness.delivery
-  ? "Aktiv"
-  : "Inaktiv";
+  currentBusiness.delivery ? "Aktiv" : "Inaktiv";
 
   document.getElementById("businessPlz").value =
   currentBusiness.plz || "";
@@ -145,19 +119,13 @@ function updateUI(){
 
   if(currentBusiness.has_delivery === true){
 
-    deliveryControls.style.display =
-    "block";
-
-    deliveryStatusCard.style.display =
-    "block";
+    deliveryControls.style.display = "block";
+    deliveryStatusCard.style.display = "block";
 
   }else{
 
-    deliveryControls.style.display =
-    "none";
-
-    deliveryStatusCard.style.display =
-    "none";
+    deliveryControls.style.display = "none";
+    deliveryStatusCard.style.display = "none";
   }
 }
 
@@ -168,8 +136,7 @@ async function setOpen(value){
   };
 
   if(value === false){
-    updates.delivery =
-    false;
+    updates.delivery = false;
   }
 
   const { error } =
@@ -179,20 +146,15 @@ async function setOpen(value){
   .eq("id", currentBusiness.id);
 
   if(error){
-
     alert("Status konnte nicht gespeichert werden");
-
     console.error(error);
-
     return;
   }
 
-  currentBusiness.open =
-  value;
+  currentBusiness.open = value;
 
   if(value === false){
-    currentBusiness.delivery =
-    false;
+    currentBusiness.delivery = false;
   }
 
   updateUI();
@@ -209,16 +171,12 @@ async function setDelivery(value){
   .eq("id", currentBusiness.id);
 
   if(error){
-
     alert("Lieferung konnte nicht gespeichert werden");
-
     console.error(error);
-
     return;
   }
 
-  currentBusiness.delivery =
-  value;
+  currentBusiness.delivery = value;
 
   updateUI();
 }
@@ -257,25 +215,15 @@ async function saveBusinessData(){
   .eq("id", currentBusiness.id);
 
   if(error){
-
     alert("Firmendaten konnten nicht gespeichert werden");
-
     console.error(error);
-
     return;
   }
 
-  currentBusiness.plz =
-  plz;
-
-  currentBusiness.description =
-  description;
-
-  currentBusiness.website =
-  website;
-
-  currentBusiness.discord =
-  discord;
+  currentBusiness.plz = plz;
+  currentBusiness.description = description;
+  currentBusiness.website = website;
+  currentBusiness.discord = discord;
 
   alert("Firmendaten gespeichert");
 }
@@ -293,9 +241,7 @@ async function addEmployee(){
   .value;
 
   if(!loginName){
-
     alert("Bitte Loginname eintragen");
-
     return;
   }
 
@@ -307,11 +253,8 @@ async function addEmployee(){
   .single();
 
   if(profileError || !profile){
-
     alert("User nicht gefunden");
-
     console.error(profileError);
-
     return;
   }
 
@@ -334,18 +277,14 @@ async function addEmployee(){
     .eq("id", existingMember.id);
 
     if(updateError){
-
       alert("Mitarbeiter konnte nicht aktualisiert werden");
-
       console.error(updateError);
-
       return;
     }
 
     alert("Mitarbeiterrolle aktualisiert");
 
-    document.getElementById("employeeLoginName").value =
-    "";
+    document.getElementById("employeeLoginName").value = "";
 
     loadEmployees();
 
@@ -362,16 +301,12 @@ async function addEmployee(){
   });
 
   if(error){
-
     alert("Mitarbeiter konnte nicht hinzugef\u00fcgt werden");
-
     console.error(error);
-
     return;
   }
 
-  document.getElementById("employeeLoginName").value =
-  "";
+  document.getElementById("employeeLoginName").value = "";
 
   alert("Mitarbeiter hinzugef\u00fcgt");
 
@@ -387,17 +322,14 @@ async function loadEmployees(){
   .eq("business_id", currentBusiness.id);
 
   if(error){
-
     console.error(error);
-
     return;
   }
 
   const list =
   document.getElementById("employeeList");
 
-  list.innerHTML =
-  "";
+  list.innerHTML = "";
 
   if(!data || data.length === 0){
 
@@ -465,7 +397,6 @@ async function getProfileByUserId(userId){
 async function removeEmployee(memberId){
 
   if(!confirm("Mitarbeiter wirklich entfernen?")){
-
     return;
   }
 
@@ -476,11 +407,8 @@ async function removeEmployee(memberId){
   .eq("id", memberId);
 
   if(error){
-
     alert("Mitarbeiter konnte nicht entfernt werden");
-
     console.error(error);
-
     return;
   }
 
@@ -513,22 +441,14 @@ async function saveApplicationSettings(){
   .eq("id", currentBusiness.id);
 
   if(error){
-
     alert("Bewerbungseinstellungen konnten nicht gespeichert werden");
-
     console.error(error);
-
     return;
   }
 
-  currentBusiness.applications_enabled =
-  enabled;
-
-  currentBusiness.applications_open =
-  open;
-
-  currentBusiness.application_note =
-  note;
+  currentBusiness.applications_enabled = enabled;
+  currentBusiness.applications_open = open;
+  currentBusiness.application_note = note;
 
   alert("Bewerbungseinstellungen gespeichert");
 }
@@ -541,9 +461,7 @@ async function addQuestion(){
   .trim();
 
   if(!questionText){
-
     alert("Bitte Frage eintragen");
-
     return;
   }
 
@@ -558,16 +476,12 @@ async function addQuestion(){
   });
 
   if(error){
-
     alert("Frage konnte nicht gespeichert werden");
-
     console.error(error);
-
     return;
   }
 
-  document.getElementById("questionText").value =
-  "";
+  document.getElementById("questionText").value = "";
 
   loadQuestions();
 }
@@ -582,17 +496,14 @@ async function loadQuestions(){
   .order("sort_order");
 
   if(error){
-
     console.error(error);
-
     return;
   }
 
   const list =
   document.getElementById("questionList");
 
-  list.innerHTML =
-  "";
+  list.innerHTML = "";
 
   if(!data || data.length === 0){
 
@@ -630,7 +541,6 @@ async function loadQuestions(){
 async function deleteQuestion(questionId){
 
   if(!confirm("Frage wirklich l\u00f6schen?")){
-
     return;
   }
 
@@ -641,11 +551,8 @@ async function deleteQuestion(questionId){
   .eq("id", questionId);
 
   if(error){
-
     alert("Frage konnte nicht gel\u00f6scht werden");
-
     console.error(error);
-
     return;
   }
 
@@ -664,17 +571,14 @@ async function loadApplications(){
   });
 
   if(error){
-
     console.error(error);
-
     return;
   }
 
   const list =
   document.getElementById("applicationList");
 
-  list.innerHTML =
-  "";
+  list.innerHTML = "";
 
   if(!data || data.length === 0){
 
@@ -691,6 +595,9 @@ async function loadApplications(){
 
     const answers =
     await loadApplicationAnswers(application.id);
+
+    const messages =
+    await loadApplicationMessages(application.id);
 
     const created =
     application.created_at
@@ -755,6 +662,20 @@ async function loadApplications(){
         }
       </div>
 
+      <div class="application-thread">
+
+        <strong>
+          Nachrichtenverlauf:
+        </strong>
+
+        ${
+          messages.length > 0
+          ? messages.map(message => renderOwnerMessage(message)).join("")
+          : "<p class='muted'>Noch keine Nachrichten im Verlauf.</p>"
+        }
+
+      </div>
+
       <div class="application-actions">
 
         <select id="status-${application.id}">
@@ -766,11 +687,15 @@ async function loadApplications(){
 
         <textarea
           id="reply-${application.id}"
-          placeholder="Antwort an den Bewerber"
-        >${escapeHtml(application.owner_reply || "")}</textarea>
+          placeholder="Antwort schreiben"
+        ></textarea>
 
-        <button onclick="saveApplication(${application.id})">
-          Bewerbung speichern
+        <button onclick="sendOwnerMessage(${application.id})">
+          Nachricht senden
+        </button>
+
+        <button onclick="saveApplicationStatus(${application.id})">
+          Status speichern
         </button>
 
       </div>
@@ -789,9 +714,7 @@ async function loadApplicationAnswers(applicationId){
   .eq("application_id", applicationId);
 
   if(error){
-
     console.error(error);
-
     return [];
   }
 
@@ -815,37 +738,108 @@ async function loadApplicationAnswers(applicationId){
   return result;
 }
 
-async function saveApplication(applicationId){
+async function loadApplicationMessages(applicationId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("application_messages")
+  .select("*")
+  .eq("application_id", applicationId)
+  .order("created_at", {
+    ascending:true
+  });
+
+  if(error){
+    console.error(error);
+    return [];
+  }
+
+  return data || [];
+}
+
+function renderOwnerMessage(message){
+
+  const created =
+  message.created_at
+  ? new Date(message.created_at).toLocaleString("de-DE")
+  : "-";
+
+  const isMine =
+  currentUser &&
+  message.sender_user_id === currentUser.id;
+
+  return `
+    <div class="thread-message ${isMine ? "thread-own" : "thread-other"}">
+
+      <div class="thread-meta">
+        ${isMine ? "Du" : "Bewerber"}
+        &middot;
+        ${escapeHtml(created)}
+      </div>
+
+      <div class="thread-text">
+        ${escapeHtml(message.message_text)}
+      </div>
+
+    </div>
+  `;
+}
+
+async function sendOwnerMessage(applicationId){
+
+  const field =
+  document.getElementById("reply-" + applicationId);
+
+  const messageText =
+  field.value.trim();
+
+  if(!messageText){
+    alert("Bitte Nachricht eingeben");
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("application_messages")
+  .insert({
+    application_id:applicationId,
+    sender_user_id:currentUser.id,
+    message_text:messageText
+  });
+
+  if(error){
+    alert("Nachricht konnte nicht gesendet werden");
+    console.error(error);
+    return;
+  }
+
+  field.value = "";
+
+  loadApplications();
+}
+
+async function saveApplicationStatus(applicationId){
 
   const status =
   document.getElementById("status-" + applicationId)
   .value;
-
-  const reply =
-  document.getElementById("reply-" + applicationId)
-  .value
-  .trim();
 
   const { error } =
   await supabaseClient
   .from("applications")
   .update({
     status:status,
-    owner_reply:reply,
     updated_at:new Date().toISOString()
   })
   .eq("id", applicationId);
 
   if(error){
-
-    alert("Bewerbung konnte nicht gespeichert werden");
-
+    alert("Status konnte nicht gespeichert werden");
     console.error(error);
-
     return;
   }
 
-  alert("Bewerbung gespeichert");
+  alert("Status gespeichert");
 
   loadApplications();
 }
