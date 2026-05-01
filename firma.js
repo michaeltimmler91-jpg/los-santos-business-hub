@@ -1,21 +1,28 @@
-const SUPABASE_URL = "https://eulfqqkxqxjgszqdffhy.supabase.co";
+const SUPABASE_URL =
+"https://eulfqqkxqxjgszqdffhy.supabase.co";
 
-const SUPABASE_KEY = "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
+const SUPABASE_KEY =
+"sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
 
-const supabaseClient = supabase.createClient(
+const supabaseClient =
+supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
-const params = new URLSearchParams(window.location.search);
+const params =
+new URLSearchParams(window.location.search);
 
-const businessId = params.get("id");
+const businessId =
+params.get("id");
 
 let activeBusiness = null;
 
 let selectedRating = 5;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+"DOMContentLoaded",
+() => {
 
     setupRating();
 
@@ -26,16 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
 function setupRating(){
 
     const stars =
-        document.querySelectorAll(".star");
+    document.querySelectorAll(".star");
 
     updateStars(selectedRating);
 
     stars.forEach(star => {
 
-        star.addEventListener("click", () => {
+        star.addEventListener(
+        "click",
+        () => {
 
             selectedRating =
-                Number(star.dataset.value);
+            Number(star.dataset.value);
 
             updateStars(selectedRating);
 
@@ -48,21 +57,24 @@ function setupRating(){
 function updateStars(rating){
 
     const stars =
-        document.querySelectorAll(".star");
+    document.querySelectorAll(".star");
 
     stars.forEach(star => {
 
         const value =
-            Number(star.dataset.value);
+        Number(star.dataset.value);
 
         if(value <= rating){
 
             star.classList.add("active");
 
+            star.innerHTML = "&#9733;";
+
         }else{
 
             star.classList.remove("active");
 
+            star.innerHTML = "&#9734;";
         }
 
     });
@@ -72,51 +84,51 @@ function updateStars(rating){
 async function ladeFirma(){
 
     const { data, error } =
-        await supabaseClient
-            .from("businesses")
-            .select("*")
-            .eq("id", businessId)
-            .single();
+    await supabaseClient
+        .from("businesses")
+        .select("*")
+        .eq("id", businessId)
+        .single();
 
     if(error || !data){
 
         document.body.innerHTML =
-            "<h1>Firma nicht gefunden</h1>";
+        "<h1>Firma nicht gefunden</h1>";
 
         return;
     }
 
     activeBusiness = data;
 
-    document.title =
-        data.name;
+    document.title = data.name;
 
     document.getElementById("firmaName")
-        .innerText = data.name;
+    .innerText = data.name;
 
     document.getElementById("firmaDescription")
-        .innerText =
-            data.description ||
-            "Keine Beschreibung vorhanden.";
+    .innerText =
+    data.description ||
+    "Keine Beschreibung vorhanden.";
 
     document.getElementById("firmaPlz")
-        .innerText =
-            data.plz
-                ? "PLZ: " + data.plz
-                : "";
+    .innerText =
+    data.plz
+    ? "PLZ: " + data.plz
+    : "";
 
     document.getElementById("firmaImage")
-        .src =
-            "bilder/" + getImageName(data.name);
+    .src =
+    "bilder/" + getImageName(data.name);
 
     const status =
-        document.getElementById("firmaStatus");
+    document.getElementById("firmaStatus");
 
     if(data.open){
 
         status.innerText = "Offen";
 
         status.classList.remove("closed");
+
         status.classList.add("open");
 
     }else{
@@ -124,11 +136,12 @@ async function ladeFirma(){
         status.innerText = "Geschlossen";
 
         status.classList.remove("open");
+
         status.classList.add("closed");
     }
 
     const delivery =
-        document.getElementById("firmaDelivery");
+    document.getElementById("firmaDelivery");
 
     if(data.category &&
        data.category.toLowerCase() === "food"){
@@ -136,17 +149,19 @@ async function ladeFirma(){
         if(data.delivery){
 
             delivery.innerText =
-                "Lieferung aktiv";
+            "Lieferung aktiv";
 
             delivery.classList.remove("no");
+
             delivery.classList.add("yes");
 
         }else{
 
             delivery.innerText =
-                "Keine Lieferung";
+            "Keine Lieferung";
 
             delivery.classList.remove("yes");
+
             delivery.classList.add("no");
         }
 
@@ -156,39 +171,39 @@ async function ladeFirma(){
     }
 
     const websiteBtn =
-        document.getElementById("websiteBtn");
+    document.getElementById("websiteBtn");
 
     const discordBtn =
-        document.getElementById("discordBtn");
+    document.getElementById("discordBtn");
 
     if(data.website &&
        data.website.trim() !== ""){
 
         websiteBtn.href =
-            data.website;
+        data.website;
 
         websiteBtn.style.display =
-            "block";
+        "block";
 
     }else{
 
         websiteBtn.style.display =
-            "none";
+        "none";
     }
 
     if(data.discord &&
        data.discord.trim() !== ""){
 
         discordBtn.href =
-            data.discord;
+        data.discord;
 
         discordBtn.style.display =
-            "block";
+        "block";
 
     }else{
 
         discordBtn.style.display =
-            "none";
+        "none";
     }
 
     ladeKommentare();
@@ -220,24 +235,26 @@ function getImageName(name){
 async function ladeKommentare(){
 
     const { data, error } =
-        await supabaseClient
-            .from("comments")
-            .select("*")
-            .eq("business_id", businessId)
-            .order("created_at", {
-                ascending:false
-            });
+    await supabaseClient
+        .from("comments")
+        .select("*")
+        .eq("business_id", businessId)
+        .order("created_at", {
+            ascending:false
+        });
 
     if(error){
+
         console.error(error);
+
         return;
     }
 
     const list =
-        document.getElementById("commentsList");
+    document.getElementById("commentsList");
 
     const averageBox =
-        document.getElementById("averageRating");
+    document.getElementById("averageRating");
 
     list.innerHTML = "";
 
@@ -246,27 +263,27 @@ async function ladeKommentare(){
         averageBox.innerHTML = "";
 
         list.innerHTML =
-            "<p>Noch keine Kommentare.</p>";
+        "<p>Noch keine Kommentare.</p>";
 
         return;
     }
 
     const ratings = data
-        .map(comment =>
-            Number(comment.rating || 0)
-        )
-        .filter(rating =>
-            rating > 0
-        );
+    .map(comment =>
+        Number(comment.rating || 0)
+    )
+    .filter(rating =>
+        rating > 0
+    );
 
     if(ratings.length > 0){
 
         const average =
-            ratings.reduce(
-                (sum, rating) =>
-                    sum + rating,
-                0
-            ) / ratings.length;
+        ratings.reduce(
+            (sum, rating) =>
+            sum + rating,
+            0
+        ) / ratings.length;
 
         averageBox.innerHTML = `
             <div class="average-rating">
@@ -276,9 +293,12 @@ async function ladeKommentare(){
                 )}
 
                 <span>
+
                     ${average.toFixed(1)} / 5
+
                     bei ${ratings.length}
                     Bewertungen
+
                 </span>
 
             </div>
@@ -292,23 +312,29 @@ async function ladeKommentare(){
     data.forEach(comment => {
 
         const div =
-            document.createElement("div");
+        document.createElement("div");
 
         div.className = "comment";
 
         div.innerHTML = `
             <strong>
+
                 ${escapeHtml(comment.author)}
+
             </strong>
 
             <div class="comment-rating">
+
                 ${renderStars(
                     Number(comment.rating || 0)
                 )}
+
             </div>
 
             <p>
+
                 ${escapeHtml(comment.message)}
+
             </p>
 
             ${
@@ -317,11 +343,15 @@ async function ladeKommentare(){
                 <div class="owner-reply">
 
                     <strong>
+
                         Antwort vom Unternehmen:
+
                     </strong>
 
                     <p>
+
                         ${escapeHtml(comment.owner_reply)}
+
                     </p>
 
                 </div>
@@ -339,40 +369,43 @@ async function ladeKommentare(){
 async function sendComment(){
 
     const author =
-        document.getElementById("commentAuthor")
-            .value
-            .trim();
+    document.getElementById("commentAuthor")
+    .value
+    .trim();
 
     const message =
-        document.getElementById("commentMessage")
-            .value
-            .trim();
+    document.getElementById("commentMessage")
+    .value
+    .trim();
 
     if(!author || !message){
 
         alert(
-            "Bitte Name und Kommentar ausf&uuml;llen"
+        "Bitte Name und Kommentar ausf&uuml;llen"
         );
 
         return;
     }
 
     const { error } =
-        await supabaseClient
-            .from("comments")
-            .insert({
+    await supabaseClient
+        .from("comments")
+        .insert({
 
-                business_id: businessId,
-                author: author,
-                message: message,
-                rating: selectedRating
+            business_id: businessId,
 
-            });
+            author: author,
+
+            message: message,
+
+            rating: selectedRating
+
+        });
 
     if(error){
 
         alert(
-            "Kommentar konnte nicht gespeichert werden"
+        "Kommentar konnte nicht gespeichert werden"
         );
 
         console.error(error);
@@ -381,7 +414,7 @@ async function sendComment(){
     }
 
     document.getElementById("commentMessage")
-        .value = "";
+    .value = "";
 
     selectedRating = 5;
 
@@ -394,13 +427,13 @@ async function sendComment(){
 function renderStars(rating){
 
     const safeRating =
-        Math.max(
-            0,
-            Math.min(
-                5,
-                Number(rating || 0)
-            )
-        );
+    Math.max(
+        0,
+        Math.min(
+            5,
+            Number(rating || 0)
+        )
+    );
 
     return "&#9733;".repeat(safeRating);
 
@@ -409,9 +442,9 @@ function renderStars(rating){
 function escapeHtml(text){
 
     return String(text || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
