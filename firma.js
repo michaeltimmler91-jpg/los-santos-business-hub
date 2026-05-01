@@ -381,7 +381,7 @@ async function sendComment(){
     if(selectedRating < 1){
 
         alert(
-        "Bitte mindestens 1 Stern auswählen"
+        "Bitte mindestens 1 Stern ausw\u00e4hlen"
         );
 
         return;
@@ -390,7 +390,7 @@ async function sendComment(){
     if(!author || !message){
 
         alert(
-        "Bitte Name und Kommentar ausf&uuml;llen"
+        "Bitte Name und Kommentar ausf\u00fcllen"
         );
 
         return;
