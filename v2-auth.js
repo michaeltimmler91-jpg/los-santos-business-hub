@@ -12,11 +12,6 @@ supabase.createClient(
 
 async function registerUser(){
 
-  const email =
-  document.getElementById("registerEmail")
-  .value
-  .trim();
-
   const loginName =
   document.getElementById("registerLoginName")
   .value
@@ -32,16 +27,57 @@ async function registerUser(){
   document.getElementById("registerPassword")
   .value;
 
-  if(!email || !loginName || !displayName || !password){
+  const passwordRepeat =
+  document.getElementById("registerPasswordRepeat")
+  .value;
 
-    alert("Bitte alle Felder ausf\u00fcllen");
+  if(
+    !loginName ||
+    !displayName ||
+    !password ||
+    !passwordRepeat
+  ){
+
+    alert("Bitte alle Felder ausfüllen");
+
+    return;
+  }
+
+  if(password.length < 6){
+
+    alert("Das Passwort muss mindestens 6 Zeichen haben");
+
+    return;
+  }
+
+  if(password !== passwordRepeat){
+
+    alert("Die Passwörter stimmen nicht überein");
+
+    return;
+  }
+
+  const fakeEmail =
+  loginName +
+  "@businesshub.local";
+
+  const { data: existingProfile } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("login_name", loginName)
+  .maybeSingle();
+
+  if(existingProfile){
+
+    alert("Der Loginname existiert bereits");
 
     return;
   }
 
   const { data, error } =
   await supabaseClient.auth.signUp({
-    email:email,
+    email:fakeEmail,
     password:password
   });
 
@@ -61,7 +97,7 @@ async function registerUser(){
     .from("profiles")
     .insert({
       user_id:data.user.id,
-      email:email,
+      email:fakeEmail,
       login_name:loginName,
       display_name:displayName,
       global_role:"user",
@@ -71,7 +107,9 @@ async function registerUser(){
 
     if(profileError){
 
-      alert("Account wurde erstellt, aber Profil konnte nicht gespeichert werden");
+      alert(
+        "Account erstellt, aber Profil konnte nicht gespeichert werden"
+      );
 
       console.error(profileError);
 
@@ -79,7 +117,9 @@ async function registerUser(){
     }
   }
 
-  alert("Registrierung erfolgreich. Bitte warte auf Freischaltung durch einen Guide oder Superadmin.");
+  alert(
+    "Registrierung erfolgreich.\n\nEin Guide oder Superadmin muss deinen Account jetzt freischalten."
+  );
 
   window.location.href =
   "v2-login.html";
@@ -237,16 +277,17 @@ async function checkDashboard(){
     .classList
     .remove("hidden");
   }
-  if(
-  roleNames.includes("guide") ||
-  roleNames.includes("superadmin")
-){
 
-  document
-  .getElementById("userManagementLink")
-  .classList
-  .remove("hidden");
-}
+  if(
+    roleNames.includes("guide") ||
+    roleNames.includes("superadmin")
+  ){
+
+    document
+    .getElementById("userManagementLink")
+    .classList
+    .remove("hidden");
+  }
 
   const { data: memberships, error: memberError } =
   await supabaseClient
