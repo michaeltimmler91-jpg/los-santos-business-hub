@@ -6,7 +6,7 @@
 
   <title>Superadmin Panel</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=160">
+  <link rel="stylesheet" href="./v2-style.css?v=200">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -45,72 +45,29 @@
       <h2>Neue Firma erstellen</h2>
 
       <label>Firmenname</label>
-      <input
-        type="text"
-        id="businessName"
-        placeholder="Firmenname"
-      >
+      <input type="text" id="businessName" placeholder="Firmenname">
 
       <label>Kategorie</label>
       <select id="businessCategory">
-
-        <option value="service">
-          Unternehmen &amp; Service
-        </option>
-
-        <option value="food">
-          Essen &amp; Lieferung
-        </option>
-
-        <option value="government">
-          Beh&ouml;rde
-        </option>
-
-        <option value="workshop">
-          Werkstatt
-        </option>
-
+        <option value="service">Unternehmen &amp; Service</option>
+        <option value="food">Essen &amp; Lieferung</option>
+        <option value="government">Beh&ouml;rde</option>
+        <option value="workshop">Werkstatt</option>
       </select>
 
       <label>Standort</label>
-      <input
-        type="text"
-        id="businessPlz"
-        placeholder="Standort / Gegend"
-      >
+      <input type="text" id="businessPlz" placeholder="Standort / Gegend">
 
       <label>Beschreibung</label>
-      <textarea
-        id="businessDescription"
-        placeholder="Beschreibung"
-      ></textarea>
+      <textarea id="businessDescription" placeholder="Beschreibung"></textarea>
 
       <label>Firmenbild</label>
-
-      <input
-        type="file"
-        id="businessImage"
-        accept="image/*"
-      >
+      <input type="file" id="businessImage" accept="image/*">
 
       <label class="checkbox-line">
-
-        <input
-          type="checkbox"
-          id="businessHasDelivery"
-        >
-
+        <input type="checkbox" id="businessHasDelivery">
         Hat Lieferung
-
       </label>
-
-      <label>Firmeninhaber</label>
-
-      <select id="businessOwner">
-        <option value="">
-          Kein Inhaber
-        </option>
-      </select>
 
       <button onclick="createBusiness()">
         Firma erstellen
@@ -130,86 +87,48 @@
 
 </div>
 
-<div
-  id="editModal"
-  class="edit-modal hidden"
->
+<div id="editModal" class="edit-modal hidden">
+
   <div class="edit-box">
 
     <h2>Firma bearbeiten</h2>
+
+    <input type="hidden" id="editBusinessId">
 
     <label>Firmenname</label>
     <input type="text" id="editBusinessName">
 
     <label>Kategorie</label>
     <select id="editBusinessCategory">
-
-      <option value="service">
-        Unternehmen &amp; Service
-      </option>
-
-      <option value="food">
-        Essen &amp; Lieferung
-      </option>
-
-      <option value="government">
-        Beh&ouml;rde
-      </option>
-
-      <option value="workshop">
-        Werkstatt
-      </option>
-
+      <option value="service">Unternehmen &amp; Service</option>
+      <option value="food">Essen &amp; Lieferung</option>
+      <option value="government">Beh&ouml;rde</option>
+      <option value="workshop">Werkstatt</option>
     </select>
 
     <label>Standort</label>
-    <input
-      type="text"
-      id="editBusinessPlz"
-    >
+    <input type="text" id="editBusinessPlz">
 
     <label>Beschreibung</label>
-    <textarea
-      id="editBusinessDescription"
-    ></textarea>
+    <textarea id="editBusinessDescription"></textarea>
 
     <label>Website</label>
-    <input
-      type="text"
-      id="editBusinessWebsite"
-    >
+    <input type="text" id="editBusinessWebsite">
 
     <label>Verteiler / Discord</label>
-    <input
-      type="text"
-      id="editBusinessDiscord"
-    >
+    <input type="text" id="editBusinessDiscord">
 
     <label>Neues Firmenbild</label>
-
-    <input
-      type="file"
-      id="editBusinessImage"
-      accept="image/*"
-    >
+    <input type="file" id="editBusinessImage" accept="image/*">
 
     <label class="checkbox-line">
-
-      <input
-        type="checkbox"
-        id="editBusinessHasDelivery"
-      >
-
+      <input type="checkbox" id="editBusinessHasDelivery">
       Hat Lieferung
-
     </label>
 
     <label>Firmeninhaber</label>
-
-    <select id="editBusinessOwner">
-      <option value="">
-        Kein Inhaber
-      </option>
+    <select id="editOwnerSelect">
+      <option value="">Kein Inhaber</option>
     </select>
 
     <div class="owner-button-row">
@@ -218,19 +137,21 @@
         Speichern
       </button>
 
-      <button
-        class="owner-gray-btn"
-        onclick="closeEditModal()"
-      >
+      <button class="danger-btn" onclick="deleteBusiness()">
+        Firma l&ouml;schen
+      </button>
+
+      <button class="owner-gray-btn" onclick="closeEditModal()">
         Abbrechen
       </button>
 
     </div>
 
   </div>
+
 </div>
 
-<script src="./v2-superadmin.js?v=71"></script>
+<script src="./v2-superadmin.js?v=200"></script>
 
 <script>
 checkSuperadmin();
