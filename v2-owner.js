@@ -5,10 +5,7 @@ const SUPABASE_KEY =
 "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
 
 const supabaseClient =
-supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let currentBusiness = null;
@@ -89,24 +86,13 @@ async function loadBusiness(businessId){
   currentBusiness = business;
 
   document.getElementById("ownerContent").classList.remove("hidden");
+  document.getElementById("businessTitle").innerText = business.name;
+  document.getElementById("businessSelect").value = business.id;
 
-  document.getElementById("businessTitle").innerText =
-  business.name;
-
-  document.getElementById("businessSelect").value =
-  business.id;
-
-  document.getElementById("businessPlz").value =
-  business.plz || "";
-
-  document.getElementById("businessDescription").value =
-  business.description || "";
-
-  document.getElementById("businessWebsite").value =
-  business.website || "";
-
-  document.getElementById("businessDiscord").value =
-  business.discord || "";
+  document.getElementById("businessPlz").value = business.plz || "";
+  document.getElementById("businessDescription").value = business.description || "";
+  document.getElementById("businessWebsite").value = business.website || "";
+  document.getElementById("businessDiscord").value = business.discord || "";
 
   document.getElementById("applicationsEnabled").checked =
   business.applications_enabled === true;
@@ -175,7 +161,6 @@ async function setOpen(state){
   }
 
   Object.assign(currentBusiness, updateData);
-
   updateStatus();
 }
 
@@ -196,7 +181,6 @@ async function setDelivery(state){
   }
 
   currentBusiness.delivery = state;
-
   updateStatus();
 }
 
@@ -222,7 +206,6 @@ async function saveBusinessData(){
   }
 
   Object.assign(currentBusiness, updateData);
-
   alert("Gespeichert");
 }
 
@@ -247,7 +230,6 @@ async function saveApplicationSettings(){
   }
 
   Object.assign(currentBusiness, updateData);
-
   alert("Gespeichert");
 }
 
@@ -285,24 +267,13 @@ async function loadEmployees(){
     div.className = "business-item";
 
     div.innerHTML = `
-      <strong>
-        ${escapeHtml(profile ? profile.display_name : "Unbekannt")}
-      </strong>
+      <strong>${escapeHtml(profile ? profile.display_name : "Unbekannt")}</strong>
 
-      <p>
-        Login:
-        ${escapeHtml(profile ? profile.login_name : "-")}
-      </p>
+      <p>Login: ${escapeHtml(profile ? profile.login_name : "-")}</p>
 
-      <p>
-        Rolle:
-        ${escapeHtml(member.member_role)}
-      </p>
+      <p>Rolle: ${escapeHtml(member.member_role)}</p>
 
-      <button
-        class="danger-btn"
-        onclick="removeEmployee(${member.id})"
-      >
+      <button class="danger-btn" onclick="removeEmployee(${member.id})">
         Mitarbeiter entfernen
       </button>
     `;
@@ -330,7 +301,6 @@ async function removeEmployee(memberId){
   }
 
   alert("Mitarbeiter entfernt");
-
   await loadEmployees();
 }
 
@@ -367,14 +337,8 @@ async function loadAvailableUsers(){
     const option =
     document.createElement("option");
 
-    option.value =
-    profile.user_id;
-
-    option.innerText =
-    profile.display_name +
-    " (" +
-    profile.login_name +
-    ")";
+    option.value = profile.user_id;
+    option.innerText = profile.display_name + " (" + profile.login_name + ")";
 
     select.appendChild(option);
   });
@@ -383,12 +347,10 @@ async function loadAvailableUsers(){
 async function addEmployee(){
 
   const userId =
-  document.getElementById("employeeUserSelect")
-  .value;
+  document.getElementById("employeeUserSelect").value;
 
   const role =
-  document.getElementById("employeeRole")
-  .value;
+  document.getElementById("employeeRole").value;
 
   if(!userId){
     alert("Bitte User auswählen");
@@ -450,7 +412,7 @@ async function loadQuestions(){
   document.getElementById("questionList");
 
   list.innerHTML = "";
-}
+
   const { data, error } =
   await supabaseClient
   .from("application_questions")
@@ -476,14 +438,9 @@ async function loadQuestions(){
     div.className = "question-box";
 
     div.innerHTML = `
-      <label>
-        ${escapeHtml(question.question_text)}
-      </label>
+      <label>${escapeHtml(question.question_text)}</label>
 
-      <button
-        class="danger-btn"
-        onclick="deleteQuestion(${question.id})"
-      >
+      <button class="danger-btn" onclick="deleteQuestion(${question.id})">
         L&ouml;schen
       </button>
     `;
@@ -589,6 +546,12 @@ async function loadApplications(){
     const applicantProfile =
     await getProfileByUserId(application.user_id);
 
+    const answers =
+    await loadApplicationAnswers(application.id);
+
+    const messages =
+    await loadApplicationMessages(application.id);
+
     const created =
     application.created_at
     ? new Date(application.created_at).toLocaleString("de-DE")
@@ -604,20 +567,12 @@ async function loadApplications(){
 
         <div>
           <strong>
-            ${escapeHtml(
-              applicantProfile
-              ? applicantProfile.display_name
-              : "Unbekannter Bewerber"
-            )}
+            ${escapeHtml(applicantProfile ? applicantProfile.display_name : "Unbekannter Bewerber")}
           </strong>
 
           <p>
             Login:
-            ${escapeHtml(
-              applicantProfile
-              ? applicantProfile.login_name
-              : "-"
-            )}
+            ${escapeHtml(applicantProfile ? applicantProfile.login_name : "-")}
           </p>
 
           <p>
@@ -626,59 +581,54 @@ async function loadApplications(){
           </p>
         </div>
 
-        <span class="
-          application-status
-          status-${escapeHtml(application.status)}
-        ">
+        <span class="application-status status-${escapeHtml(application.status)}">
           ${formatStatus(application.status)}
         </span>
 
       </div>
 
       <div class="application-message">
+        <strong>Zus&auml;tzliche Nachricht:</strong>
+        <p>${escapeHtml(application.message || "-")}</p>
+      </div>
 
-        <strong>
-          Zus&auml;tzliche Nachricht:
-        </strong>
+      <div class="application-answers">
+        <strong>Antworten:</strong>
 
-        <p>
-          ${escapeHtml(application.message || "-")}
-        </p>
+        ${
+          answers.length > 0
+          ? answers.map(answer => `
+              <div class="answer-box">
+                <p class="answer-question">
+                  ${escapeHtml(answer.question_text || "Frage")}
+                </p>
 
+                <p>
+                  ${escapeHtml(answer.answer_text || "-")}
+                </p>
+              </div>
+            `).join("")
+          : "<p class='muted'>Keine Antworten vorhanden.</p>"
+        }
+      </div>
+
+      <div class="application-thread">
+        <strong>Nachrichtenverlauf:</strong>
+
+        ${
+          messages.length > 0
+          ? messages.map(message => renderOwnerMessage(message)).join("")
+          : "<p class='muted'>Noch keine Nachrichten im Verlauf.</p>"
+        }
       </div>
 
       <div class="application-actions">
 
         <select id="status-${application.id}">
-
-          <option
-            value="offen"
-            ${application.status === "offen" ? "selected" : ""}
-          >
-            Offen
-          </option>
-
-          <option
-            value="in_bearbeitung"
-            ${application.status === "in_bearbeitung" ? "selected" : ""}
-          >
-            In Bearbeitung
-          </option>
-
-          <option
-            value="angenommen"
-            ${application.status === "angenommen" ? "selected" : ""}
-          >
-            Angenommen
-          </option>
-
-          <option
-            value="abgelehnt"
-            ${application.status === "abgelehnt" ? "selected" : ""}
-          >
-            Abgelehnt
-          </option>
-
+          <option value="offen" ${application.status === "offen" ? "selected" : ""}>Offen</option>
+          <option value="in_bearbeitung" ${application.status === "in_bearbeitung" ? "selected" : ""}>In Bearbeitung</option>
+          <option value="angenommen" ${application.status === "angenommen" ? "selected" : ""}>Angenommen</option>
+          <option value="abgelehnt" ${application.status === "abgelehnt" ? "selected" : ""}>Abgelehnt</option>
         </select>
 
         <textarea
@@ -686,22 +636,15 @@ async function loadApplications(){
           placeholder="Antwort schreiben..."
         ></textarea>
 
-        <button
-          onclick="sendOwnerMessage(${application.id})"
-        >
+        <button onclick="sendOwnerMessage(${application.id})">
           Nachricht senden
         </button>
 
-        <button
-          onclick="saveApplicationStatus(${application.id})"
-        >
+        <button onclick="saveApplicationStatus(${application.id})">
           Status speichern
         </button>
 
-        <button
-          class="danger-btn"
-          onclick="deleteApplication(${application.id})"
-        >
+        <button class="danger-btn" onclick="deleteApplication(${application.id})">
           Bewerbung l&ouml;schen
         </button>
 
@@ -712,12 +655,90 @@ async function loadApplications(){
   }
 }
 
+async function loadApplicationAnswers(applicationId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("application_answers")
+  .select("*")
+  .eq("application_id", applicationId);
+
+  if(error){
+    console.error(error);
+    return [];
+  }
+
+  const result = [];
+
+  for(const answer of data || []){
+
+    const { data: question } =
+    await supabaseClient
+    .from("application_questions")
+    .select("*")
+    .eq("id", answer.question_id)
+    .maybeSingle();
+
+    result.push({
+      question_text: question ? question.question_text : "Frage",
+      answer_text: answer.answer_text || ""
+    });
+  }
+
+  return result;
+}
+
+async function loadApplicationMessages(applicationId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("application_messages")
+  .select("*")
+  .eq("application_id", applicationId)
+  .order("created_at", {
+    ascending: true
+  });
+
+  if(error){
+    console.error(error);
+    return [];
+  }
+
+  return data || [];
+}
+
+function renderOwnerMessage(message){
+
+  const created =
+  message.created_at
+  ? new Date(message.created_at).toLocaleString("de-DE")
+  : "-";
+
+  const isMine =
+  currentUser &&
+  message.sender_user_id === currentUser.id;
+
+  return `
+    <div class="thread-message ${isMine ? "thread-own" : "thread-other"}">
+
+      <div class="thread-meta">
+        ${isMine ? "Du" : "Bewerber"}
+        &middot;
+        ${escapeHtml(created)}
+      </div>
+
+      <div class="thread-text">
+        ${escapeHtml(message.message_text)}
+      </div>
+
+    </div>
+  `;
+}
+
 async function sendOwnerMessage(applicationId){
 
   const field =
-  document.getElementById(
-    "reply-" + applicationId
-  );
+  document.getElementById("reply-" + applicationId);
 
   const messageText =
   field.value.trim();
@@ -750,9 +771,7 @@ async function sendOwnerMessage(applicationId){
 async function saveApplicationStatus(applicationId){
 
   const status =
-  document.getElementById(
-    "status-" + applicationId
-  ).value;
+  document.getElementById("status-" + applicationId).value;
 
   const { error } =
   await supabaseClient
