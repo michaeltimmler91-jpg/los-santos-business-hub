@@ -11,6 +11,7 @@ supabase.createClient(
 );
 
 let businessesCache = [];
+let profilesCache = [];
 
 async function checkSuperadmin(){
 
@@ -52,7 +53,52 @@ async function checkSuperadmin(){
     return;
   }
 
-  loadBusinesses();
+  await loadProfiles();
+
+  await loadBusinesses();
+}
+
+async function loadProfiles(){
+
+  const { data, error } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .order("display_name");
+
+  if(error){
+
+    console.error(error);
+
+    return;
+  }
+
+  profilesCache =
+  data || [];
+
+  fillUserSelect();
+}
+
+function fillUserSelect(){
+
+  const select =
+  document.getElementById("ownerUserSelect");
+
+  select.innerHTML = "";
+
+  profilesCache.forEach(profile => {
+
+    const option =
+    document.createElement("option");
+
+    option.value =
+    profile.user_id;
+
+    option.innerText =
+    profile.display_name + " (" + profile.login_name + ")";
+
+    select.appendChild(option);
+  });
 }
 
 async function createBusiness(){
@@ -253,31 +299,13 @@ async function assignOwner(){
   document.getElementById("ownerBusinessSelect")
   .value;
 
-  const loginName =
-  document.getElementById("ownerLoginName")
-  .value
-  .trim()
-  .toLowerCase();
+  const userId =
+  document.getElementById("ownerUserSelect")
+  .value;
 
-  if(!businessId || !loginName){
+  if(!businessId || !userId){
 
-    alert("Bitte Firma und Loginname angeben");
-
-    return;
-  }
-
-  const { data: profile, error: profileError } =
-  await supabaseClient
-  .from("profiles")
-  .select("*")
-  .eq("login_name", loginName)
-  .single();
-
-  if(profileError || !profile){
-
-    alert("User nicht gefunden");
-
-    console.error(profileError);
+    alert("Bitte Firma und User ausw\u00e4hlen");
 
     return;
   }
@@ -287,7 +315,7 @@ async function assignOwner(){
   .from("business_members")
   .insert({
     business_id:Number(businessId),
-    user_id:profile.user_id,
+    user_id:userId,
     member_role:"inhaber"
   });
 
@@ -301,8 +329,6 @@ async function assignOwner(){
   }
 
   alert("Inhaber wurde zugewiesen");
-
-  document.getElementById("ownerLoginName").value = "";
 
   loadBusinesses();
 }
