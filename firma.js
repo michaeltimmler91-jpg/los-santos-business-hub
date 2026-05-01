@@ -18,7 +18,7 @@ params.get("id");
 
 let activeBusiness = null;
 
-let selectedRating = 5;
+let selectedRating = 0;
 
 document.addEventListener(
 "DOMContentLoaded",
@@ -378,6 +378,15 @@ async function sendComment(){
     .value
     .trim();
 
+    if(selectedRating < 1){
+
+        alert(
+        "Bitte mindestens 1 Stern ausw&auml;hlen"
+        );
+
+        return;
+    }
+
     if(!author || !message){
 
         alert(
@@ -416,7 +425,7 @@ async function sendComment(){
     document.getElementById("commentMessage")
     .value = "";
 
-    selectedRating = 5;
+    selectedRating = 0;
 
     updateStars(selectedRating);
 
