@@ -13,6 +13,7 @@ supabase.createClient(
 let businessesCache = [];
 let profilesCache = [];
 let currentEditBusiness = null;
+let currentEditMembers = [];
 
 async function checkSuperadmin(){
 
@@ -331,7 +332,7 @@ async function loadBusinessMembers(businessId){
   return data || [];
 }
 
-function openEditModal(businessId){
+async function openEditModal(businessId){
 
   const business =
   businessesCache.find(item =>
@@ -348,6 +349,14 @@ function openEditModal(businessId){
   currentEditBusiness =
   business;
 
+  currentEditMembers =
+  await loadBusinessMembers(business.id);
+
+  const currentOwner =
+  currentEditMembers.find(member =>
+    member.member_role === "inhaber"
+  );
+
   document.getElementById("editBusinessId").value =
   business.id;
 
@@ -363,7 +372,9 @@ function openEditModal(businessId){
   document.getElementById("editBusinessPlz").value =
   business.plz || "";
 
-  fillEditOwnerSelect();
+  fillEditOwnerSelect(
+    currentOwner ? currentOwner.user_id : ""
+  );
 
   document
   .getElementById("editModal")
@@ -371,7 +382,7 @@ function openEditModal(businessId){
   .remove("hidden");
 }
 
-function fillEditOwnerSelect(){
+function fillEditOwnerSelect(selectedUserId){
 
   const select =
   document.getElementById("editOwnerSelect");
@@ -390,6 +401,11 @@ function fillEditOwnerSelect(){
     option.innerText =
     profile.display_name + " (" + profile.login_name + ")";
 
+    if(profile.user_id === selectedUserId){
+
+      option.selected = true;
+    }
+
     select.appendChild(option);
   });
 }
@@ -398,6 +414,9 @@ function closeEditModal(){
 
   currentEditBusiness =
   null;
+
+  currentEditMembers =
+  [];
 
   document.getElementById("editBusinessImage").value = "";
 
@@ -483,7 +502,12 @@ async function saveBusinessEdit(){
     return;
   }
 
+  const ownerChanged =
   await changeOwner(id, ownerUserId);
+
+  if(!ownerChanged){
+    return;
+  }
 
   alert("Firma gespeichert");
 
@@ -494,6 +518,18 @@ async function saveBusinessEdit(){
 
 async function changeOwner(businessId, ownerUserId){
 
+  const currentOwner =
+  currentEditMembers.find(member =>
+    member.member_role === "inhaber"
+  );
+
+  if(
+    currentOwner &&
+    currentOwner.user_id === ownerUserId
+  ){
+    return true;
+  }
+
   const { error: deleteError } =
   await supabaseClient
   .from("business_members")
@@ -503,13 +539,45 @@ async function changeOwner(businessId, ownerUserId){
 
   if(deleteError){
 
+    alert("Alter Inhaber konnte nicht entfernt werden");
+
     console.error(deleteError);
 
-    return;
+    return false;
   }
 
   if(!ownerUserId){
-    return;
+    return true;
+  }
+
+  const { data: existingMember } =
+  await supabaseClient
+  .from("business_members")
+  .select("*")
+  .eq("business_id", businessId)
+  .eq("user_id", ownerUserId)
+  .maybeSingle();
+
+  if(existingMember){
+
+    const { error: updateError } =
+    await supabaseClient
+    .from("business_members")
+    .update({
+      member_role:"inhaber"
+    })
+    .eq("id", existingMember.id);
+
+    if(updateError){
+
+      alert("Inhaber konnte nicht ge\u00e4ndert werden");
+
+      console.error(updateError);
+
+      return false;
+    }
+
+    return true;
   }
 
   const { error } =
@@ -523,10 +591,14 @@ async function changeOwner(businessId, ownerUserId){
 
   if(error){
 
-    alert("Inhaber konnte nicht ge\u00e4ndert werden");
+    alert("Inhaber konnte nicht gespeichert werden");
 
     console.error(error);
+
+    return false;
   }
+
+  return true;
 }
 
 async function deleteBusiness(){
@@ -538,7 +610,8 @@ async function deleteBusiness(){
     return;
   }
 
-  if(!confirm("Firma wirklich l\u00f6schen? Alle Mitarbeiter-Zuweisungen und Bewerbungen k\u00f6nnen dadurch betroffen sein.")){
+  if(!confirm("Firma wirklich l\u00f6schen?")){
+
     return;
   }
 
