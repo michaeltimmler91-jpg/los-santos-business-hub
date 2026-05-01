@@ -85,43 +85,57 @@ async function registerUser(){
 
 async function loginUser(){
 
-  const email =
-  document.getElementById("loginEmail")
+  const loginName =
+  document
+  .getElementById("loginLoginname")
   .value
-  .trim();
+  .trim()
+  .toLowerCase();
 
   const password =
-  document.getElementById("loginPassword")
-  .value
-  .trim();
+  document
+  .getElementById("loginPassword")
+  .value;
 
-  if(!email || !password){
+  if(!loginName || !password){
 
-    alert("Bitte E-Mail und Passwort eingeben");
+    alert("Bitte alles ausfüllen");
 
     return;
   }
 
-  const { data, error } =
+  const { data: profile, error: profileError } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("login_name", loginName)
+  .maybeSingle();
+
+  if(profileError || !profile){
+
+    alert("Loginname nicht gefunden");
+
+    return;
+  }
+
+  const { error } =
   await supabaseClient.auth.signInWithPassword({
-    email: email,
+    email: profile.email,
     password: password
   });
 
   if(error){
 
-    alert(error.message);
+    alert("Falsches Passwort");
 
     console.error(error);
 
     return;
   }
 
-  if(data.user){
-
-    window.location.href =
-    "v2-dashboard.html";
-  }
+  window.location.href =
+  "v2-dashboard.html";
+}
 }
 
 async function checkDashboard(){
