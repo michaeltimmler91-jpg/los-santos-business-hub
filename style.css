@@ -426,4 +426,38 @@ font-size:34px;
 height:260px;
 }
 
+.image-link{
+position:relative;
+display:block;
+}
+
+.card-rating-badge{
+position:absolute;
+top:10px;
+left:50%;
+transform:translateX(-50%);
+background:#0d8dff;
+color:white;
+padding:6px 14px;
+border-radius:0 0 14px 14px;
+font-size:22px;
+font-weight:bold;
+letter-spacing:2px;
+box-shadow:0 4px 14px rgba(0,0,0,0.35);
+z-index:5;
+white-space:nowrap;
+}
+
+.card-rating-badge span{
+font-size:13px;
+margin-left:8px;
+letter-spacing:0;
+vertical-align:middle;
+}
+
+.card-rating-badge.empty-rating{
+background:rgba(20,20,35,0.85);
+color:#777;
+}
+
 }
