@@ -451,3 +451,414 @@ async function loadQuestions(){
 
   list.innerHTML = "";
 }
+  const { data, error } =
+  await supabaseClient
+  .from("application_questions")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .order("sort_order");
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  if(!data || data.length === 0){
+    list.innerHTML = "<p class='muted'>Noch keine Bewerbungsfragen.</p>";
+    return;
+  }
+
+  data.forEach(question => {
+
+    const div =
+    document.createElement("div");
+
+    div.className = "question-box";
+
+    div.innerHTML = `
+      <label>
+        ${escapeHtml(question.question_text)}
+      </label>
+
+      <button
+        class="danger-btn"
+        onclick="deleteQuestion(${question.id})"
+      >
+        L&ouml;schen
+      </button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+async function addQuestion(){
+
+  const questionText =
+  document.getElementById("questionText")
+  .value
+  .trim();
+
+  if(!questionText){
+    alert("Frage fehlt");
+    return;
+  }
+
+  const { data: existingQuestions } =
+  await supabaseClient
+  .from("application_questions")
+  .select("*")
+  .eq("business_id", currentBusiness.id);
+
+  const nextOrder =
+  existingQuestions ? existingQuestions.length + 1 : 1;
+
+  const { error } =
+  await supabaseClient
+  .from("application_questions")
+  .insert({
+    business_id: currentBusiness.id,
+    question_text: questionText,
+    required: true,
+    sort_order: nextOrder
+  });
+
+  if(error){
+    alert("Frage konnte nicht gespeichert werden");
+    console.error(error);
+    return;
+  }
+
+  document.getElementById("questionText").value = "";
+
+  await loadQuestions();
+}
+
+async function deleteQuestion(questionId){
+
+  if(!confirm("Frage wirklich löschen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("application_questions")
+  .delete()
+  .eq("id", questionId);
+
+  if(error){
+    alert("Frage konnte nicht gelöscht werden");
+    console.error(error);
+    return;
+  }
+
+  await loadQuestions();
+}
+
+async function loadApplications(){
+
+  const list =
+  document.getElementById("applicationList");
+
+  list.innerHTML = "";
+
+  const { data, error } =
+  await supabaseClient
+  .from("applications")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .order("created_at", {
+    ascending: false
+  });
+
+  if(error){
+    console.error(error);
+    list.innerHTML =
+    "<p class='muted'>Bewerbungen konnten nicht geladen werden.</p>";
+    return;
+  }
+
+  if(!data || data.length === 0){
+    list.innerHTML =
+    "<p class='muted'>Keine Bewerbungen vorhanden.</p>";
+    return;
+  }
+
+  for(const application of data){
+
+    const applicantProfile =
+    await getProfileByUserId(application.user_id);
+
+    const created =
+    application.created_at
+    ? new Date(application.created_at).toLocaleString("de-DE")
+    : "-";
+
+    const div =
+    document.createElement("div");
+
+    div.className = "application-card";
+
+    div.innerHTML = `
+      <div class="application-head">
+
+        <div>
+          <strong>
+            ${escapeHtml(
+              applicantProfile
+              ? applicantProfile.display_name
+              : "Unbekannter Bewerber"
+            )}
+          </strong>
+
+          <p>
+            Login:
+            ${escapeHtml(
+              applicantProfile
+              ? applicantProfile.login_name
+              : "-"
+            )}
+          </p>
+
+          <p>
+            Eingegangen:
+            ${escapeHtml(created)}
+          </p>
+        </div>
+
+        <span class="
+          application-status
+          status-${escapeHtml(application.status)}
+        ">
+          ${formatStatus(application.status)}
+        </span>
+
+      </div>
+
+      <div class="application-message">
+
+        <strong>
+          Zus&auml;tzliche Nachricht:
+        </strong>
+
+        <p>
+          ${escapeHtml(application.message || "-")}
+        </p>
+
+      </div>
+
+      <div class="application-actions">
+
+        <select id="status-${application.id}">
+
+          <option
+            value="offen"
+            ${application.status === "offen" ? "selected" : ""}
+          >
+            Offen
+          </option>
+
+          <option
+            value="in_bearbeitung"
+            ${application.status === "in_bearbeitung" ? "selected" : ""}
+          >
+            In Bearbeitung
+          </option>
+
+          <option
+            value="angenommen"
+            ${application.status === "angenommen" ? "selected" : ""}
+          >
+            Angenommen
+          </option>
+
+          <option
+            value="abgelehnt"
+            ${application.status === "abgelehnt" ? "selected" : ""}
+          >
+            Abgelehnt
+          </option>
+
+        </select>
+
+        <textarea
+          id="reply-${application.id}"
+          placeholder="Antwort schreiben..."
+        ></textarea>
+
+        <button
+          onclick="sendOwnerMessage(${application.id})"
+        >
+          Nachricht senden
+        </button>
+
+        <button
+          onclick="saveApplicationStatus(${application.id})"
+        >
+          Status speichern
+        </button>
+
+        <button
+          class="danger-btn"
+          onclick="deleteApplication(${application.id})"
+        >
+          Bewerbung l&ouml;schen
+        </button>
+
+      </div>
+    `;
+
+    list.appendChild(div);
+  }
+}
+
+async function sendOwnerMessage(applicationId){
+
+  const field =
+  document.getElementById(
+    "reply-" + applicationId
+  );
+
+  const messageText =
+  field.value.trim();
+
+  if(!messageText){
+    alert("Bitte Nachricht eingeben");
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("application_messages")
+  .insert({
+    application_id: applicationId,
+    sender_user_id: currentUser.id,
+    message_text: messageText
+  });
+
+  if(error){
+    alert("Nachricht konnte nicht gesendet werden");
+    console.error(error);
+    return;
+  }
+
+  field.value = "";
+
+  await loadApplications();
+}
+
+async function saveApplicationStatus(applicationId){
+
+  const status =
+  document.getElementById(
+    "status-" + applicationId
+  ).value;
+
+  const { error } =
+  await supabaseClient
+  .from("applications")
+  .update({
+    status: status,
+    updated_at: new Date().toISOString()
+  })
+  .eq("id", applicationId);
+
+  if(error){
+    alert("Status konnte nicht gespeichert werden");
+    console.error(error);
+    return;
+  }
+
+  alert("Status gespeichert");
+
+  await loadApplications();
+}
+
+async function deleteApplication(applicationId){
+
+  if(!confirm("Bewerbung wirklich löschen?")){
+    return;
+  }
+
+  await supabaseClient
+  .from("application_messages")
+  .delete()
+  .eq("application_id", applicationId);
+
+  await supabaseClient
+  .from("application_answers")
+  .delete()
+  .eq("application_id", applicationId);
+
+  const { error } =
+  await supabaseClient
+  .from("applications")
+  .delete()
+  .eq("id", applicationId);
+
+  if(error){
+    alert("Bewerbung konnte nicht gelöscht werden");
+    console.error(error);
+    return;
+  }
+
+  alert("Bewerbung gelöscht");
+
+  await loadApplications();
+}
+
+async function getProfileByUserId(userId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("user_id", userId)
+  .maybeSingle();
+
+  if(error){
+    console.error(error);
+    return null;
+  }
+
+  return data;
+}
+
+function formatStatus(status){
+
+  switch(status){
+
+    case "offen":
+      return "Offen";
+
+    case "in_bearbeitung":
+      return "In Bearbeitung";
+
+    case "angenommen":
+      return "Angenommen";
+
+    case "abgelehnt":
+      return "Abgelehnt";
+
+    default:
+      return status || "Offen";
+  }
+}
+
+async function logoutUser(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+  "v2-login.html";
+}
+
+function escapeHtml(text){
+
+  return String(text || "")
+  .replaceAll("&", "&amp;")
+  .replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;")
+  .replaceAll("'", "&#039;");
+}
