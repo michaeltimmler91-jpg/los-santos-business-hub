@@ -189,7 +189,7 @@ function renderStars(rating){
 
   const safeRating = Math.max(0, Math.min(5, Number(rating || 0)));
 
-  return "?".repeat(safeRating);
+  return "&#9733;".repeat(safeRating);
 }
 
 function escapeHtml(text){

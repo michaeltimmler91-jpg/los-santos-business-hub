@@ -402,7 +402,7 @@ function renderStars(rating){
             )
         );
 
-    return "?".repeat(safeRating);
+    return "&#9733;".repeat(safeRating);
 
 }
 
