@@ -372,11 +372,23 @@ async function openRoleModal(userId){
 
     if(remove){
 
-      await supabaseClient
-      .from("user_roles")
-      .delete()
-      .eq("id", existing.id);
-    }
+  const { error } =
+  await supabaseClient
+  .from("user_roles")
+  .delete()
+  .eq("id", existing.id);
+
+  if(error){
+
+    alert("Rolle konnte nicht entfernt werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  alert("Rolle entfernt");
+}
 
   }else{
 
