@@ -97,6 +97,38 @@
       </div>
 
     </section>
+    
+    <section class="owner-card owner-wide-card">
+
+  <h2>Schwarzes Brett</h2>
+
+  <div id="boardOwnerControls" class="owner-only">
+
+    <input
+      type="text"
+      id="boardTitle"
+      placeholder="Titel"
+    >
+
+    <textarea
+      id="boardContent"
+      placeholder="Beitrag schreiben..."
+    ></textarea>
+
+    <label class="checkbox-line">
+      <input type="checkbox" id="boardPinned">
+      Beitrag anheften
+    </label>
+
+    <button onclick="createBoardPost()">
+      Beitrag erstellen
+    </button>
+
+  </div>
+
+  <div id="boardPosts"></div>
+
+</section>
 
     <section class="owner-card owner-only">
 
