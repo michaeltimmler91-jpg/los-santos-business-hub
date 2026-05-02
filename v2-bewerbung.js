@@ -55,11 +55,23 @@ async function loadApplicationPage(){
     return;
   }
 
-  document.getElementById("businessTitle").innerText =
-  "Bewerbung bei " + business.name;
+document.getElementById("businessTitle").innerText =
+"Bewerbung";
 
-  document.getElementById("applicationNote").innerText =
-  business.application_note || "";
+document.getElementById("businessName").innerText =
+business.name;
+
+document.getElementById("applicationNote").innerText =
+business.application_note || "";
+
+if(
+  business.logo_url &&
+  business.logo_url.trim() !== ""
+){
+
+  document.getElementById("businessLogo").src =
+  business.logo_url;
+}
 
   await loadQuestions();
 }
