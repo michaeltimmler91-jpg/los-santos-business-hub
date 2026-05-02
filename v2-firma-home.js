@@ -375,23 +375,23 @@ async function renderReviews(businessId){
         <select id="reviewRating">
 
           <option value="5">
-            ?????
+            &#9733;&#9733;&#9733;&#9733;&#9733;
           </option>
 
           <option value="4">
-            ?????
+            &#9733;&#9733;&#9733;&#9733;&#9734;
           </option>
 
           <option value="3">
-            ?????
+            &#9733;&#9733;&#9733;&#9734;&#9734;
           </option>
 
           <option value="2">
-            ?????
+            &#9733;&#9733;&#9734;&#9734;&#9734;
           </option>
 
           <option value="1">
-            ?????
+            &#9733;&#9734;&#9734;&#9734;&#9734;
           </option>
 
         </select>
@@ -577,11 +577,9 @@ function renderStars(rating){
 
   for(let i = 1; i <= 5; i++){
 
-    if(i <= rating){
-      stars += "?";
-    }else{
-      stars += "?";
-    }
+    stars += i <= rating
+    ? "&#9733;"
+    : "&#9734;";
   }
 
   return stars;
