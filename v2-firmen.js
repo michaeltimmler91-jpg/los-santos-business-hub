@@ -107,8 +107,8 @@ function renderStars(rating){
   for(let i = 1; i <= 5; i++){
 
     stars += i <= rating
-    ? "?"
-    : "?";
+	? "&#9733;"
+	: "&#9734;";
   }
 
   return stars;
@@ -142,7 +142,7 @@ function renderBusinesses(businesses){
     "hub-card";
 
     card.innerHTML = `
-    
+
       <a href="v2-firma-home.html?id=${business.id}" class="hub-image-link">
 
         ${
@@ -171,7 +171,7 @@ function renderBusinesses(businesses){
             `
             : `
               <span class="hub-rating-stars">
-                ${rating.stars}
+                <span>${rating.stars}</span>
               </span>
 
               <strong>
