@@ -53,41 +53,69 @@
 
 </div>
 
-      <div class="business-filter-bar">
-<div class="hub-live-stats">
+<div class="hub-top-grid">
 
-  <div class="hub-stat-card">
-    <strong id="openCount">0</strong>
-    <span>Ge&ouml;ffnet</span>
+  <div class="hub-live-stats">
+
+    <div class="hub-stat-card">
+      <strong id="openCount">0</strong>
+      <span>Ge&ouml;ffnet</span>
+    </div>
+
+    <div class="hub-stat-card">
+      <strong id="deliveryCount">0</strong>
+      <span>Lieferung aktiv</span>
+    </div>
+
+    <div class="hub-stat-card">
+      <strong id="reviewCount">0</strong>
+      <span>Bewertungen</span>
+    </div>
+
   </div>
 
-  <div class="hub-stat-card">
-    <strong id="deliveryCount">0</strong>
-    <span>Lieferung aktiv</span>
+  <div class="business-filter-bar">
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Unternehmen suchen..."
+      oninput="filterBusinesses()"
+    >
+
+    <select
+      id="categoryFilter"
+      onchange="filterBusinesses()"
+    >
+      <option value="">
+        Alle Kategorien
+      </option>
+
+      <option value="restaurant">
+        Restaurants
+      </option>
+
+      <option value="werkstatt">
+        Werkst&auml;tten
+      </option>
+
+      <option value="medizin">
+        Medizin
+      </option>
+
+      <option value="staat">
+        Staatlich
+      </option>
+
+      <option value="handel">
+        Handel
+      </option>
+
+    </select>
+
   </div>
 
-  <div class="hub-stat-card">
-    <strong id="reviewCount">0</strong>
-    <span>Bewertungen</span>
-  </div>
-
-</div>
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Unternehmen suchen..."
-          oninput="filterBusinesses()"
-        >
-
-        <select id="categoryFilter" onchange="filterBusinesses()">
-          <option value="">Alle Kategorien</option>
-          <option value="food">Essen &amp; Lieferung</option>
-          <option value="service">Unternehmen &amp; Service</option>
-          <option value="government">Beh&ouml;rden</option>
-          <option value="workshop">Werkstatt</option>
-        </select>
-
-      </div>
+</div>>
 
       <div id="businessList" class="hub-card-grid"></div>
 

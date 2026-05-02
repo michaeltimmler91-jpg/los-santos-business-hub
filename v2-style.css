@@ -1888,3 +1888,43 @@ font-size:16px;
 line-height:1.6;
 max-width:760px;
 }
+
+.hub-top-grid{
+display:flex;
+flex-direction:column;
+gap:22px;
+margin-bottom:34px;
+}
+
+.business-filter-bar{
+display:grid;
+grid-template-columns:1fr 280px;
+gap:20px;
+align-items:center;
+}
+
+.business-filter-bar input,
+.business-filter-bar select{
+height:74px;
+font-size:17px;
+border-radius:22px;
+padding:0 24px;
+background:#15152d;
+border:1px solid rgba(255,255,255,0.06);
+transition:0.2s;
+}
+
+.business-filter-bar input:focus,
+.business-filter-bar select:focus{
+border-color:#ff1493;
+box-shadow:
+0 0 20px rgba(255,20,147,0.25);
+}
+
+@media(max-width:900px){
+
+.business-filter-bar{
+grid-template-columns:1fr;
+}
+
+}
