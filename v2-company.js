@@ -120,14 +120,16 @@ async function loadBusiness(businessId){
   toggleDeliveryArea();
   toggleOwnerAreas();
 
-  if(isOwner()){
-    fillOwnerFields();
+ if(isOwner()){
+  fillOwnerFields();
 
-    await loadEmployees();
-    await loadAvailableUsers();
-    await loadQuestions();
-    await loadApplications();
-  }
+  await loadEmployees();
+  await loadAvailableUsers();
+  await loadQuestions();
+  await loadApplications();
+}
+
+await loadBoardPosts();
 }
 
 function isOwner(){
@@ -978,6 +980,211 @@ async function deleteApplication(applicationId){
   alert("Bewerbung gelöscht");
 
   await loadApplications();
+}
+
+async function loadBoardPosts(){
+
+  const list =
+  document.getElementById("boardPosts");
+
+  if(!list){
+    return;
+  }
+
+  list.innerHTML =
+  "<p class='muted'>Lade schwarzes Brett...</p>";
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_board_posts")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .order("pinned", {
+    ascending:false
+  })
+  .order("created_at", {
+    ascending:false
+  });
+
+  if(error){
+
+    console.error(error);
+
+    list.innerHTML =
+    "<p class='muted'>Schwarzes Brett konnte nicht geladen werden.</p>";
+
+    return;
+  }
+
+  if(!data || data.length === 0){
+
+    list.innerHTML =
+    "<p class='muted'>Noch keine Beitr&auml;ge vorhanden.</p>";
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  for(const post of data){
+
+    const author =
+    await getProfileByUserId(post.author_user_id);
+
+    const created =
+    post.created_at
+    ? new Date(post.created_at).toLocaleString("de-DE")
+    : "-";
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    post.pinned
+    ? "board-post board-post-pinned"
+    : "board-post";
+
+    div.innerHTML = `
+      <div class="board-post-head">
+
+        <div>
+
+          ${
+            post.pinned
+            ? `
+              <span class="board-pin">
+                Angeheftet
+              </span>
+            `
+            : ""
+          }
+
+          <h3>
+            ${escapeHtml(post.title)}
+          </h3>
+
+          <p>
+            Von
+            ${escapeHtml(author ? author.display_name : "Unbekannt")}
+            &middot;
+            ${escapeHtml(created)}
+          </p>
+
+        </div>
+
+        ${
+          isOwner()
+          ? `
+            <button
+              class="danger-btn"
+              onclick="deleteBoardPost(${post.id})"
+            >
+              L&ouml;schen
+            </button>
+          `
+          : ""
+        }
+
+      </div>
+
+      <div class="board-post-content">
+        ${escapeHtml(post.content)}
+      </div>
+    `;
+
+    list.appendChild(div);
+  }
+}
+
+async function createBoardPost(){
+
+  if(!isOwner()){
+
+    alert("Keine Berechtigung");
+
+    return;
+  }
+
+  const title =
+  document.getElementById("boardTitle")
+  .value
+  .trim();
+
+  const content =
+  document.getElementById("boardContent")
+  .value
+  .trim();
+
+  const pinned =
+  document.getElementById("boardPinned")
+  .checked;
+
+  if(!title || !content){
+
+    alert("Bitte Titel und Inhalt ausf&uuml;llen");
+
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_board_posts")
+  .insert({
+    business_id: currentBusiness.id,
+    author_user_id: currentUser.id,
+    title: title,
+    content: content,
+    pinned: pinned
+  });
+
+  if(error){
+
+    alert("Beitrag konnte nicht erstellt werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  document.getElementById("boardTitle").value = "";
+  document.getElementById("boardContent").value = "";
+  document.getElementById("boardPinned").checked = false;
+
+  await loadBoardPosts();
+
+  alert("Beitrag erstellt");
+}
+
+async function deleteBoardPost(postId){
+
+  if(!isOwner()){
+
+    alert("Keine Berechtigung");
+
+    return;
+  }
+
+  if(!confirm("Beitrag wirklich löschen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_board_posts")
+  .delete()
+  .eq("id", postId)
+  .eq("business_id", currentBusiness.id);
+
+  if(error){
+
+    alert("Beitrag konnte nicht gelöscht werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  await loadBoardPosts();
 }
 
 async function getProfileByUserId(userId){
