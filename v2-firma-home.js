@@ -186,7 +186,7 @@ async function loadFirma(){
         }
 
         <a href="v2-firmen.html">
-          Zurück zur Übersicht
+          Zur&uuml;ck zur &Uuml;bersicht
         </a>
 
       </div>
@@ -202,7 +202,7 @@ async function loadFirma(){
       <section class="firma-home-block firma-home-intro">
 
         <h2>
-          Über uns
+          &Uuml;ber uns
         </h2>
 
         <div class="firma-home-content">
@@ -299,7 +299,7 @@ function getBlockLabel(type){
       return "Hausordnung";
 
     case "event":
-      return "Ankündigung";
+      return "Ank&uuml;ndigung";
 
     case "image":
       return "Bild & Info";
