@@ -349,7 +349,7 @@ async function renderReviews(businessId){
         <div>
 
           <div class="review-average">
-            ? ${average.toFixed(1)} / 5
+            &#9733; ${average.toFixed(1)} / 5
           </div>
 
           <div class="review-count">
@@ -582,9 +582,7 @@ function renderStars(rating){
     : "&#9734;";
   }
 
- 	return stars.replaceAll("&", "&amp;")
-	.replaceAll("&amp;#9733;", "&#9733;")
-	.replaceAll("&amp;#9734;", "&#9734;");
+  return stars;
 }
 
 function formatText(text){
