@@ -432,8 +432,8 @@ async function renderReviews(businessId){
         <div class="review-item">
 
           <div class="review-stars">
-            ${renderStars(review.rating)}
-          </div>
+			  <span>${renderStars(review.rating)}</span>
+		  </div>
 
           <div class="review-author">
 
@@ -582,7 +582,9 @@ function renderStars(rating){
     : "&#9734;";
   }
 
-  return stars;
+ 	return stars.replaceAll("&", "&amp;")
+	.replaceAll("&amp;#9733;", "&#9733;")
+	.replaceAll("&amp;#9734;", "&#9734;");
 }
 
 function formatText(text){
