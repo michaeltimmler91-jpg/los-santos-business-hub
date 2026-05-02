@@ -1861,3 +1861,30 @@ grid-template-columns:1fr;
 }
 
 }
+
+.hub-section-intro{
+margin-bottom:22px;
+}
+
+.hub-kicker{
+display:inline-block;
+color:#ff1493;
+font-weight:900;
+font-size:13px;
+letter-spacing:1.2px;
+text-transform:uppercase;
+margin-bottom:8px;
+}
+
+.hub-section-intro h2{
+font-size:38px;
+line-height:1;
+margin-bottom:10px;
+}
+
+.hub-section-intro p{
+color:#bdbdd0;
+font-size:16px;
+line-height:1.6;
+max-width:760px;
+}
