@@ -239,18 +239,25 @@ function createUserCard(profile, roles){
         : ""
       }
 
-      ${
-        currentRoles.includes("superadmin")
-        ? `
-          <button
-            class="owner-gray-btn"
-            onclick="openRoleModal('${profile.user_id}')"
-          >
-            Rollen
-          </button>
-        `
-        : ""
-      }
+${
+  currentRoles.includes("superadmin")
+  ? `
+    <button
+      class="owner-gray-btn"
+      onclick="openRoleModal('${profile.user_id}')"
+    >
+      Rollen
+    </button>
+
+    <button
+      class="owner-gray-btn"
+      onclick="resetPassword('${profile.user_id}')"
+    >
+      Passwort reset
+    </button>
+  `
+  : ""
+}
 
     </div>
   `;
@@ -382,6 +389,77 @@ async function openRoleModal(userId){
   }
 
   await loadUsers();
+}
+
+async function resetPassword(userId){
+
+  const newPassword =
+  prompt(
+    "Neues Passwort eingeben:"
+  );
+
+  if(!newPassword){
+    return;
+  }
+
+  if(newPassword.length < 6){
+
+    alert(
+      "Passwort muss mindestens 6 Zeichen haben"
+    );
+
+    return;
+  }
+
+  const {
+    data: sessionData
+  } =
+  await supabaseClient.auth.getSession();
+
+  const accessToken =
+  sessionData?.session?.access_token;
+
+  if(!accessToken){
+
+    alert("Nicht eingeloggt");
+
+    return;
+  }
+
+  const response =
+  await fetch(
+    "https://eulfqqkxqxjgszqdffhy.functions.supabase.co/reset-user-password",
+    {
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + accessToken
+      },
+
+      body:JSON.stringify({
+        user_id:userId,
+        new_password:newPassword
+      })
+    }
+  );
+
+  const result =
+  await response.json();
+
+  if(!response.ok){
+
+    alert(
+      result.error ||
+      "Passwort konnte nicht geändert werden"
+    );
+
+    console.error(result);
+
+    return;
+  }
+
+  alert("Passwort wurde geändert");
 }
 
 async function logoutUser(){
