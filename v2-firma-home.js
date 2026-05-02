@@ -97,7 +97,7 @@ async function loadFirma(){
 
               ${
                 business.open
-                ? "Geöffnet"
+                ? "Ge&ouml;ffnet"
                 : "Geschlossen"
               }
 
