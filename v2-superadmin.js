@@ -537,6 +537,204 @@ async function deleteBusiness(){
   loadBusinesses();
 }
 
+async function loadAllReviews(){
+
+  const list =
+  document.getElementById("adminReviewsList");
+
+  if(!list){
+    return;
+  }
+
+  list.innerHTML =
+  "<p class='muted'>Lade Bewertungen...</p>";
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_reviews")
+  .select("*")
+  .order("created_at", {
+    ascending:false
+  });
+
+  if(error){
+
+    console.error(error);
+
+    list.innerHTML =
+    "<p class='muted'>Bewertungen konnten nicht geladen werden.</p>";
+
+    return;
+  }
+
+  if(!data || data.length === 0){
+
+    list.innerHTML =
+    "<p class='muted'>Keine Bewertungen vorhanden.</p>";
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  for(const review of data){
+
+    const business =
+    businessesCache.find(item =>
+      Number(item.id) === Number(review.business_id)
+    );
+
+    const profile =
+    getProfileByUserId(review.user_id);
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "review-item";
+
+    div.innerHTML = `
+      <div class="review-stars">
+        ${renderStars(review.rating)}
+      </div>
+
+      <div class="review-author">
+
+        ${escapeHtml(
+          profile
+          ? profile.display_name
+          : "Unbekannt"
+        )}
+
+      </div>
+
+      <p>
+        Firma:
+        <strong>
+          ${escapeHtml(
+            business
+            ? business.name
+            : "Unbekannt"
+          )}
+        </strong>
+      </p>
+
+      <div class="review-text">
+        ${escapeHtml(review.comment || "-")}
+      </div>
+
+      ${
+        review.company_reply
+        ? `
+          <div class="company-reply">
+
+            <strong>
+              Antwort vom Unternehmen
+            </strong>
+
+            <div>
+              ${escapeHtml(review.company_reply)}
+            </div>
+
+          </div>
+        `
+        : ""
+      }
+
+      <div class="owner-button-row">
+
+        <button
+          class="danger-btn"
+          onclick="deleteReview(${review.id})"
+        >
+          Bewertung löschen
+        </button>
+
+        ${
+          review.company_reply
+          ? `
+            <button
+              onclick="deleteReviewReplyAdmin(${review.id})"
+            >
+              Antwort löschen
+            </button>
+          `
+          : ""
+        }
+
+      </div>
+    `;
+
+    list.appendChild(div);
+  }
+}
+
+async function deleteReview(reviewId){
+
+  if(!confirm("Bewertung wirklich löschen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_reviews")
+  .delete()
+  .eq("id", reviewId);
+
+  if(error){
+
+    alert("Bewertung konnte nicht gelöscht werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  await loadAllReviews();
+}
+
+async function deleteReviewReplyAdmin(reviewId){
+
+  if(!confirm("Antwort wirklich löschen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_reviews")
+  .update({
+    company_reply:null,
+    company_reply_user_id:null,
+    company_reply_at:null
+  })
+  .eq("id", reviewId);
+
+  if(error){
+
+    alert("Antwort konnte nicht gelöscht werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  await loadAllReviews();
+}
+
+function renderStars(rating){
+
+  let stars = "";
+
+  for(let i = 1; i <= 5; i++){
+
+    stars += i <= rating
+    ? "?"
+    : "?";
+  }
+
+  return stars;
+}
+
 async function logoutUser(){
 
   await supabaseClient.auth.signOut();
