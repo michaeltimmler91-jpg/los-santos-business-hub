@@ -2063,3 +2063,24 @@ font-size:13px;
 .hub-rating-stars{
 font-size:14px;
 }
+
+.hub-mini-topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:18px;
+margin-bottom:32px;
+padding:18px 0;
+}
+
+.hub-mini-topbar strong{
+font-size:18px;
+color:#ff1493;
+letter-spacing:0.5px;
+}
+
+.hub-mini-topbar div{
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+}
