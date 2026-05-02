@@ -437,7 +437,7 @@ async function loadAvailableUsers(){
 
   select.innerHTML = `
     <option value="">
-      User auswählen
+      User ausw&auml;hlen
     </option>
   `;
 
@@ -485,7 +485,7 @@ async function addEmployee(){
   document.getElementById("employeeRole").value;
 
   if(!userId){
-    alert("Bitte User auswählen");
+    alert("Bitte User ausw&auml;hlen");
     return;
   }
 
