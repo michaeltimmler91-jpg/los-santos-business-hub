@@ -48,6 +48,7 @@ async function loadBusinesses(){
   await loadReviews();
 
   renderBusinesses(businessesCache);
+  updateLiveStats();
 }
 
 async function loadReviews(){
@@ -301,6 +302,30 @@ function filterBusinesses(){
 }
 
 async function logoutUser(){
+function updateLiveStats(){
+
+  const openBusinesses =
+  businessesCache.filter(item =>
+    item.open === true
+  ).length;
+
+  const deliveryBusinesses =
+  businessesCache.filter(item =>
+    item.delivery === true
+  ).length;
+
+  const reviewCount =
+  reviewsCache.length;
+
+  document.getElementById("openCount").innerText =
+  openBusinesses;
+
+  document.getElementById("deliveryCount").innerText =
+  deliveryBusinesses;
+
+  document.getElementById("reviewCount").innerText =
+  reviewCount;
+}
 
   await supabaseClient.auth.signOut();
 
