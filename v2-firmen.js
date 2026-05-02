@@ -72,7 +72,8 @@ function renderBusinesses(businesses){
     "hub-card";
 
     card.innerHTML = `
-      <a href="v2-firma.html?id=${business.id}" class="hub-image-link">
+     /* <a href="v2-firma.html?id=${business.id}" class="hub-image-link"> */
+     <a href="v2-firma-home.html?id=${business.id}" class="hub-image-link">
 
         ${
           business.image_url
@@ -94,9 +95,14 @@ function renderBusinesses(businesses){
 
       <div class="hub-card-content">
 
-        <h2>
+        /*<h2>
           ${escapeHtml(business.name)}
-        </h2>
+        </h2>*/
+        <h2>
+  		<a href="v2-firma-home.html?id=${business.id}">
+   		 ${escapeHtml(business.name)}
+  		</a>
+		</h2>
 
         <div class="hub-badges">
 
