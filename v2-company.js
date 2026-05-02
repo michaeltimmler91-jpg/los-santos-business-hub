@@ -127,6 +127,7 @@ async function loadBusiness(businessId){
   await loadAvailableUsers();
   await loadQuestions();
   await loadApplications();
+  await loadCompanyReviews();
 }
 
 await loadBoardPosts();
@@ -1185,6 +1186,78 @@ async function deleteBoardPost(postId){
   }
 
   await loadBoardPosts();
+}
+
+async function loadCompanyReviews(){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_reviews")
+  .update({
+    company_reply:reply,
+    company_reply_user_id:currentUser.id,
+    company_reply_at:new Date().toISOString()
+  })
+  .eq("id", reviewId)
+  .eq("business_id", currentBusiness.id);
+
+  if(error){
+
+    alert("Antwort konnte nicht gespeichert werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  alert("Antwort gespeichert");
+
+  await loadCompanyReviews();
+}
+
+async function deleteReviewReply(reviewId){
+
+  if(!confirm("Antwort wirklich löschen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_reviews")
+  .update({
+    company_reply:null,
+    company_reply_user_id:null,
+    company_reply_at:null
+  })
+  .eq("id", reviewId)
+  .eq("business_id", currentBusiness.id);
+
+  if(error){
+
+    alert("Antwort konnte nicht gelöscht werden");
+
+    console.error(error);
+
+    return;
+  }
+
+  await loadCompanyReviews();
+}
+
+function renderStars(rating){
+
+  let stars = "";
+
+  for(let i = 1; i <= 5; i++){
+
+    stars += i <= rating
+    ? "?"
+    : "?";
+  }
+
+  return stars;
 }
 
 async function getProfileByUserId(userId){
