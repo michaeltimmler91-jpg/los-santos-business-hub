@@ -65,12 +65,12 @@ document.getElementById("applicationNote").innerText =
 business.application_note || "";
 
 if(
-  business.logo_url &&
-  business.logo_url.trim() !== ""
+  business.image_url &&
+  business.image_url.trim() !== ""
 ){
 
   document.getElementById("businessLogo").src =
-  business.logo_url;
+  business.image_url;
 }
 
   await loadQuestions();
