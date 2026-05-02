@@ -14,7 +14,9 @@ const params =
 new URLSearchParams(window.location.search);
 
 const businessId =
-params.get("id");
+Number(params.get("id"));
+
+let currentBusiness = null;
 
 loadFirma();
 
