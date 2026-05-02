@@ -181,7 +181,7 @@ function fillOwnerFields(){
 function updateStatus(){
 
   document.getElementById("openStatus").innerText =
-  currentBusiness.open ? "Ge&ouml;ffnet" : "Geschlossen";
+  currentBusiness.open ? "Offen" : "Geschlossen";
 
   document.getElementById("deliveryStatus").innerText =
   currentBusiness.delivery ? "Aktiv" : "Inaktiv";
