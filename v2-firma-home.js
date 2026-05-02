@@ -26,12 +26,24 @@ async function loadFirma(){
   container.innerHTML =
   "Lade Firma...";
 
-  const { data: business } =
+ /* const { data: business } =
   await supabaseClient
   .from("businesses_v2")
   .select("*")
   .eq("id", businessId)
-  .single();
+  .single();*/
+  const {
+  data: business,
+  error: businessError
+} =
+await supabaseClient
+.from("businesses_v2")
+.select("*")
+.eq("id", businessId)
+.single();
+
+console.log(business);
+console.log(businessError);
 
   if(!business){
 
