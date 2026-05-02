@@ -3,36 +3,102 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Bewerbung</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=150">
+  <link rel="stylesheet" href="./v2-style.css?v=500">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <div class="auth-page">
 
-  <div class="admin-wrapper">
+  <div class="firmen-header">
 
-    <div class="admin-topbar">
-      <h1>Bewerbung</h1>
+    <div class="firmen-header-left">
 
-      <button onclick="goBack()">
-        Zur&uuml;ck
-      </button>
+      <div class="firma-logo-wrap">
+
+        <img
+          id="businessLogo"
+          src="./img/default-business.png"
+          alt="Logo"
+          class="firma-logo"
+        >
+
+      </div>
+
+      <div>
+
+        <h1 id="businessTitle">
+          Bewerbung
+        </h1>
+
+        <p class="firmen-subtitle">
+          Bewirb dich direkt &uuml;ber den Los Santos Business Hub
+        </p>
+
+      </div>
+
     </div>
 
-    <div class="admin-box">
+    <button
+      class="owner-gray-btn"
+      onclick="goBack()"
+    >
+      Zur&uuml;ck
+    </button>
 
-      <h2 id="businessTitle">L&auml;dt...</h2>
+  </div>
 
-      <p id="applicationNote" class="hint"></p>
+  <div class="bewerbung-layout">
 
-      <div id="questionsBox"></div>
+    <div class="bewerbung-card">
 
-      <textarea id="messageText" placeholder="Zus&auml;tzliche Nachricht"></textarea>
+      <div class="bewerbung-top">
 
-      <button onclick="sendApplication()">
+        <div>
+
+          <div class="bewerbung-badge">
+            Bewerbungssystem
+          </div>
+
+          <h2 id="businessName">
+            Firma wird geladen...
+          </h2>
+
+        </div>
+
+      </div>
+
+      <div
+        id="applicationNote"
+        class="bewerbung-note"
+      ></div>
+
+      <div
+        id="questionsBox"
+        class="bewerbung-questions"
+      ></div>
+
+      <div class="bewerbung-extra">
+
+        <label>
+          Zus&auml;tzliche Nachricht
+        </label>
+
+        <textarea
+          id="messageText"
+          placeholder="Optional kannst du hier noch etwas zus&auml;tzlich schreiben..."
+        ></textarea>
+
+      </div>
+
+      <button
+        class="bewerbung-send-btn"
+        onclick="sendApplication()"
+      >
         Bewerbung absenden
       </button>
 
@@ -42,7 +108,7 @@
 
 </div>
 
-<script src="./v2-bewerbung.js?v=1"></script>
+<script src="./v2-bewerbung.js?v=500"></script>
 
 <script>
 loadApplicationPage();
