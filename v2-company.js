@@ -181,7 +181,7 @@ function fillOwnerFields(){
 function updateStatus(){
 
   document.getElementById("openStatus").innerText =
-  currentBusiness.open ? "Geöffnet" : "Geschlossen";
+  currentBusiness.open ? "Ge&ouml;ffnet" : "Geschlossen";
 
   document.getElementById("deliveryStatus").innerText =
   currentBusiness.delivery ? "Aktiv" : "Inaktiv";
@@ -525,7 +525,7 @@ async function addEmployee(){
     });
 
     if(error){
-      alert("Mitarbeiter konnte nicht hinzugefügt werden");
+      alert("Mitarbeiter konnte nicht hinzugef&uuml;gt werden");
       console.error(error);
       return;
     }
@@ -635,7 +635,7 @@ async function deleteQuestion(questionId){
     return;
   }
 
-  if(!confirm("Frage wirklich löschen?")){
+  if(!confirm("Frage wirklich l&ouml;schen?")){
     return;
   }
 
@@ -646,7 +646,7 @@ async function deleteQuestion(questionId){
   .eq("id", questionId);
 
   if(error){
-    alert("Frage konnte nicht gelöscht werden");
+    alert("Frage konnte nicht gel&ouml;scht werden");
     console.error(error);
     return;
   }
@@ -952,7 +952,7 @@ async function deleteApplication(applicationId){
     return;
   }
 
-  if(!confirm("Bewerbung wirklich löschen?")){
+  if(!confirm("Bewerbung wirklich l&ouml;schen?")){
     return;
   }
 
@@ -973,12 +973,12 @@ async function deleteApplication(applicationId){
   .eq("id", applicationId);
 
   if(error){
-    alert("Bewerbung konnte nicht gelöscht werden");
+    alert("Bewerbung konnte nicht gel&ouml;scht werden");
     console.error(error);
     return;
   }
 
-  alert("Bewerbung gelöscht");
+  alert("Bewerbung gel&ouml;scht");
 
   await loadApplications();
 }
@@ -1155,7 +1155,7 @@ async function deleteBoardPost(postId){
     return;
   }
 
-  if(!confirm("Beitrag wirklich löschen?")){
+  if(!confirm("Beitrag wirklich l&ouml;schen?")){
     return;
   }
 
@@ -1167,7 +1167,7 @@ async function deleteBoardPost(postId){
   .eq("business_id", currentBusiness.id);
 
   if(error){
-    alert("Beitrag konnte nicht gelöscht werden");
+    alert("Beitrag konnte nicht gel&ouml;scht werden");
     console.error(error);
     return;
   }
@@ -1228,8 +1228,8 @@ async function loadCompanyReviews(){
 
     div.innerHTML = `
       <div class="review-stars">
-        ${renderStars(review.rating)}
-      </div>
+	  <span>${renderStars(review.rating)}</span>
+	  </div>
 
       <div class="review-author">
         ${escapeHtml(profile ? profile.display_name : "Unbekannt")}
@@ -1318,7 +1318,7 @@ async function deleteReviewReply(reviewId){
     return;
   }
 
-  if(!confirm("Antwort wirklich löschen?")){
+  if(!confirm("Antwort wirklich l&ouml;schen?")){
     return;
   }
 
@@ -1334,7 +1334,7 @@ async function deleteReviewReply(reviewId){
   .eq("business_id", currentBusiness.id);
 
   if(error){
-    alert("Antwort konnte nicht gelöscht werden");
+    alert("Antwort konnte nicht gel&ouml;scht werden");
     console.error(error);
     return;
   }
@@ -1347,7 +1347,10 @@ function renderStars(rating){
   let stars = "";
 
   for(let i = 1; i <= 5; i++){
-    stars += i <= rating ? "?" : "?";
+
+    stars += i <= rating
+    ? "&#9733;"
+    : "&#9734;";
   }
 
   return stars;
