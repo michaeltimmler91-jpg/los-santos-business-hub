@@ -103,14 +103,16 @@ console.log(businessError);
               }
             </span>
 
-            <span>
-              ?? Lieferung:
-              ${
-                business.delivery_enabled
-                ? "Ja"
-                : "Nein"
-              }
-            </span>
+            ${
+  business.has_delivery
+  ? `
+    <span>
+      ?? Lieferung:
+      ${business.delivery ? "Ja" : "Nein"}
+    </span>
+  `
+  : ""
+}
 
           </div>
 
