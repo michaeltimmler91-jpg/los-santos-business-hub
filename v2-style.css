@@ -1100,3 +1100,81 @@ font-size:16px;
     height:72px;
   }
 }
+
+.board-post{
+background:#0d0d1d;
+border:1px solid rgba(255,255,255,0.07);
+border-radius:22px;
+padding:20px;
+margin-top:18px;
+}
+
+.board-post-pinned{
+border-color:#ff1493;
+box-shadow:0 0 20px rgba(255,20,147,0.22);
+}
+
+.board-post-head{
+display:flex;
+justify-content:space-between;
+gap:18px;
+align-items:flex-start;
+margin-bottom:14px;
+}
+
+.board-post h3{
+font-size:24px;
+color:white;
+margin:8px 0;
+}
+
+.board-post p{
+color:#aaa;
+font-size:14px;
+}
+
+.board-post-content{
+white-space:pre-wrap;
+line-height:1.6;
+color:#ddd;
+font-size:16px;
+background:#151530;
+border-radius:16px;
+padding:16px;
+margin-top:14px;
+}
+
+.board-pin{
+display:inline-block;
+background:#ff1493;
+color:white;
+font-size:12px;
+font-weight:bold;
+padding:6px 12px;
+border-radius:999px;
+}
+
+#boardOwnerControls{
+background:#0d0d1d;
+border:1px solid rgba(255,255,255,0.07);
+border-radius:22px;
+padding:20px;
+margin-bottom:22px;
+}
+
+#boardPosts .muted{
+background:#0d0d1d;
+border-radius:18px;
+padding:18px;
+display:block;
+}
+
+.owner-card.owner-wide-card h2{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.owner-card.owner-wide-card h2::before{
+content:"??";
+}
