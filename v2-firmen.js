@@ -11,6 +11,7 @@ supabase.createClient(
 );
 
 let businessesCache = [];
+let reviewsCache = [];
 
 async function loadBusinesses(){
 
@@ -44,7 +45,73 @@ async function loadBusinesses(){
   businessesCache =
   data || [];
 
+  await loadReviews();
+
   renderBusinesses(businessesCache);
+}
+
+async function loadReviews(){
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_reviews")
+  .select("*");
+
+  if(error){
+
+    console.error(error);
+
+    reviewsCache = [];
+
+    return;
+  }
+
+  reviewsCache =
+  data || [];
+}
+
+function getBusinessRating(businessId){
+
+  const reviews =
+  reviewsCache.filter(review =>
+    Number(review.business_id) === Number(businessId)
+  );
+
+  if(reviews.length === 0){
+
+    return {
+      count:0,
+      average:0,
+      stars:"?????",
+      text:"Noch keine Bewertung"
+    };
+  }
+
+  const average =
+  reviews.reduce((sum, review) =>
+    sum + Number(review.rating || 0), 0
+  ) / reviews.length;
+
+  return {
+    count:reviews.length,
+    average:average,
+    stars:renderStars(Math.round(average)),
+    text:average.toFixed(1)
+  };
+}
+
+function renderStars(rating){
+
+  let stars = "";
+
+  for(let i = 1; i <= 5; i++){
+
+    stars += i <= rating
+    ? "?"
+    : "?";
+  }
+
+  return stars;
 }
 
 function renderBusinesses(businesses){
@@ -65,6 +132,9 @@ function renderBusinesses(businesses){
 
   businesses.forEach(business => {
 
+    const rating =
+    getBusinessRating(business.id);
+
     const card =
     document.createElement("div");
 
@@ -73,7 +143,7 @@ function renderBusinesses(businesses){
 
     card.innerHTML = `
     
-     <a href="v2-firma-home.html?id=${business.id}" class="hub-image-link">
+      <a href="v2-firma-home.html?id=${business.id}" class="hub-image-link">
 
         ${
           business.image_url
@@ -91,16 +161,39 @@ function renderBusinesses(businesses){
           `
         }
 
+        <div class="hub-rating-badge ${rating.count === 0 ? "hub-rating-empty" : ""}">
+          ${
+            rating.count === 0
+            ? `
+              <span>
+                Noch keine Bewertung
+              </span>
+            `
+            : `
+              <span class="hub-rating-stars">
+                ${rating.stars}
+              </span>
+
+              <strong>
+                ${rating.text}
+              </strong>
+            `
+          }
+        </div>
+
       </a>
 
       <div class="hub-card-content">
 
-
         <h2>
-  		<a href="v2-firma-home.html?id=${business.id}">
-   		 ${escapeHtml(business.name)}
-  		</a>
-		</h2>
+          <a href="v2-firma-home.html?id=${business.id}">
+            ${escapeHtml(business.name)}
+          </a>
+        </h2>
+
+        <p class="hub-location">
+          ${escapeHtml(business.plz || "")}
+        </p>
 
         <div class="hub-badges">
 
