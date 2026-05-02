@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Firmenhomepage verwalten</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=2100">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="owner-page">
+
+  <div class="owner-topbar">
+
+    <div>
+      <h1>Homepage verwalten</h1>
+      <p id="businessTitle">
+        Firma ausw&auml;hlen
+      </p>
+    </div>
+
+    <div class="owner-topbar-buttons">
+
+      <button
+        class="owner-gray-btn"
+        onclick="window.location.href='v2-dashboard.html'"
+      >
+        Zur&uuml;ck
+      </button>
+
+      <button onclick="logoutUser()">
+        Ausloggen
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="owner-select-box">
+
+    <label>Firma ausw&auml;hlen</label>
+
+    <select id="businessSelect"></select>
+
+    <div id="roleInfo" class="register-info">
+      Nur Inhaber k&ouml;nnen Firmenhomepages bearbeiten.
+    </div>
+
+  </div>
+
+  <div id="homepageContent" class="owner-grid hidden">
+
+    <section class="owner-card">
+
+      <h2>Neuer Block</h2>
+
+      <label>Blocktyp</label>
+      <select id="homepageBlockType">
+        <option value="text">Textblock</option>
+        <option value="image">Bild + Text</option>
+        <option value="price">Preisliste</option>
+        <option value="rules">Hausordnung / Regeln</option>
+        <option value="event">Event / Ank&uuml;ndigung</option>
+      </select>
+
+      <label>Titel</label>
+      <input
+        type="text"
+        id="homepageBlockTitle"
+        placeholder="Titel"
+      >
+
+      <label>Bild URL optional</label>
+      <input
+        type="text"
+        id="homepageBlockImage"
+        placeholder="https://..."
+      >
+
+      <label>Inhalt</label>
+      <textarea
+        id="homepageBlockContent"
+        placeholder="Inhalt schreiben..."
+      ></textarea>
+
+      <label>Reihenfolge</label>
+      <input
+        type="number"
+        id="homepageBlockOrder"
+        value="1"
+      >
+
+      <label class="checkbox-line">
+        <input
+          type="checkbox"
+          id="homepageBlockVisible"
+          checked
+        >
+        Sichtbar
+      </label>
+
+      <button onclick="createHomepageBlock()">
+        Block erstellen
+      </button>
+
+    </section>
+
+    <section class="owner-card owner-wide-card">
+
+      <h2>Bestehende Bl&ouml;cke</h2>
+
+      <div id="homepageBlocksList"></div>
+
+    </section>
+
+  </div>
+
+</div>
+
+<script src="./v2-homepage-editor.js?v=2100"></script>
+
+<script>
+checkHomepageEditorAccess();
+</script>
+
+</body>
+</html>
