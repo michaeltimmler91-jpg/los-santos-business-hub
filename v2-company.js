@@ -120,17 +120,17 @@ async function loadBusiness(businessId){
   toggleDeliveryArea();
   toggleOwnerAreas();
 
- if(isOwner()){
-  fillOwnerFields();
+  if(isOwner()){
+    fillOwnerFields();
 
-  await loadEmployees();
-  await loadAvailableUsers();
-  await loadQuestions();
-  await loadApplications();
-  await loadCompanyReviews();
-}
+    await loadEmployees();
+    await loadAvailableUsers();
+    await loadQuestions();
+    await loadApplications();
+    await loadCompanyReviews();
+  }
 
-await loadBoardPosts();
+  await loadBoardPosts();
 }
 
 function isOwner(){
@@ -1008,7 +1008,6 @@ async function loadBoardPosts(){
   });
 
   if(error){
-
     console.error(error);
 
     list.innerHTML =
@@ -1100,9 +1099,7 @@ async function loadBoardPosts(){
 async function createBoardPost(){
 
   if(!isOwner()){
-
     alert("Keine Berechtigung");
-
     return;
   }
 
@@ -1121,9 +1118,7 @@ async function createBoardPost(){
   .checked;
 
   if(!title || !content){
-
     alert("Bitte Titel und Inhalt ausf&uuml;llen");
-
     return;
   }
 
@@ -1139,11 +1134,8 @@ async function createBoardPost(){
   });
 
   if(error){
-
     alert("Beitrag konnte nicht erstellt werden");
-
     console.error(error);
-
     return;
   }
 
@@ -1159,9 +1151,7 @@ async function createBoardPost(){
 async function deleteBoardPost(postId){
 
   if(!isOwner()){
-
     alert("Keine Berechtigung");
-
     return;
   }
 
@@ -1177,11 +1167,8 @@ async function deleteBoardPost(postId){
   .eq("business_id", currentBusiness.id);
 
   if(error){
-
     alert("Beitrag konnte nicht gelöscht werden");
-
     console.error(error);
-
     return;
   }
 
@@ -1189,6 +1176,116 @@ async function deleteBoardPost(postId){
 }
 
 async function loadCompanyReviews(){
+
+  const list =
+  document.getElementById("companyReviews");
+
+  if(!list){
+    return;
+  }
+
+  list.innerHTML =
+  "<p class='muted'>Lade Bewertungen...</p>";
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_reviews")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .order("created_at", {
+    ascending:false
+  });
+
+  if(error){
+    console.error(error);
+
+    list.innerHTML =
+    "<p class='muted'>Bewertungen konnten nicht geladen werden.</p>";
+
+    return;
+  }
+
+  if(!data || data.length === 0){
+
+    list.innerHTML =
+    "<p class='muted'>Noch keine Bewertungen vorhanden.</p>";
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  for(const review of data){
+
+    const profile =
+    await getProfileByUserId(review.user_id);
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "review-item";
+
+    div.innerHTML = `
+      <div class="review-stars">
+        ${renderStars(review.rating)}
+      </div>
+
+      <div class="review-author">
+        ${escapeHtml(profile ? profile.display_name : "Unbekannt")}
+      </div>
+
+      <div class="review-text">
+        ${escapeHtml(review.comment || "-")}
+      </div>
+
+      ${
+        review.company_reply
+        ? `
+          <div class="company-reply">
+            <strong>Antwort vom Unternehmen</strong>
+            <div>${escapeHtml(review.company_reply)}</div>
+          </div>
+        `
+        : ""
+      }
+
+      <textarea
+        id="replyReview-${review.id}"
+        placeholder="Antwort vom Unternehmen..."
+      >${escapeHtml(review.company_reply || "")}</textarea>
+
+      <button onclick="saveReviewReply(${review.id})">
+        Antwort speichern
+      </button>
+
+      <button
+        class="danger-btn"
+        onclick="deleteReviewReply(${review.id})"
+      >
+        Antwort l&ouml;schen
+      </button>
+    `;
+
+    list.appendChild(div);
+  }
+}
+
+async function saveReviewReply(reviewId){
+
+  if(!isOwner()){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  const field =
+  document.getElementById("replyReview-" + reviewId);
+
+  const reply =
+  field.value.trim();
+
+  if(!reply){
+    alert("Bitte Antwort eingeben");
     return;
   }
 
@@ -1204,11 +1301,8 @@ async function loadCompanyReviews(){
   .eq("business_id", currentBusiness.id);
 
   if(error){
-
     alert("Antwort konnte nicht gespeichert werden");
-
     console.error(error);
-
     return;
   }
 
@@ -1218,6 +1312,11 @@ async function loadCompanyReviews(){
 }
 
 async function deleteReviewReply(reviewId){
+
+  if(!isOwner()){
+    alert("Keine Berechtigung");
+    return;
+  }
 
   if(!confirm("Antwort wirklich löschen?")){
     return;
@@ -1235,11 +1334,8 @@ async function deleteReviewReply(reviewId){
   .eq("business_id", currentBusiness.id);
 
   if(error){
-
     alert("Antwort konnte nicht gelöscht werden");
-
     console.error(error);
-
     return;
   }
 
@@ -1251,10 +1347,7 @@ function renderStars(rating){
   let stars = "";
 
   for(let i = 1; i <= 5; i++){
-
-    stars += i <= rating
-    ? "?"
-    : "?";
+    stars += i <= rating ? "?" : "?";
   }
 
   return stars;
