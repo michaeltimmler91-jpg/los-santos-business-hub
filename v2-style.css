@@ -1928,3 +1928,138 @@ grid-template-columns:1fr;
 }
 
 }
+
+/* =========================
+   CLEAN CARD UPGRADE
+========================= */
+
+.hub-card{
+overflow:hidden;
+border:1px solid rgba(255,20,147,0.14);
+background:
+linear-gradient(
+180deg,
+rgba(18,18,34,0.98),
+rgba(10,10,20,0.98)
+);
+backdrop-filter:blur(14px);
+}
+
+.hub-card:hover{
+transform:
+translateY(-8px)
+scale(1.01);
+box-shadow:
+0 0 50px rgba(255,20,147,0.22),
+0 0 120px rgba(255,20,147,0.08);
+}
+
+.hub-image-link{
+position:relative;
+overflow:hidden;
+}
+
+.hub-image-link::after{
+content:"";
+position:absolute;
+inset:0;
+background:
+linear-gradient(
+to bottom,
+rgba(0,0,0,0.08),
+rgba(0,0,0,0.42)
+);
+pointer-events:none;
+}
+
+.hub-card-image{
+transition:
+transform 0.45s,
+filter 0.45s;
+filter:brightness(0.92);
+}
+
+.hub-card:hover .hub-card-image{
+transform:scale(1.05);
+filter:brightness(1);
+}
+
+/* STATUS BADGES IM BILD */
+
+.hub-badges{
+position:absolute;
+left:16px;
+bottom:16px;
+z-index:5;
+margin:0;
+}
+
+.hub-badge{
+padding:8px 14px;
+font-size:12px;
+font-weight:800;
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.08);
+}
+
+/* CONTENT */
+
+.hub-card-content{
+padding:20px;
+gap:14px;
+}
+
+.hub-card-content h2{
+font-size:30px;
+font-weight:900;
+line-height:1;
+letter-spacing:-0.5px;
+margin:0;
+}
+
+.hub-location{
+font-size:14px;
+margin:0;
+color:#9d9db2;
+}
+
+/* BUTTONS */
+
+.hub-buttons{
+margin-top:6px;
+gap:10px;
+}
+
+.hub-buttons a{
+padding:12px 14px;
+font-size:14px;
+border-radius:14px;
+font-weight:800;
+background:
+linear-gradient(
+180deg,
+#ff1493,
+#e0007a
+);
+box-shadow:
+0 0 18px rgba(255,20,147,0.25);
+}
+
+.hub-buttons a:hover{
+transform:translateY(-2px);
+box-shadow:
+0 0 28px rgba(255,20,147,0.38);
+}
+
+/* RATING */
+
+.hub-rating-badge{
+top:14px;
+padding:8px 14px;
+border-radius:16px;
+font-size:13px;
+}
+
+.hub-rating-stars{
+font-size:14px;
+}

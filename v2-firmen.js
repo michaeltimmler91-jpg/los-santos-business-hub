@@ -181,22 +181,8 @@ function renderBusinesses(businesses){
             `
           }
         </div>
-
-      </a>
-
-      <div class="hub-card-content">
-
-        <h2>
-          <a href="v2-firma-home.html?id=${business.id}">
-            ${escapeHtml(business.name)}
-          </a>
-        </h2>
-
-        <p class="hub-location">
-          ${escapeHtml(business.plz || "")}
-        </p>
-
-        <div class="hub-badges">
+        
+		<div class="hub-badges">
 
           <span class="
             hub-badge
@@ -223,6 +209,22 @@ function renderBusinesses(businesses){
           }
 
         </div>
+
+      </a>
+
+      <div class="hub-card-content">
+
+        <h2>
+          <a href="v2-firma-home.html?id=${business.id}">
+            ${escapeHtml(business.name)}
+          </a>
+        </h2>
+
+        <p class="hub-location">
+          ${escapeHtml(business.plz || "")}
+        </p>
+
+
 
         <div class="hub-buttons">
 
