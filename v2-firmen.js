@@ -83,7 +83,7 @@ function getBusinessRating(businessId){
     return {
       count:0,
       average:0,
-      stars:"?????",
+      stars:"&#9734;&#9734;&#9734;&#9734;&#9734;",
       text:"Noch keine Bewertung"
     };
   }
@@ -303,7 +303,6 @@ function filterBusinesses(){
   renderBusinesses(filtered);
 }
 
-async function logoutUser(){
 function updateLiveStats(){
 
   const openBusinesses =
@@ -329,16 +328,12 @@ function updateLiveStats(){
   reviewCount;
 }
 
+async function logoutUser(){
+
   await supabaseClient.auth.signOut();
 
   window.location.href =
   "v2-login.html";
-}
-
-function goDashboard(){
-
-  window.location.href =
-  "v2-dashboard.html";
 }
 
 function escapeHtml(text){
