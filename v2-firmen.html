@@ -6,7 +6,7 @@
 
   <title>Unternehmen</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=2801">
+  <link rel="stylesheet" href="./v2-style.css?v=2804">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -18,103 +18,79 @@
 
   <div class="admin-wrapper">
 
-<div class="hub-mini-topbar">
+    <div class="hub-mini-topbar">
 
-  <strong>Los Santos Business Hub</strong>
+      <strong>Los Santos Business Hub</strong>
 
-  <div>
-    <button onclick="goDashboard()">Dashboard</button>
-    <button onclick="logoutUser()">Ausloggen</button>
-  </div>
-
-</div>
+      <div>
+        <button onclick="goDashboard()">Dashboard</button>
+        <button onclick="logoutUser()">Ausloggen</button>
+      </div>
 
     </div>
 
-    <div class="admin-box">
+    <div class="hub-section-intro">
 
-      <div class="hub-section-intro">
+      <div>
+        <span class="hub-kicker">Live-&Uuml;bersicht</span>
 
-  <div>
-    <span class="hub-kicker">Live-&Uuml;bersicht</span>
+        <h2>Business Live-Status</h2>
 
-    <h2>Business Live-Status</h2>
-
-    <p>
-      Alle aktuellen Unternehmen, &Ouml;ffnungszeiten,
-      Lieferdienste und Bewertungen auf einen Blick.
-    </p>
-  </div>
-
-</div>
-
-<div class="hub-top-grid">
-
-  <div class="hub-live-stats">
-
-    <div class="hub-stat-card">
-      <strong id="openCount">0</strong>
-      <span>Ge&ouml;ffnet</span>
-    </div>
-
-    <div class="hub-stat-card">
-      <strong id="deliveryCount">0</strong>
-      <span>Lieferung aktiv</span>
-    </div>
-
-    <div class="hub-stat-card">
-      <strong id="reviewCount">0</strong>
-      <span>Bewertungen</span>
-    </div>
-
-  </div>
-
-  <div class="business-filter-bar">
-
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Unternehmen suchen..."
-      oninput="filterBusinesses()"
-    >
-
-    <select
-      id="categoryFilter"
-      onchange="filterBusinesses()"
-    >
-      <option value="">
-        Alle Kategorien
-      </option>
-
-      <option value="restaurant">
-        Restaurants
-      </option>
-
-      <option value="werkstatt">
-        Werkst&auml;tten
-      </option>
-
-      <option value="medizin">
-        Medizin
-      </option>
-
-      <option value="staat">
-        Staatlich
-      </option>
-
-      <option value="handel">
-        Handel
-      </option>
-
-    </select>
-
-  </div>
-
-</div>
-
-      <div id="businessList" class="hub-card-grid"></div>
+        <p>
+          Alle aktuellen Unternehmen, &Ouml;ffnungszeiten,
+          Lieferdienste und Bewertungen auf einen Blick.
+        </p>
+      </div>
 
     </div>
+
+    <div class="hub-top-grid">
+
+      <div class="hub-live-stats">
+
+        <div class="hub-stat-card">
+          <strong id="openCount">0</strong>
+          <span>Ge&ouml;ffnet</span>
+        </div>
+
+        <div class="hub-stat-card">
+          <strong id="deliveryCount">0</strong>
+          <span>Lieferung aktiv</span>
+        </div>
+
+        <div class="hub-stat-card">
+          <strong id="reviewCount">0</strong>
+          <span>Bewertungen</span>
+        </div>
+
+      </div>
+
+      <div class="business-filter-bar">
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Unternehmen suchen..."
+          oninput="filterBusinesses()"
+        >
+
+        <select
+          id="categoryFilter"
+          onchange="filterBusinesses()"
+        >
+          <option value="">Alle Kategorien</option>
+          <option value="restaurant">Restaurants</option>
+          <option value="werkstatt">Werkst&auml;tten</option>
+          <option value="medizin">Medizin</option>
+          <option value="staat">Staatlich</option>
+          <option value="handel">Handel</option>
+        </select>
+
+      </div>
+
+    </div>
+
+    <div id="businessList" class="hub-card-grid"></div>
 
   </div>
 
