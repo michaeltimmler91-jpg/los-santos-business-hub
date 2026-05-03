@@ -194,8 +194,7 @@ async function loginUser(){
     return;
   }
 
-  window.location.href =
-  "v2-dashboard.html";
+  window.location.href = "v2-firmen.html";
 }
 
 async function checkDashboard(){
