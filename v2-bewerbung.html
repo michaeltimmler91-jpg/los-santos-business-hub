@@ -56,19 +56,22 @@
 
   </div>
 
-  <div class="bewerbung-layout">
+  <div class="bewerbung-wrapper">
 
-    <div class="bewerbung-card">
+  <div class="application-box">
 
       <div class="bewerbung-top">
 
         <div>
 
-          <div class="bewerbung-badge">
+          <div class="application-badge">
             Bewerbungssystem
           </div>
 
-          <h2 id="businessName">
+          <h2
+  			class="application-company"
+ 			id="businessName"
+		  >
             Firma wird geladen...
           </h2>
 
@@ -76,17 +79,14 @@
 
       </div>
 
-      <div
-        id="applicationNote"
-        class="bewerbung-note"
-      ></div>
+     <div class="application-question bewerbung-note">
 
       <div
         id="questionsBox"
         class="bewerbung-questions"
       ></div>
 
-      <div class="bewerbung-extra">
+      <div class="application-question">
 
         <label>
           Zus&auml;tzliche Nachricht
@@ -99,10 +99,10 @@
 
       </div>
 
-      <button
-        class="bewerbung-send-btn"
-        onclick="sendApplication()"
-      >
+      <div class="application-send">
+
+<button onclick="sendApplication()">
+        
         Bewerbung absenden
       </button>
 
@@ -110,6 +110,7 @@
 
   </div>
 
+</div>
 </div>
 </div>
 <script src="./v2-bewerbung.js?v=502"></script>
