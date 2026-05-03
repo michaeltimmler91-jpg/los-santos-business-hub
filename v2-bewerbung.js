@@ -112,7 +112,7 @@ async function loadQuestions(){
     document.createElement("div");
 
     div.className =
-    "question-box";
+"application-question";
 
     div.innerHTML = `
       <label>

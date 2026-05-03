@@ -2608,3 +2608,198 @@ box-shadow:
 0 0 50px rgba(255,20,147,0.14),
 0 0 100px rgba(0,0,0,0.35);
 }
+/* =========================
+   V2 BEWERBUNG
+========================= */
+
+.bewerbung-wrapper{
+max-width:1200px;
+margin:0 auto;
+}
+
+.application-box{
+position:relative;
+overflow:hidden;
+background:
+linear-gradient(
+180deg,
+rgba(20,20,38,0.96),
+rgba(10,10,20,0.98)
+);
+border:1px solid rgba(255,20,147,0.18);
+border-radius:32px;
+padding:34px;
+box-shadow:
+0 0 45px rgba(255,20,147,0.10);
+}
+
+.application-box::before{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:4px;
+background:
+linear-gradient(
+90deg,
+#ff1493,
+#ff4db2
+);
+}
+
+.application-badge{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:8px 16px;
+border-radius:999px;
+background:
+linear-gradient(
+90deg,
+#ff1493,
+#ff4db2
+);
+font-size:12px;
+font-weight:800;
+letter-spacing:1px;
+text-transform:uppercase;
+margin-bottom:18px;
+}
+
+.application-company{
+font-size:42px;
+font-weight:900;
+margin-bottom:28px;
+line-height:1;
+}
+
+.application-question{
+background:#141428;
+border:1px solid rgba(255,255,255,0.05);
+border-radius:24px;
+padding:24px;
+margin-bottom:22px;
+}
+
+.application-question label{
+display:block;
+font-size:18px;
+font-weight:700;
+margin-bottom:14px;
+color:white;
+}
+
+.application-question textarea{
+min-height:160px;
+}
+
+.application-send{
+margin-top:30px;
+}
+
+.application-send button{
+width:100%;
+height:64px;
+border-radius:24px;
+font-size:18px;
+font-weight:800;
+}
+
+@media(max-width:700px){
+
+.application-box{
+padding:22px;
+border-radius:24px;
+}
+
+.application-company{
+font-size:32px;
+}
+
+}
+
+/* =========================
+   BEWERBUNG FINAL FIX
+========================= */
+
+.bewerbung-wrapper{
+max-width:1200px;
+margin:0 auto;
+}
+
+.application-box{
+position:relative;
+overflow:hidden;
+background:
+linear-gradient(
+180deg,
+rgba(20,20,38,0.98),
+rgba(10,10,20,0.98)
+);
+border:1px solid rgba(255,20,147,0.18);
+border-radius:32px;
+padding:34px;
+box-shadow:0 0 35px rgba(255,20,147,0.14);
+}
+
+.application-box::before{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:4px;
+background:linear-gradient(90deg,#ff1493,#ff4db2);
+}
+
+.application-badge{
+display:inline-flex;
+padding:8px 16px;
+border-radius:999px;
+background:#ff1493;
+font-size:12px;
+font-weight:900;
+text-transform:uppercase;
+letter-spacing:1px;
+margin-bottom:16px;
+}
+
+.application-company{
+font-size:42px;
+line-height:1;
+margin-bottom:24px;
+color:white;
+}
+
+.application-question,
+.bewerbung-note{
+background:#141428;
+border:1px solid rgba(255,255,255,0.06);
+border-radius:22px;
+padding:22px;
+margin-bottom:22px;
+}
+
+.application-question label{
+display:block;
+font-size:18px;
+font-weight:bold;
+margin-bottom:14px;
+}
+
+.application-question textarea{
+min-height:150px;
+}
+
+.bewerbung-questions{
+display:block;
+}
+
+.application-send button{
+width:100%;
+height:62px;
+border-radius:22px;
+font-size:17px;
+font-weight:900;
+}
