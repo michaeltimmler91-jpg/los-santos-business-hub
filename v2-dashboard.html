@@ -6,72 +6,80 @@
 
   <title>V2 Dashboard</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=150">
+  <link rel="stylesheet" href="./v2-style.css?v=3001">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
+<header class="v2-hero">
+
+  <div class="hero-top-actions">
+
+    <button onclick="logoutUser()">
+      Ausloggen
+    </button>
+
+  </div>
+
+</header>
+
 <div class="auth-page">
 
   <div class="admin-wrapper">
 
-    <div class="admin-topbar">
+    <div class="hub-section-intro">
 
-      <h1>Dashboard</h1>
+      <span class="hub-kicker">Account-Bereich</span>
 
-      <button onclick="logoutUser()">
-        Ausloggen
-      </button>
+      <h2>Dashboard</h2>
 
-    </div>
-
-    <div class="admin-box">
-
-      <h2 id="welcomeTitle">Willkommen</h2>
+      <p id="welcomeTitle">
+        Willkommen
+      </p>
 
       <p id="welcomeText">
         L&auml;dt...
       </p>
 
-      <div class="dashboard-actions">
+    </div>
 
-      	<a href="v2-firmen.html" class="dashboard-card">
-  	     <strong>Firmen ansehen</strong>
-  	     <span>Unternehmen anschauen und Bewerbungen schreiben</span>
-		</a>
+    <div class="dashboard-actions">
 
-		<a href="v2-meine-bewerbungen.html" class="dashboard-card">
-  		   <strong>Meine Bewerbungen</strong>
-  		   <span>Status und Antworten deiner Bewerbungen ansehen</span>
-		</a>
+      <a href="v2-firmen.html" class="dashboard-card">
+        <strong>Firmen ansehen</strong>
+        <span>Unternehmen anschauen und Bewerbungen schreiben</span>
+      </a>
 
-        <a href="v2-superadmin.html" id="superadminLink" class="dashboard-card hidden">
-          <strong>Superadmin Panel</strong>
-          <span>Firmen verwalten, Inhaber &auml;ndern und System steuern</span>
-        </a>
+      <a href="v2-meine-bewerbungen.html" class="dashboard-card">
+        <strong>Meine Bewerbungen</strong>
+        <span>Status und Antworten deiner Bewerbungen ansehen</span>
+      </a>
 
-        <a href="v2-company.html" id="ownerLink" class="dashboard-card hidden">
-          <strong>Firmenverwaltung</strong>
-          <span>Eigene Firma verwalten, Mitarbeiter und Bewerbungen bearbeiten</span>
-        </a>
+      <a href="v2-superadmin.html" id="superadminLink" class="dashboard-card hidden">
+        <strong>Superadmin Panel</strong>
+        <span>Firmen verwalten, Inhaber &auml;ndern und System steuern</span>
+      </a>
 
-        <a href="v2-homepage-editor.html" class="dashboard-card" id="homepageEditorLink">
- 		 <strong>Homepage verwalten</strong>
- 		 <span>Eigene Firmenhomepage bearbeiten</span>
-		</a>
+      <a href="v2-company.html" id="ownerLink" class="dashboard-card hidden">
+        <strong>Firmenverwaltung</strong>
+        <span>Eigene Firma verwalten, Mitarbeiter und Bewerbungen bearbeiten</span>
+      </a>
 
-        <a href="v2-user-management.html" id="userManagementLink" class="dashboard-card hidden">
- 		 <strong>Userverwaltung</strong>
- 		 <span>User freischalten, sperren und Rollen verwalten</span>
-		</a>
+      <a href="v2-homepage-editor.html" class="dashboard-card" id="homepageEditorLink">
+        <strong>Homepage verwalten</strong>
+        <span>Eigene Firmenhomepage bearbeiten</span>
+      </a>
 
-		<a href="v2-account.html" class="dashboard-card">
-  		 <strong>Mein Account</strong>
-  		 <span>Account-Einstellungen verwalten</span>
-		</a>
+      <a href="v2-user-management.html" id="userManagementLink" class="dashboard-card hidden">
+        <strong>Userverwaltung</strong>
+        <span>User freischalten, sperren und Rollen verwalten</span>
+      </a>
 
-      </div>
+      <a href="v2-account.html" class="dashboard-card">
+        <strong>Mein Account</strong>
+        <span>Account-Einstellungen verwalten</span>
+      </a>
 
     </div>
 
