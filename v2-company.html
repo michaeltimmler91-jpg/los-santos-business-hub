@@ -61,82 +61,104 @@
     </div>
 
     <div id="companyContent" class="owner-grid hidden">
+<section class="owner-card owner-wide-card">
 
-      <section class="owner-card">
+  <div class="company-board-header">
 
-        <h2>Status</h2>
+    <div>
 
-        <div class="owner-status-grid">
+      <span class="hub-kicker">
+        Firmenkommunikation
+      </span>
 
-          <div class="owner-status-box">
-            <strong>Firma</strong>
-            <span id="openStatus">-</span>
-          </div>
+      <h2>
+        Schwarzes Brett
+      </h2>
 
-          <div class="owner-status-box" id="deliveryStatusCard">
-            <strong>Lieferung</strong>
-            <span id="deliveryStatus">-</span>
-          </div>
+      <p>
+        Wichtige Informationen, Ank&uuml;ndigungen
+        und interne Mitteilungen.
+      </p>
 
-        </div>
+    </div>
 
-        <div class="owner-button-row">
+  </div>
 
-          <button onclick="setOpen(true)">
-            Firma &ouml;ffnen
-          </button>
+  <div id="boardOwnerControls" class="owner-only">
 
-          <button onclick="setOpen(false)" class="owner-danger-btn">
-            Firma schlie&szlig;en
-          </button>
+    <input
+      type="text"
+      id="boardTitle"
+      placeholder="Titel"
+    >
 
-        </div>
+    <textarea
+      id="boardContent"
+      placeholder="Beitrag schreiben..."
+    ></textarea>
 
-        <div id="deliveryControls" class="owner-button-row">
+    <label class="checkbox-line">
+      <input type="checkbox" id="boardPinned">
+      Beitrag anheften
+    </label>
 
-          <button onclick="setDelivery(true)">
-            Lieferung aktivieren
-          </button>
+    <button onclick="createBoardPost()">
+      Beitrag erstellen
+    </button>
 
-          <button onclick="setDelivery(false)" class="owner-gray-btn">
-            Lieferung deaktivieren
-          </button>
+  </div>
 
-        </div>
+  <div id="boardPosts"></div>
 
-      </section>
+</section>
 
-      <section class="owner-card owner-wide-card">
+<section class="owner-card">
 
-        <h2>Schwarzes Brett</h2>
+  <span class="hub-kicker">
+    Live
+  </span>
 
-        <div id="boardOwnerControls" class="owner-only">
+  <h2>Status</h2>
 
-          <input
-            type="text"
-            id="boardTitle"
-            placeholder="Titel"
-          >
+  <div class="owner-status-grid">
 
-          <textarea
-            id="boardContent"
-            placeholder="Beitrag schreiben..."
-          ></textarea>
+    <div class="owner-status-box">
+      <strong>Firma</strong>
+      <span id="openStatus">-</span>
+    </div>
 
-          <label class="checkbox-line">
-            <input type="checkbox" id="boardPinned">
-            Beitrag anheften
-          </label>
+    <div class="owner-status-box" id="deliveryStatusCard">
+      <strong>Lieferung</strong>
+      <span id="deliveryStatus">-</span>
+    </div>
 
-          <button onclick="createBoardPost()">
-            Beitrag erstellen
-          </button>
+  </div>
 
-        </div>
+  <div class="owner-button-row">
 
-        <div id="boardPosts"></div>
+    <button onclick="setOpen(true)">
+      Firma &ouml;ffnen
+    </button>
 
-      </section>
+    <button onclick="setOpen(false)" class="owner-danger-btn">
+      Firma schlie&szlig;en
+    </button>
+
+  </div>
+
+  <div id="deliveryControls" class="owner-button-row">
+
+    <button onclick="setDelivery(true)">
+      Lieferung aktivieren
+    </button>
+
+    <button onclick="setDelivery(false)" class="owner-gray-btn">
+      Lieferung deaktivieren
+    </button>
+
+  </div>
+
+</section>
 
       <section class="owner-card owner-wide-card owner-only">
 

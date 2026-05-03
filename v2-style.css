@@ -2211,3 +2211,13 @@ color:#ff1493;
 font-weight:bold;
 margin-bottom:8px;
 }
+
+.company-board-header{
+margin-bottom:24px;
+}
+
+.company-board-header p{
+color:#bdbdd0;
+line-height:1.6;
+margin-top:10px;
+}
