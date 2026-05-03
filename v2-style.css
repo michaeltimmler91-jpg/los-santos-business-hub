@@ -2130,3 +2130,84 @@ border-radius:18px;
 color:#ffc107;
 letter-spacing:1px;
 }
+/* =========================
+   COMPANY MANAGEMENT UPGRADE
+========================= */
+
+.owner-select-box{
+background:
+linear-gradient(
+180deg,
+rgba(18,18,34,0.98),
+rgba(10,10,20,0.98)
+);
+border:1px solid rgba(255,20,147,0.18);
+}
+
+.owner-card{
+position:relative;
+overflow:hidden;
+background:
+linear-gradient(
+180deg,
+rgba(20,20,38,0.98),
+rgba(10,10,20,0.98)
+);
+}
+
+.owner-card::before{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:4px;
+background:
+linear-gradient(
+90deg,
+#ff1493,
+#ff4db2
+);
+opacity:0.85;
+}
+
+.owner-card h2{
+font-size:32px;
+line-height:1.1;
+}
+
+.owner-status-box{
+border:1px solid rgba(255,255,255,0.06);
+box-shadow:0 0 18px rgba(0,0,0,0.18);
+}
+
+.owner-status-box span{
+color:#ff1493;
+}
+
+#boardOwnerControls{
+background:#141428;
+border-radius:22px;
+}
+
+.owner-card input,
+.owner-card textarea,
+.owner-card select{
+background:#15152d;
+border-radius:18px;
+}
+
+.question-box,
+.answer-box{
+background:#141428;
+border:1px solid rgba(255,255,255,0.06);
+border-radius:18px;
+padding:16px;
+margin-top:14px;
+}
+
+.answer-question{
+color:#ff1493;
+font-weight:bold;
+margin-bottom:8px;
+}
