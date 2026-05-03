@@ -86,7 +86,7 @@ async function saveDisplayName(){
   if(error){
 
     alert(
-      "Anzeigename konnte nicht gespeichert werden"
+      "Anzeigename konnte nicht gespeichert werden."
     );
 
     console.error(error);
@@ -108,7 +108,7 @@ async function changePassword(){
   if(!pw1 || !pw2){
 
     alert(
-      "Bitte beide Passwortfelder ausfüllen"
+      "Bitte beide Passwortfelder ausf&uuml;llen"
     );
 
     return;
@@ -117,7 +117,7 @@ async function changePassword(){
   if(pw1 !== pw2){
 
     alert(
-      "Passwörter stimmen nicht überein"
+      "Passw&ouml;rter stimmen nicht &uuml;berein"
     );
 
     return;
@@ -140,7 +140,7 @@ async function changePassword(){
   if(error){
 
     alert(
-      "Passwort konnte nicht geändert werden"
+      "Passwort konnte nicht ge&auml;ndert werden"
     );
 
     console.error(error);
@@ -151,5 +151,5 @@ async function changePassword(){
   document.getElementById("newPassword").value = "";
   document.getElementById("newPasswordRepeat").value = "";
 
-  alert("Passwort geändert");
+  alert("Passwort ge&auml;ndert");
 }
