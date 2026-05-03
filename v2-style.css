@@ -2284,18 +2284,35 @@ background:#141428;
    HOMEPAGE EDITOR LAYOUT
 ========================= */
 
-.homepage-create-card{
-order:2;
+#homepageContent.owner-grid{
+grid-template-columns:1fr 420px;
+align-items:start;
 }
 
 .homepage-list-card{
-order:1;
+grid-column:1;
+grid-row:1;
 }
 
 .homepage-create-card{
-max-width:420px;
+grid-column:2;
+grid-row:1;
+position:sticky;
+top:20px;
 }
 
-.homepage-list-card{
-flex:1;
+@media(max-width:1000px){
+
+#homepageContent.owner-grid{
+grid-template-columns:1fr;
+}
+
+.homepage-list-card,
+.homepage-create-card{
+grid-column:auto;
+grid-row:auto;
+position:relative;
+top:auto;
+}
+
 }
