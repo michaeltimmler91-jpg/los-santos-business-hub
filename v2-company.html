@@ -6,248 +6,260 @@
 
   <title>Firmenverwaltung</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=1002">
+  <link rel="stylesheet" href="./v2-style.css?v=3200">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="owner-page">
+<header class="v2-hero">
 
-  <div class="owner-topbar">
+  <div class="hero-top-actions">
 
-    <div>
-      <h1>Firmenverwaltung</h1>
-      <p id="businessTitle">
-        Firma ausw&auml;hlen
-      </p>
-    </div>
+    <button onclick="window.location.href='v2-dashboard.html'">
+      Dashboard
+    </button>
 
-    <div class="owner-topbar-buttons">
-
-      <button
-        class="owner-gray-btn"
-        onclick="window.location.href='v2-dashboard.html'"
-      >
-        Zur&uuml;ck
-      </button>
-
-      <button onclick="logoutUser()">
-        Ausloggen
-      </button>
-
-    </div>
-
-  </div>
-
-  <div class="owner-select-box">
-
-    <label>Firma ausw&auml;hlen</label>
-
-    <select id="businessSelect"></select>
-
-    <div id="roleInfo" class="register-info">
-      Rolle wird geladen...
-    </div>
-
-  </div>
-
-  <div id="companyContent" class="owner-grid hidden">
-
-    <section class="owner-card">
-
-      <h2>Status</h2>
-
-      <div class="owner-status-grid">
-
-        <div class="owner-status-box">
-          <strong>Firma</strong>
-          <span id="openStatus">-</span>
-        </div>
-
-        <div class="owner-status-box" id="deliveryStatusCard">
-          <strong>Lieferung</strong>
-          <span id="deliveryStatus">-</span>
-        </div>
-
-      </div>
-
-      <div class="owner-button-row">
-
-        <button onclick="setOpen(true)">
-          Firma &ouml;ffnen
-        </button>
-
-        <button onclick="setOpen(false)" class="owner-danger-btn">
-          Firma schlie&szlig;en
-        </button>
-
-      </div>
-
-      <div id="deliveryControls" class="owner-button-row">
-
-        <button onclick="setDelivery(true)">
-          Lieferung aktivieren
-        </button>
-
-        <button onclick="setDelivery(false)" class="owner-gray-btn">
-          Lieferung deaktivieren
-        </button>
-
-      </div>
-
-    </section>
-
-    <section class="owner-card owner-wide-card">
-
-  <h2>Schwarzes Brett</h2>
-
-  <div id="boardOwnerControls" class="owner-only">
-
-    <input
-      type="text"
-      id="boardTitle"
-      placeholder="Titel"
-    >
-
-    <textarea
-      id="boardContent"
-      placeholder="Beitrag schreiben..."
-    ></textarea>
-
-    <label class="checkbox-line">
-      <input type="checkbox" id="boardPinned">
-      Beitrag anheften
-    </label>
-
-    <button onclick="createBoardPost()">
-      Beitrag erstellen
+    <button onclick="logoutUser()">
+      Ausloggen
     </button>
 
   </div>
 
-  <div id="boardPosts"></div>
+</header>
 
-</section>
-<section class="owner-card owner-wide-card owner-only">
+<div class="auth-page">
 
-  <h2>Bewertungen</h2>
+  <div class="admin-wrapper">
 
-  <div id="companyReviews"></div>
+    <div class="dashboard-welcome-card">
 
-</section>
-    <section class="owner-card owner-only">
+      <span class="hub-kicker">
+        Firmenbereich
+      </span>
 
-      <h2>Firmendaten</h2>
+      <h2>
+        Firmenverwaltung
+      </h2>
 
-      <label>Standort</label>
-      <input type="text" id="businessPlz" placeholder="Standort">
+      <p id="businessTitle">
+        Firma ausw&auml;hlen
+      </p>
 
-      <label>Beschreibung</label>
-      <textarea id="businessDescription" placeholder="Beschreibung"></textarea>
+    </div>
 
-      <label>Website</label>
-      <input type="text" id="businessWebsite" placeholder="Website-Link">
+    <div class="owner-select-box">
 
-      <label>Verteiler / Discord</label>
-      <input type="text" id="businessDiscord" placeholder="Verteiler / Discord-Link">
+      <label>Firma ausw&auml;hlen</label>
 
-      <button onclick="saveBusinessData()">
-        Firmendaten speichern
-      </button>
+      <select id="businessSelect"></select>
 
-    </section>
-
-    <section class="owner-card owner-only">
-
-      <h2>Mitarbeiter</h2>
-
-      <label>User ausw&auml;hlen</label>
-
-      <select id="employeeUserSelect">
-        <option value="">User ausw&auml;hlen</option>
-      </select>
-
-      <label>Rolle</label>
-
-      <select id="employeeRole">
-
-        <option value="mitarbeiter">
-          Mitarbeiter
-        </option>
-
-        <option value="inhaber">
-          Inhaber
-        </option>
-
-      </select>
-
-      <button onclick="addEmployee()">
-        Mitarbeiter hinzuf&uuml;gen
-      </button>
-
-      <div id="employeeList"></div>
-
-    </section>
-
-    <section class="owner-card owner-only">
-
-      <h2>Bewerbungssystem</h2>
-
-      <label class="checkbox-line">
-        <input type="checkbox" id="applicationsEnabled">
-        Bewerbungssystem nutzen
-      </label>
-
-      <label class="checkbox-line">
-        <input type="checkbox" id="applicationsOpen">
-        Bewerbungen offen
-      </label>
-
-      <label>Hinweistext</label>
-      <textarea id="applicationNote" placeholder="Hinweistext"></textarea>
-
-      <button onclick="saveApplicationSettings()">
-        Einstellungen speichern
-      </button>
-
-    </section>
-
-    <section class="owner-card owner-only">
-
-      <h2>Bewerbungsfragen</h2>
-
-      <div class="owner-two-column">
-
-        <input
-          type="text"
-          id="questionText"
-          placeholder="Neue Frage"
-        >
-
-        <button onclick="addQuestion()">
-          Frage hinzuf&uuml;gen
-        </button>
-
+      <div id="roleInfo" class="register-info">
+        Rolle wird geladen...
       </div>
 
-      <div id="questionList"></div>
+    </div>
 
-    </section>
+    <div id="companyContent" class="owner-grid hidden">
 
-    <section class="owner-card owner-wide-card owner-only">
+      <section class="owner-card">
 
-      <h2>Eingegangene Bewerbungen</h2>
+        <h2>Status</h2>
 
-      <div id="applicationList"></div>
+        <div class="owner-status-grid">
 
-    </section>
+          <div class="owner-status-box">
+            <strong>Firma</strong>
+            <span id="openStatus">-</span>
+          </div>
+
+          <div class="owner-status-box" id="deliveryStatusCard">
+            <strong>Lieferung</strong>
+            <span id="deliveryStatus">-</span>
+          </div>
+
+        </div>
+
+        <div class="owner-button-row">
+
+          <button onclick="setOpen(true)">
+            Firma &ouml;ffnen
+          </button>
+
+          <button onclick="setOpen(false)" class="owner-danger-btn">
+            Firma schlie&szlig;en
+          </button>
+
+        </div>
+
+        <div id="deliveryControls" class="owner-button-row">
+
+          <button onclick="setDelivery(true)">
+            Lieferung aktivieren
+          </button>
+
+          <button onclick="setDelivery(false)" class="owner-gray-btn">
+            Lieferung deaktivieren
+          </button>
+
+        </div>
+
+      </section>
+
+      <section class="owner-card owner-wide-card">
+
+        <h2>Schwarzes Brett</h2>
+
+        <div id="boardOwnerControls" class="owner-only">
+
+          <input
+            type="text"
+            id="boardTitle"
+            placeholder="Titel"
+          >
+
+          <textarea
+            id="boardContent"
+            placeholder="Beitrag schreiben..."
+          ></textarea>
+
+          <label class="checkbox-line">
+            <input type="checkbox" id="boardPinned">
+            Beitrag anheften
+          </label>
+
+          <button onclick="createBoardPost()">
+            Beitrag erstellen
+          </button>
+
+        </div>
+
+        <div id="boardPosts"></div>
+
+      </section>
+
+      <section class="owner-card owner-wide-card owner-only">
+
+        <h2>Bewertungen</h2>
+
+        <div id="companyReviews"></div>
+
+      </section>
+
+      <section class="owner-card owner-only">
+
+        <h2>Firmendaten</h2>
+
+        <label>Standort</label>
+        <input type="text" id="businessPlz" placeholder="Standort">
+
+        <label>Beschreibung</label>
+        <textarea id="businessDescription" placeholder="Beschreibung"></textarea>
+
+        <label>Website</label>
+        <input type="text" id="businessWebsite" placeholder="Website-Link">
+
+        <label>Verteiler / Discord</label>
+        <input type="text" id="businessDiscord" placeholder="Verteiler / Discord-Link">
+
+        <button onclick="saveBusinessData()">
+          Firmendaten speichern
+        </button>
+
+      </section>
+
+      <section class="owner-card owner-only">
+
+        <h2>Mitarbeiter</h2>
+
+        <label>User ausw&auml;hlen</label>
+
+        <select id="employeeUserSelect">
+          <option value="">User ausw&auml;hlen</option>
+        </select>
+
+        <label>Rolle</label>
+
+        <select id="employeeRole">
+
+          <option value="mitarbeiter">
+            Mitarbeiter
+          </option>
+
+          <option value="inhaber">
+            Inhaber
+          </option>
+
+        </select>
+
+        <button onclick="addEmployee()">
+          Mitarbeiter hinzuf&uuml;gen
+        </button>
+
+        <div id="employeeList"></div>
+
+      </section>
+
+      <section class="owner-card owner-only">
+
+        <h2>Bewerbungssystem</h2>
+
+        <label class="checkbox-line">
+          <input type="checkbox" id="applicationsEnabled">
+          Bewerbungssystem nutzen
+        </label>
+
+        <label class="checkbox-line">
+          <input type="checkbox" id="applicationsOpen">
+          Bewerbungen offen
+        </label>
+
+        <label>Hinweistext</label>
+        <textarea id="applicationNote" placeholder="Hinweistext"></textarea>
+
+        <button onclick="saveApplicationSettings()">
+          Einstellungen speichern
+        </button>
+
+      </section>
+
+      <section class="owner-card owner-only">
+
+        <h2>Bewerbungsfragen</h2>
+
+        <div class="owner-two-column">
+
+          <input
+            type="text"
+            id="questionText"
+            placeholder="Neue Frage"
+          >
+
+          <button onclick="addQuestion()">
+            Frage hinzuf&uuml;gen
+          </button>
+
+        </div>
+
+        <div id="questionList"></div>
+
+      </section>
+
+      <section class="owner-card owner-wide-card owner-only">
+
+        <h2>Eingegangene Bewerbungen</h2>
+
+        <div id="applicationList"></div>
+
+      </section>
+
+    </div>
 
   </div>
 
 </div>
 
-<script src="./v2-company.js?v=2500"></script>
+<script src="./v2-company.js?v=3200"></script>
 
 <script>
 checkCompanyAccess();
