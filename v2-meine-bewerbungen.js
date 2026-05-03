@@ -298,22 +298,22 @@ function updateApplicationStats(applications){
 
   const open =
   applications.filter(app =>
-    app.status === "offen"
+    normalizeStatus(app.status) === "offen"
   ).length;
 
   const progress =
   applications.filter(app =>
-    app.status === "in_bearbeitung"
+    normalizeStatus(app.status) === "inbearbeitung"
   ).length;
 
   const accepted =
   applications.filter(app =>
-    app.status === "angenommen"
+    normalizeStatus(app.status) === "angenommen"
   ).length;
 
   const rejected =
   applications.filter(app =>
-    app.status === "abgelehnt"
+    normalizeStatus(app.status) === "abgelehnt"
   ).length;
 
   document.getElementById("openApplications").innerText =
@@ -327,6 +327,14 @@ function updateApplicationStats(applications){
 
   document.getElementById("rejectedApplications").innerText =
   rejected;
+}
+
+function normalizeStatus(status){
+
+  return String(status || "")
+    .toLowerCase()
+    .replaceAll("_","")
+    .replaceAll(" ","");
 }
 
 function escapeHtml(text){
