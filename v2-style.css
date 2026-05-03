@@ -2085,3 +2085,48 @@ margin-bottom:8px;
 .myapps-stats .hub-stat-card span{
 font-size:13px;
 }
+
+/* =========================
+   SUPERADMIN UPGRADE
+========================= */
+
+.superadmin-section-head{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:20px;
+flex-wrap:wrap;
+margin-bottom:24px;
+}
+
+.superadmin-section-head h2{
+margin-bottom:10px;
+}
+
+.superadmin-section-head p{
+color:#bdbdd0;
+line-height:1.6;
+}
+
+.superadmin-reviews-card{
+margin-top:34px;
+}
+
+.superadmin-card label{
+display:block;
+font-weight:bold;
+margin-bottom:8px;
+color:#ddd;
+}
+
+.superadmin-card input,
+.superadmin-card textarea,
+.superadmin-card select{
+background:#15152d;
+border-radius:18px;
+}
+
+.review-stars span{
+color:#ffc107;
+letter-spacing:1px;
+}
