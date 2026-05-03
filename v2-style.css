@@ -2316,3 +2316,79 @@ top:auto;
 }
 
 }
+
+/* =========================
+   USER MANAGEMENT UPGRADE
+========================= */
+
+.usermgmt-search{
+margin-bottom:30px;
+}
+
+.usermgmt-search input{
+margin-bottom:0;
+}
+
+.usermgmt-card{
+position:relative;
+overflow:hidden;
+background:
+linear-gradient(
+180deg,
+rgba(20,20,38,0.98),
+rgba(10,10,20,0.98)
+);
+}
+
+.usermgmt-card::before{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:4px;
+background:
+linear-gradient(
+90deg,
+#ff1493,
+#ff4db2
+);
+}
+
+.usermgmt-user{
+position:relative;
+overflow:hidden;
+background:#141428;
+border:1px solid rgba(255,255,255,0.06);
+box-shadow:0 0 18px rgba(0,0,0,0.18);
+transition:0.2s;
+}
+
+.usermgmt-user:hover{
+transform:translateY(-3px);
+border-color:rgba(255,20,147,0.28);
+box-shadow:0 0 25px rgba(255,20,147,0.14);
+}
+
+.usermgmt-user strong{
+font-size:22px;
+color:white;
+}
+
+.usermgmt-user p{
+line-height:1.5;
+}
+
+.usermgmt-actions button{
+padding:10px 14px;
+border-radius:13px;
+font-size:13px;
+}
+
+.usermgmt-card .muted{
+display:block;
+background:#141428;
+padding:18px;
+border-radius:18px;
+border:1px solid rgba(255,255,255,0.05);
+}

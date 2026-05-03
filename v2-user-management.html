@@ -6,84 +6,103 @@
 
   <title>Userverwaltung</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=600">
+  <link rel="stylesheet" href="./v2-style.css?v=3401">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="usermgmt-page">
+<header class="v2-hero">
 
-  <div class="usermgmt-topbar">
+  <div class="hero-top-actions">
 
-    <div>
+    <button onclick="window.location.href='v2-dashboard.html'">
+      Dashboard
+    </button>
 
-      <h1>Userverwaltung</h1>
+    <button onclick="logoutUser()">
+      Ausloggen
+    </button>
+
+  </div>
+
+</header>
+
+<div class="auth-page">
+
+  <div class="admin-wrapper">
+
+    <div class="dashboard-welcome-card">
+
+      <span class="hub-kicker">
+        Verwaltung
+      </span>
+
+      <h2>
+        Userverwaltung
+      </h2>
 
       <p>
-        User freischalten, sperren und Rollen verwalten
+        User freischalten, sperren, entsperren und Rollen verwalten.
       </p>
 
     </div>
 
-    <div class="usermgmt-buttons">
+    <div class="business-filter-bar usermgmt-search">
 
-      <button
-        class="owner-gray-btn"
-        onclick="window.location.href='v2-dashboard.html'"
+      <input
+        type="text"
+        id="userSearch"
+        placeholder="User suchen..."
       >
-        Zur&uuml;ck
-      </button>
-
-      <button onclick="logoutUser()">
-        Ausloggen
-      </button>
 
     </div>
 
-  </div>
+    <div class="usermgmt-grid">
 
-  <div class="usermgmt-search">
+      <section class="usermgmt-card">
 
-    <input
-      type="text"
-      id="userSearch"
-      placeholder="User suchen..."
-    >
+        <span class="hub-kicker">
+          Wartend
+        </span>
 
-  </div>
+        <h2>Wartet auf Freischaltung</h2>
 
-  <div class="usermgmt-grid">
+        <div id="pendingUsers"></div>
 
-    <section class="usermgmt-card">
+      </section>
 
-      <h2>Wartet auf Freischaltung</h2>
+      <section class="usermgmt-card">
 
-      <div id="pendingUsers"></div>
+        <span class="hub-kicker">
+          Aktiv
+        </span>
 
-    </section>
+        <h2>Freigeschaltete User</h2>
 
-    <section class="usermgmt-card">
+        <div id="approvedUsers"></div>
 
-      <h2>Freigeschaltete User</h2>
+      </section>
 
-      <div id="approvedUsers"></div>
+      <section class="usermgmt-card">
 
-    </section>
+        <span class="hub-kicker">
+          Gesperrt
+        </span>
 
-    <section class="usermgmt-card">
+        <h2>Gesperrte User</h2>
 
-      <h2>Gesperrte User</h2>
+        <div id="blockedUsers"></div>
 
-      <div id="blockedUsers"></div>
+      </section>
 
-    </section>
+    </div>
 
   </div>
 
 </div>
 
-<script src="./v2-user-management.js?v=500"></script>
+<script src="./v2-user-management.js?v=3400"></script>
 
 <script>
 checkUserManagementAccess();
