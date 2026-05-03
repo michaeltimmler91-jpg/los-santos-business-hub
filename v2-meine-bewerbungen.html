@@ -6,30 +6,69 @@
 
   <title>Meine Bewerbungen</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=260">
+  <link rel="stylesheet" href="./v2-style.css?v=3003">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="myapps-page">
+<header class="v2-hero">
+
+  <div class="hero-top-actions">
+
+    <button onclick="goBack()">
+      Dashboard
+    </button>
+
+  </div>
+
+</header>
+
+<div class="auth-page">
 
   <div class="myapps-topbar">
 
-    <div>
-      <h1>Meine Bewerbungen</h1>
-      <p>Status und Nachrichten deiner Bewerbungen</p>
-    </div>
+    <div class="hub-section-intro">
 
-    <button onclick="goBack()">
-      Zur&uuml;ck
-    </button>
+      <span class="hub-kicker">
+        Bewerbungscenter
+      </span>
+
+      <h2>
+        Meine Bewerbungen
+      </h2>
+
+      <p>
+        Hier siehst du alle gesendeten Bewerbungen, Antworten
+        der Unternehmen und euren kompletten Nachrichtenverlauf.
+      </p>
+
+    </div>
 
   </div>
 
   <div class="myapps-wrapper">
 
-    <h2>Gesendete Bewerbungen</h2>
+    <div class="dashboard-welcome-card">
+
+      <span class="hub-kicker">
+        Live-Übersicht
+      </span>
+
+      <h2>
+        Deine Bewerbungen
+      </h2>
+
+      <p>
+        Verfolge Antworten von Unternehmen, schreibe neue
+        Nachrichten und behalte den aktuellen Status jederzeit im Blick.
+      </p>
+
+    </div>
+
+    <h2 style="margin-bottom:24px;">
+      Gesendete Bewerbungen
+    </h2>
 
     <div id="applicationList"></div>
 
@@ -37,7 +76,7 @@
 
 </div>
 
-<script src="./v2-meine-bewerbungen.js?v=260"></script>
+<script src="./v2-meine-bewerbungen.js?v=3003"></script>
 
 <script>
 loadMyApplications();
