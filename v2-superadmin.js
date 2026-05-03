@@ -595,8 +595,8 @@ async function loadAllReviews(){
 
     div.innerHTML = `
       <div class="review-stars">
-        ${renderStars(review.rating)}
-      </div>
+	 	 <span>${renderStars(review.rating)}</span>
+	  </div>
 
       <div class="review-author">
 
@@ -647,7 +647,7 @@ async function loadAllReviews(){
           class="danger-btn"
           onclick="deleteReview(${review.id})"
         >
-          Bewertung löschen
+          Bewertung l&ouml;schen
         </button>
 
         ${
@@ -656,7 +656,7 @@ async function loadAllReviews(){
             <button
               onclick="deleteReviewReplyAdmin(${review.id})"
             >
-              Antwort löschen
+              Antwort l&ouml;schen
             </button>
           `
           : ""
@@ -728,8 +728,8 @@ function renderStars(rating){
   for(let i = 1; i <= 5; i++){
 
     stars += i <= rating
-    ? "?"
-    : "?";
+    ? "&#9733;"
+    : "&#9734;";
   }
 
   return stars;
