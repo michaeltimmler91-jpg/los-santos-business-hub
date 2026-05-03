@@ -43,7 +43,7 @@ async function loadBusinesses(){
   }
 
   businessesCache =
-  data || [];
+  sortBusinessesRandom(data || []);
 
   await loadReviews();
 
@@ -273,6 +273,27 @@ function renderBusinesses(businesses){
 
     list.appendChild(card);
   });
+}
+
+function sortBusinessesRandom(items){
+
+  const open =
+  items.filter(item => item.open === true);
+
+  const closed =
+  items.filter(item => item.open !== true);
+
+  return [
+    ...shuffleArray(open),
+    ...shuffleArray(closed)
+  ];
+}
+
+function shuffleArray(array){
+
+  return [...array].sort(() =>
+    Math.random() - 0.5
+  );
 }
 
 function filterBusinesses(){
