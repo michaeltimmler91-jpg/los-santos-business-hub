@@ -2458,3 +2458,94 @@ grid-template-columns:1fr;
 }
 
 }
+
+/* =========================
+   PUBLIC COMPANY PAGE UPGRADE
+========================= */
+
+.firma-public-page{
+padding:35px 20px 70px;
+background:#050510;
+}
+
+.firma-public-hero{
+background:
+linear-gradient(
+135deg,
+rgba(255,20,147,0.18),
+rgba(18,18,34,0.96) 45%
+);
+}
+
+.firma-public-title h1{
+font-size:54px;
+line-height:1;
+}
+
+.firma-public-info{
+margin-top:10px;
+}
+
+.firma-public-info a{
+box-shadow:0 0 18px rgba(255,20,147,0.18);
+}
+
+.firma-home-block{
+position:relative;
+overflow:hidden;
+background:
+linear-gradient(
+180deg,
+rgba(20,20,38,0.98),
+rgba(10,10,20,0.98)
+);
+}
+
+.firma-home-block::before{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:4px;
+background:
+linear-gradient(
+90deg,
+#ff1493,
+#ff4db2
+);
+}
+
+.firma-home-block h2{
+font-size:34px;
+line-height:1.1;
+}
+
+.firma-home-content{
+background:#141428;
+border:1px solid rgba(255,255,255,0.05);
+border-radius:18px;
+padding:18px;
+}
+
+.firma-home-image{
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:0 0 22px rgba(0,0,0,0.28);
+}
+
+.review-create-box{
+border:1px solid rgba(255,255,255,0.06);
+}
+
+.review-item{
+background:#141428;
+border-radius:22px;
+}
+
+@media(max-width:700px){
+
+.firma-public-title h1{
+font-size:34px;
+}
+
+}
