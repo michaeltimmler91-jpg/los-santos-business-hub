@@ -64,12 +64,16 @@ business.name;
 document.getElementById("applicationNote").innerText =
 business.application_note || "";
 
+const businessLogo =
+document.getElementById("businessLogo");
+
 if(
+  businessLogo &&
   business.image_url &&
   business.image_url.trim() !== ""
 ){
 
-  document.getElementById("businessLogo").src =
+  businessLogo.src =
   business.image_url;
 }
 
