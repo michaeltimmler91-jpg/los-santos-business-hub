@@ -1668,3 +1668,179 @@ select:focus{
     font-size:25px;
   }
 }
+
+/* =========================
+   DASHBOARD UPGRADE
+========================= */
+
+.dashboard-welcome-card{
+position:relative;
+overflow:hidden;
+background:
+linear-gradient(
+135deg,
+rgba(255,20,147,0.14),
+rgba(18,18,34,0.96) 45%
+);
+border:1px solid rgba(255,20,147,0.22);
+border-radius:32px;
+padding:34px;
+margin-bottom:34px;
+box-shadow:
+0 0 35px rgba(255,20,147,0.16);
+}
+
+.dashboard-welcome-card::before{
+content:"";
+position:absolute;
+top:-120px;
+right:-120px;
+width:260px;
+height:260px;
+border-radius:50%;
+background:
+radial-gradient(
+circle,
+rgba(255,20,147,0.22),
+transparent 70%
+);
+pointer-events:none;
+}
+
+.dashboard-welcome-card h2{
+font-size:46px;
+margin-bottom:12px;
+line-height:1;
+}
+
+.dashboard-welcome-card p{
+font-size:18px;
+color:#d0d0df;
+line-height:1.7;
+}
+
+.dashboard-actions{
+margin-top:0;
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(290px,1fr));
+gap:24px;
+}
+
+.dashboard-card{
+position:relative;
+overflow:hidden;
+min-height:210px;
+padding:28px;
+background:
+linear-gradient(
+180deg,
+rgba(20,20,38,0.98),
+rgba(10,10,20,0.98)
+);
+border:1px solid rgba(255,20,147,0.14);
+box-shadow:
+0 0 30px rgba(255,20,147,0.12);
+transition:0.25s;
+}
+
+.dashboard-card::before{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:4px;
+background:
+linear-gradient(
+90deg,
+#ff1493,
+#ff4db2
+);
+opacity:0.85;
+}
+
+.dashboard-card::after{
+content:"";
+position:absolute;
+top:-80px;
+right:-80px;
+width:180px;
+height:180px;
+border-radius:50%;
+background:
+radial-gradient(
+circle,
+rgba(255,20,147,0.10),
+transparent 70%
+);
+pointer-events:none;
+}
+
+.dashboard-card:hover{
+transform:
+translateY(-8px)
+scale(1.015);
+border-color:
+rgba(255,20,147,0.38);
+box-shadow:
+0 0 45px rgba(255,20,147,0.22);
+}
+
+.dashboard-card strong{
+display:block;
+font-size:32px;
+line-height:1.1;
+margin-bottom:16px;
+color:#ff1493;
+}
+
+.dashboard-card span{
+display:block;
+line-height:1.7;
+font-size:16px;
+color:#d0d0df;
+}
+
+/* BADGES */
+
+.dashboard-badge{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+width:max-content;
+padding:7px 14px;
+border-radius:999px;
+font-size:12px;
+font-weight:900;
+letter-spacing:0.6px;
+text-transform:uppercase;
+margin-bottom:18px;
+background:#181830;
+border:1px solid rgba(255,255,255,0.06);
+color:#fff;
+}
+
+.badge-admin{
+background:#3a1020;
+border-color:rgba(255,20,147,0.45);
+color:#ff6fc2;
+}
+
+.badge-firma{
+background:#10283a;
+border-color:rgba(0,217,255,0.35);
+color:#6fe7ff;
+}
+
+.badge-public{
+background:#102c1f;
+border-color:rgba(0,255,136,0.35);
+color:#6fffc1;
+}
+
+.badge-account{
+background:#2b2210;
+border-color:rgba(255,193,7,0.35);
+color:#ffd76f;
+}
