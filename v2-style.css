@@ -2091,7 +2091,7 @@ width:100%;
 height:340px;
 background:
 url("./header.jpg")
-center center / cover
+center center / contain
 no-repeat;
 overflow:hidden;
 border-bottom:1px solid rgba(255,20,147,0.35);
