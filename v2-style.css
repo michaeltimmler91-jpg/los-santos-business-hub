@@ -2087,7 +2087,7 @@ flex-wrap:wrap;
 
 .v2-hero{
 position:relative;
-width:100%;
+width:360;
 height:300px;
 overflow:hidden;
 border-bottom:1px solid rgba(255,20,147,0.35);
@@ -2098,8 +2098,8 @@ rgba(0,0,0,0.15),
 rgba(5,5,16,0.72)
 ),
 url("./header.jpg");
-background-position:center top;
-background-size:100% auto;
+background-position:center center;
+background-size:cover;
 background-repeat:no-repeat;
 background-color:#050510;
 }
@@ -2150,7 +2150,7 @@ box-shadow:
 }
 
 .auth-page{
-margin-top:-40px;
+margin-top:0px;
 position:relative;
 z-index:3;
 }
