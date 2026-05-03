@@ -6,122 +6,156 @@
 
   <title>Firmenhomepage verwalten</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=2100">
+  <link rel="stylesheet" href="./v2-style.css?v=3301">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="owner-page">
+<header class="v2-hero">
 
-  <div class="owner-topbar">
+  <div class="hero-top-actions">
 
-    <div>
-      <h1>Homepage verwalten</h1>
+    <button onclick="window.location.href='v2-dashboard.html'">
+      Dashboard
+    </button>
+
+    <button onclick="logoutUser()">
+      Ausloggen
+    </button>
+
+  </div>
+
+</header>
+
+<div class="auth-page">
+
+  <div class="admin-wrapper">
+
+    <div class="dashboard-welcome-card">
+
+      <span class="hub-kicker">
+        Firmenhomepage
+      </span>
+
+      <h2>
+        Homepage verwalten
+      </h2>
+
       <p id="businessTitle">
         Firma ausw&auml;hlen
       </p>
-    </div>
 
-    <div class="owner-topbar-buttons">
-
-      <button
-        class="owner-gray-btn"
-        onclick="window.location.href='v2-dashboard.html'"
-      >
-        Zur&uuml;ck
-      </button>
-
-      <button onclick="logoutUser()">
-        Ausloggen
-      </button>
+      <p>
+        Erstelle eigene Inhalte f&uuml;r die öffentliche Firmenseite:
+        Texte, Bilder, Preislisten, Regeln und Ank&uuml;ndigungen.
+      </p>
 
     </div>
 
-  </div>
+    <div class="owner-select-box">
 
-  <div class="owner-select-box">
+      <label>Firma ausw&auml;hlen</label>
 
-    <label>Firma ausw&auml;hlen</label>
+      <select id="businessSelect"></select>
 
-    <select id="businessSelect"></select>
+      <div id="roleInfo" class="register-info">
+        Nur Inhaber k&ouml;nnen Firmenhomepages bearbeiten.
+      </div>
 
-    <div id="roleInfo" class="register-info">
-      Nur Inhaber k&ouml;nnen Firmenhomepages bearbeiten.
     </div>
 
-  </div>
+    <div id="homepageContent" class="owner-grid hidden">
 
-  <div id="homepageContent" class="owner-grid hidden">
+      <section class="owner-card">
 
-    <section class="owner-card">
+        <span class="hub-kicker">
+          Neuer Inhalt
+        </span>
 
-      <h2>Neuer Block</h2>
+        <h2>Neuer Block</h2>
 
-      <label>Blocktyp</label>
-      <select id="homepageBlockType">
-        <option value="text">Textblock</option>
-        <option value="image">Bild + Text</option>
-        <option value="price">Preisliste</option>
-        <option value="rules">Hausordnung / Regeln</option>
-        <option value="event">Event / Ank&uuml;ndigung</option>
-      </select>
+        <label>Blocktyp</label>
+        <select id="homepageBlockType">
+          <option value="text">Textblock</option>
+          <option value="image">Bild + Text</option>
+          <option value="price">Preisliste</option>
+          <option value="rules">Hausordnung / Regeln</option>
+          <option value="event">Event / Ank&uuml;ndigung</option>
+        </select>
 
-      <label>Titel</label>
-      <input
-        type="text"
-        id="homepageBlockTitle"
-        placeholder="Titel"
-      >
-
-      <label>Bild URL optional</label>
-      <input
-        type="text"
-        id="homepageBlockImage"
-        placeholder="https://..."
-      >
-
-      <label>Inhalt</label>
-      <textarea
-        id="homepageBlockContent"
-        placeholder="Inhalt schreiben..."
-      ></textarea>
-
-      <label>Reihenfolge</label>
-      <input
-        type="number"
-        id="homepageBlockOrder"
-        value="1"
-      >
-
-      <label class="checkbox-line">
+        <label>Titel</label>
         <input
-          type="checkbox"
-          id="homepageBlockVisible"
-          checked
+          type="text"
+          id="homepageBlockTitle"
+          placeholder="Titel"
         >
-        Sichtbar
-      </label>
 
-      <button onclick="createHomepageBlock()">
-        Block erstellen
-      </button>
+        <label>Bild URL optional</label>
+        <input
+          type="text"
+          id="homepageBlockImage"
+          placeholder="https://..."
+        >
 
-    </section>
+        <label>Inhalt</label>
+        <textarea
+          id="homepageBlockContent"
+          placeholder="Inhalt schreiben..."
+        ></textarea>
 
-    <section class="owner-card owner-wide-card">
+        <label>Reihenfolge</label>
+        <input
+          type="number"
+          id="homepageBlockOrder"
+          value="1"
+        >
 
-      <h2>Bestehende Bl&ouml;cke</h2>
+        <label class="checkbox-line">
+          <input
+            type="checkbox"
+            id="homepageBlockVisible"
+            checked
+          >
+          Sichtbar
+        </label>
 
-      <div id="homepageBlocksList"></div>
+        <button onclick="createHomepageBlock()">
+          Block erstellen
+        </button>
 
-    </section>
+      </section>
+
+      <section class="owner-card owner-wide-card">
+
+        <div class="company-board-header">
+
+          <span class="hub-kicker">
+            Inhalte
+          </span>
+
+          <h2>
+            Bestehende Bl&ouml;cke
+          </h2>
+
+          <p>
+            Hier kannst du vorhandene Homepage-Bl&ouml;cke bearbeiten,
+            sortieren oder l&ouml;schen.
+          </p>
+
+        </div>
+
+        <div id="homepageBlocksList"></div>
+
+      </section>
+
+    </div>
 
   </div>
 
 </div>
 
-<script src="./v2-homepage-editor.js?v=2100"></script>
+<script src="./v2-homepage-editor.js?v=3300"></script>
 
 <script>
 checkHomepageEditorAccess();

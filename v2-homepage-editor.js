@@ -159,7 +159,11 @@ async function loadHomepageBlocks(){
             Reihenfolge:
             ${escapeHtml(block.sort_order)}
             |
-            ${block.visible ? "Sichtbar" : "Versteckt"}
+            ${
+  			block.visible
+  			? "<span class='hub-badge hub-open'>Sichtbar</span>"
+  			: "<span class='hub-badge hub-closed'>Versteckt</span>"
+			}
           </p>
         </div>
 
