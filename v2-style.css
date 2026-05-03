@@ -2549,3 +2549,16 @@ font-size:34px;
 }
 
 }
+
+.hero-left-actions{
+left:24px;
+right:auto;
+}
+
+@media(max-width:700px){
+
+.hero-left-actions{
+left:14px;
+}
+
+}
