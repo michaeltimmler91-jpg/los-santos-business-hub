@@ -6,62 +6,97 @@
 
   <title>Mein Account</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=2400">
+  <link rel="stylesheet" href="./v2-style.css?v=3501">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="login-page">
+<header class="v2-hero">
 
-  <div class="login-card">
+  <div class="hero-top-actions">
 
-    <div class="login-logo">
-      Los Santos<br>
-      <span>Business Hub</span>
+    <button onclick="window.location.href='v2-dashboard.html'">
+      Dashboard
+    </button>
+
+  </div>
+
+</header>
+
+<div class="auth-page">
+
+  <div class="admin-wrapper">
+
+    <div class="dashboard-welcome-card">
+
+      <span class="hub-kicker">
+        Account
+      </span>
+
+      <h2>
+        Mein Account
+      </h2>
+
+      <p>
+        Hier kannst du deinen Anzeigenamen und dein Passwort &auml;ndern.
+      </p>
+
     </div>
 
-    <h1>Mein Account</h1>
+    <div class="account-grid">
 
-    <p>
-      Hier kannst du deinen Anzeigenamen und dein Passwort &auml;ndern.
-    </p>
+      <section class="owner-card account-card">
 
-    <label>Anzeigename</label>
+        <span class="hub-kicker">
+          Profil
+        </span>
 
-    <input
-      type="text"
-      id="displayName"
-      placeholder="Anzeigename"
-    >
+        <h2>Anzeigename</h2>
 
-    <button onclick="saveDisplayName()">
-      Anzeigename speichern
-    </button>
+        <label>Anzeigename</label>
 
-    <hr class="account-divider">
+        <input
+          type="text"
+          id="displayName"
+          placeholder="Anzeigename"
+        >
 
-    <input
-      type="password"
-      id="newPassword"
-      placeholder="Neues Passwort"
-    >
+        <button onclick="saveDisplayName()">
+          Anzeigename speichern
+        </button>
 
-    <input
-      type="password"
-      id="newPasswordRepeat"
-      placeholder="Neues Passwort wiederholen"
-    >
+      </section>
 
-    <button onclick="changePassword()">
-      Passwort speichern
-    </button>
+      <section class="owner-card account-card">
 
-    <div class="login-links">
+        <span class="hub-kicker">
+          Sicherheit
+        </span>
 
-      <a href="v2-dashboard.html">
-        Zur&uuml;ck zum Dashboard
-      </a>
+        <h2>Passwort</h2>
+
+        <label>Neues Passwort</label>
+
+        <input
+          type="password"
+          id="newPassword"
+          placeholder="Neues Passwort"
+        >
+
+        <label>Passwort wiederholen</label>
+
+        <input
+          type="password"
+          id="newPasswordRepeat"
+          placeholder="Neues Passwort wiederholen"
+        >
+
+        <button onclick="changePassword()">
+          Passwort speichern
+        </button>
+
+      </section>
 
     </div>
 
@@ -69,7 +104,7 @@
 
 </div>
 
-<script src="./v2-account.js?v=2400"></script>
+<script src="./v2-account.js?v=3500"></script>
 
 <script>
 loadAccount();
