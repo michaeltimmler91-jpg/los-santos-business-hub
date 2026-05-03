@@ -185,9 +185,6 @@ async function loadFirma(){
           : ""
         }
 
-        <a href="v2-firmen.html">
-          Zur&uuml;ck zur &Uuml;bersicht
-        </a>
 
       </div>
 
