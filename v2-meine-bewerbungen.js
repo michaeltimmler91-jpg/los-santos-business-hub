@@ -69,6 +69,8 @@ async function loadMyApplications(){
 
   if(!data || data.length === 0){
 
+  updateApplicationStats(data);
+
     list.innerHTML =
     "<p class='muted'>Du hast noch keine Bewerbungen geschrieben.</p>";
 
@@ -290,6 +292,41 @@ function goBack(){
 
   window.location.href =
   "v2-dashboard.html";
+}
+
+function updateApplicationStats(applications){
+
+  const open =
+  applications.filter(app =>
+    app.status === "offen"
+  ).length;
+
+  const progress =
+  applications.filter(app =>
+    app.status === "in_bearbeitung"
+  ).length;
+
+  const accepted =
+  applications.filter(app =>
+    app.status === "angenommen"
+  ).length;
+
+  const rejected =
+  applications.filter(app =>
+    app.status === "abgelehnt"
+  ).length;
+
+  document.getElementById("openApplications").innerText =
+  open;
+
+  document.getElementById("progressApplications").innerText =
+  progress;
+
+  document.getElementById("acceptedApplications").innerText =
+  accepted;
+
+  document.getElementById("rejectedApplications").innerText =
+  rejected;
 }
 
 function escapeHtml(text){
