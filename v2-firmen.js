@@ -181,7 +181,7 @@ function renderBusinesses(businesses){
             `
           }
         </div>
-        
+
 		<div class="hub-badges">
 
           <span class="
@@ -334,6 +334,12 @@ async function logoutUser(){
 
   window.location.href =
   "v2-login.html";
+}
+
+function goDashboard(){
+
+  window.location.href =
+  "v2-dashboard.html";
 }
 
 function escapeHtml(text){
