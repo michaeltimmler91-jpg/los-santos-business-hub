@@ -2129,3 +2129,27 @@ margin-top:-40px;
 position:relative;
 z-index:3;
 }
+.hub-location-box{
+display:inline-flex;
+align-items:center;
+gap:10px;
+background:#0d0d1d;
+border:1px solid rgba(255,255,255,0.06);
+border-radius:14px;
+padding:10px 14px;
+width:max-content;
+max-width:100%;
+}
+
+.hub-location-box span{
+color:#ff1493;
+font-size:12px;
+font-weight:900;
+text-transform:uppercase;
+letter-spacing:0.8px;
+}
+
+.hub-location-box strong{
+color:#ddd;
+font-size:15px;
+}

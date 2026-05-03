@@ -220,9 +220,10 @@ function renderBusinesses(businesses){
           </a>
         </h2>
 
-        <p class="hub-location">
-          ${escapeHtml(business.plz || "")}
-        </p>
+        <div class="hub-location-box">
+  <span>Standort</span>
+  <strong>${escapeHtml(business.plz || "Nicht eingetragen")}</strong>
+</div>
 
 
 
