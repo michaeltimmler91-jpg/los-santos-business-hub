@@ -1669,6 +1669,21 @@ select:focus{
   }
 }
 
+@media(max-width:900px){
+
+  .myapps-stats{
+    grid-template-columns:
+    repeat(2,1fr);
+  }
+}
+
+@media(max-width:500px){
+
+  .myapps-stats{
+    grid-template-columns:1fr;
+  }
+}
+
 /* =========================
    DASHBOARD UPGRADE
 ========================= */
@@ -2038,4 +2053,35 @@ background:#141428;
 padding:24px;
 border-radius:22px;
 border:1px solid rgba(255,255,255,0.05);
+}
+
+.myapps-stats{
+grid-template-columns:
+repeat(4,1fr);
+margin-bottom:34px;
+}
+
+.myapps-stats .hub-stat-card strong{
+font-size:38px;
+}
+.myapps-stats{
+display:grid;
+grid-template-columns:
+repeat(4,minmax(0,1fr));
+gap:16px;
+margin-bottom:34px;
+}
+
+.myapps-stats .hub-stat-card{
+padding:18px;
+border-radius:20px;
+}
+
+.myapps-stats .hub-stat-card strong{
+font-size:30px;
+margin-bottom:8px;
+}
+
+.myapps-stats .hub-stat-card span{
+font-size:13px;
 }
