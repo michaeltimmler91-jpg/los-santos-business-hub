@@ -78,30 +78,40 @@ if(
 
 async function loadQuestions(){
 
+  const box =
+  document.getElementById("questionsBox");
+
+  box.innerHTML =
+  "<p class='muted'>Lade Bewerbungsfragen...</p>";
+
   const { data, error } =
   await supabaseClient
   .from("application_questions")
   .select("*")
-  .eq("business_id", businessId)
-  .order("sort_order");
+  .eq("business_id", Number(businessId))
+  .order("sort_order", {
+    ascending:true
+  });
 
   if(error){
+
     console.error(error);
+
+    box.innerHTML =
+    "<p class='muted'>Bewerbungsfragen konnten nicht geladen werden.</p>";
+
     return;
   }
 
   questionsCache =
   data || [];
 
-  const box =
-  document.getElementById("questionsBox");
-
   box.innerHTML = "";
 
   if(questionsCache.length === 0){
 
     box.innerHTML =
-    "<p class='muted'>Diese Firma hat noch keine eigenen Fragen hinterlegt.</p>";
+    "<p class='muted'>Diese Firma hat noch keine Bewerbungsfragen hinterlegt.</p>";
 
     return;
   }
@@ -112,7 +122,7 @@ async function loadQuestions(){
     document.createElement("div");
 
     div.className =
-"application-question";
+    "application-question";
 
     div.innerHTML = `
       <label>
