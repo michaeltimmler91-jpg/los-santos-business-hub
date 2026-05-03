@@ -6,7 +6,7 @@
 
   <title>V2 Dashboard</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=3001">
+  <link rel="stylesheet" href="./v2-style.css?v=3002">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -28,11 +28,15 @@
 
   <div class="admin-wrapper">
 
-    <div class="hub-section-intro">
+    <div class="dashboard-welcome-card">
 
-      <span class="hub-kicker">Account-Bereich</span>
+      <span class="hub-kicker">
+        Account-Bereich
+      </span>
 
-      <h2>Dashboard</h2>
+      <h2>
+        Dashboard
+      </h2>
 
       <p id="welcomeTitle">
         Willkommen
@@ -47,38 +51,131 @@
     <div class="dashboard-actions">
 
       <a href="v2-firmen.html" class="dashboard-card">
-        <strong>Firmen ansehen</strong>
-        <span>Unternehmen anschauen und Bewerbungen schreiben</span>
+
+        <div class="dashboard-badge badge-public">
+          Live
+        </div>
+
+        <strong>
+          Firmen ansehen
+        </strong>
+
+        <span>
+          Unternehmen anschauen und Bewertungen schreiben
+        </span>
+
       </a>
 
       <a href="v2-meine-bewerbungen.html" class="dashboard-card">
-        <strong>Meine Bewerbungen</strong>
-        <span>Status und Antworten deiner Bewerbungen ansehen</span>
+
+        <div class="dashboard-badge badge-public">
+          Bewerbungen
+        </div>
+
+        <strong>
+          Meine Bewerbungen
+        </strong>
+
+        <span>
+          Status und Antworten deiner Bewerbungen ansehen
+        </span>
+
       </a>
 
-      <a href="v2-superadmin.html" id="superadminLink" class="dashboard-card hidden">
-        <strong>Superadmin Panel</strong>
-        <span>Firmen verwalten, Inhaber &auml;ndern und System steuern</span>
+      <a
+        href="v2-superadmin.html"
+        id="superadminLink"
+        class="dashboard-card hidden"
+      >
+
+        <div class="dashboard-badge badge-admin">
+          Admin
+        </div>
+
+        <strong>
+          Superadmin Panel
+        </strong>
+
+        <span>
+          Firmen verwalten, Inhaber ändern und System steuern
+        </span>
+
       </a>
 
-      <a href="v2-company.html" id="ownerLink" class="dashboard-card hidden">
-        <strong>Firmenverwaltung</strong>
-        <span>Eigene Firma verwalten, Mitarbeiter und Bewerbungen bearbeiten</span>
+      <a
+        href="v2-company.html"
+        id="ownerLink"
+        class="dashboard-card hidden"
+      >
+
+        <div class="dashboard-badge badge-firma">
+          Firma
+        </div>
+
+        <strong>
+          Firmenverwaltung
+        </strong>
+
+        <span>
+          Eigene Firma verwalten, Mitarbeiter und Bewertungen bearbeiten
+        </span>
+
       </a>
 
-      <a href="v2-homepage-editor.html" class="dashboard-card" id="homepageEditorLink">
-        <strong>Homepage verwalten</strong>
-        <span>Eigene Firmenhomepage bearbeiten</span>
+      <a
+        href="v2-homepage-editor.html"
+        class="dashboard-card"
+        id="homepageEditorLink"
+      >
+
+        <div class="dashboard-badge badge-firma">
+          Homepage
+        </div>
+
+        <strong>
+          Homepage verwalten
+        </strong>
+
+        <span>
+          Eigene Firmenhomepage bearbeiten
+        </span>
+
       </a>
 
-      <a href="v2-user-management.html" id="userManagementLink" class="dashboard-card hidden">
-        <strong>Userverwaltung</strong>
-        <span>User freischalten, sperren und Rollen verwalten</span>
+      <a
+        href="v2-user-management.html"
+        id="userManagementLink"
+        class="dashboard-card hidden"
+      >
+
+        <div class="dashboard-badge badge-admin">
+          Verwaltung
+        </div>
+
+        <strong>
+          Userverwaltung
+        </strong>
+
+        <span>
+          User freischalten, sperren und Rollen verwalten
+        </span>
+
       </a>
 
       <a href="v2-account.html" class="dashboard-card">
-        <strong>Mein Account</strong>
-        <span>Account-Einstellungen verwalten</span>
+
+        <div class="dashboard-badge badge-account">
+          Account
+        </div>
+
+        <strong>
+          Mein Account
+        </strong>
+
+        <span>
+          Account-Einstellungen verwalten
+        </span>
+
       </a>
 
     </div>
