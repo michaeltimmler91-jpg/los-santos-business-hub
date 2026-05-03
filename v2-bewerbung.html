@@ -6,23 +6,21 @@
 
   <title>Bewerbung</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=504">
+  <link rel="stylesheet" href="./v2-style.css?v=505">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
 <header class="v2-hero">
 
   <div class="hero-top-actions hero-left-actions">
-
     <button onclick="window.location.href='v2-firmen.html'">
       Firmen&uuml;bersicht
     </button>
-
   </div>
 
   <div class="hero-top-actions">
-
     <button onclick="window.location.href='v2-dashboard.html'">
       Dashboard
     </button>
@@ -30,90 +28,76 @@
     <button onclick="logoutUser()">
       Ausloggen
     </button>
-
   </div>
 
 </header>
 
-
 <div class="auth-page">
 
-<div class="admin-wrapper">
+  <div class="admin-wrapper">
 
-  <div class="dashboard-welcome-card">
+    <div class="dashboard-welcome-card">
 
-    <span class="hub-kicker">
-      Bewerbungssystem
-    </span>
+      <span class="hub-kicker">
+        Bewerbungssystem
+      </span>
 
-    <h2 id="businessTitle">
-      Bewerbung
-    </h2>
+      <h2 id="businessTitle">
+        Bewerbung
+      </h2>
 
-    <p>
-      Bewirb dich direkt &uuml;ber den Los Santos Business Hub.
-    </p>
+      <p>
+        Bewirb dich direkt &uuml;ber den Los Santos Business Hub.
+      </p>
 
-  </div>
+    </div>
 
-  <div class="bewerbung-wrapper">
+    <div class="bewerbung-wrapper">
 
-  <div class="application-box">
+      <div class="application-box">
 
-      <div class="bewerbung-top">
+        <div class="application-badge">
+          Bewerbungssystem
+        </div>
 
-        <div>
+        <h2 class="application-company" id="businessName">
+          Firma wird geladen...
+        </h2>
 
-          <div class="application-badge">
-            Bewerbungssystem
-          </div>
+        <div id="applicationNote" class="bewerbung-note"></div>
 
-          <h2
-  			class="application-company"
- 			id="businessName"
-		  >
-            Firma wird geladen...
-          </h2>
+        <div id="questionsBox" class="bewerbung-questions"></div>
+
+        <div class="application-question">
+
+          <label>
+            Zus&auml;tzliche Nachricht
+          </label>
+
+          <textarea
+            id="messageText"
+            placeholder="Optional kannst du hier noch etwas zus&auml;tzlich schreiben..."
+          ></textarea>
+
+        </div>
+
+        <div class="application-send">
+
+          <button onclick="sendApplication()">
+            Bewerbung absenden
+          </button>
 
         </div>
 
       </div>
-
-     <div class="application-question bewerbung-note">
-
-      <div
-        id="questionsBox"
-        class="bewerbung-questions"
-      ></div>
-
-      <div class="application-question">
-
-        <label>
-          Zus&auml;tzliche Nachricht
-        </label>
-
-        <textarea
-          id="messageText"
-          placeholder="Optional kannst du hier noch etwas zus&auml;tzlich schreiben..."
-        ></textarea>
-
-      </div>
-
-      <div class="application-send">
-
-<button onclick="sendApplication()">
-        
-        Bewerbung absenden
-      </button>
 
     </div>
 
   </div>
 
 </div>
-</div>
-</div>
-<script src="./v2-bewerbung.js?v=502"></script>
+
+<script src="./v2-bewerbung.js?v=503"></script>
 
 <script>
 loadApplicationPage();
