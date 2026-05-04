@@ -197,7 +197,7 @@ async function loadFirma(){
     html += `
 
       <section class="firma-home-block firma-home-intro">
-
+	  html += await renderTeamSection(business.id);
         <h2>
           &Uuml;ber uns
         </h2>
@@ -600,4 +600,63 @@ function escapeHtml(text){
   .replaceAll(">", "&gt;")
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
+}
+
+async function renderTeamSection(businessId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_team_members")
+  .select("*")
+  .eq("business_id", businessId)
+  .eq("visible", true)
+  .order("sort_order", {
+    ascending:true
+  })
+  .order("display_name", {
+    ascending:true
+  });
+
+  if(error){
+    console.error(error);
+    return "";
+  }
+
+  if(!data || data.length === 0){
+    return "";
+  }
+
+  return `
+    <section class="firma-home-block firma-team-block">
+
+      <div class="firma-block-label">
+        Team
+      </div>
+
+      <h2>
+        Unser Team
+      </h2>
+
+      <div class="firma-team-grid">
+
+        ${
+          data.map(member => `
+            <div class="firma-team-card">
+
+              <strong>
+                ${escapeHtml(member.display_name)}
+              </strong>
+
+              <span>
+                ${escapeHtml(member.rank_title)}
+              </span>
+
+            </div>
+          `).join("")
+        }
+
+      </div>
+
+    </section>
+  `;
 }

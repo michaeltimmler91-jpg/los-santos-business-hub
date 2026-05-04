@@ -229,7 +229,48 @@
         <div id="employeeList"></div>
 
       </section>
+<section class="owner-card owner-only">
 
+  <h2>Teamliste f&uuml;r Homepage</h2>
+
+  <p class="muted">
+    Diese Liste ist nur f&uuml;r die &ouml;ffentliche Firmenhomepage.
+    Die R&auml;nge kannst du frei benennen.
+  </p>
+
+  <label>Name</label>
+  <input
+    type="text"
+    id="teamDisplayName"
+    placeholder="Name z.B. Lennox Davis"
+  >
+
+  <label>Rang / Position</label>
+  <input
+    type="text"
+    id="teamRankTitle"
+    placeholder="z.B. Inhaber, Leitung, Fahrer, Azubi"
+  >
+
+  <label>Sortierung</label>
+  <input
+    type="number"
+    id="teamSortOrder"
+    value="0"
+  >
+
+  <label class="checkbox-line">
+    <input type="checkbox" id="teamVisible" checked>
+    Auf Homepage anzeigen
+  </label>
+
+  <button onclick="addTeamMember()">
+    Teammitglied speichern
+  </button>
+
+  <div id="teamList"></div>
+
+</section>
       <section class="owner-card owner-only">
 
         <h2>Bewerbungssystem</h2>

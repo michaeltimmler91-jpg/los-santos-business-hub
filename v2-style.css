@@ -1915,3 +1915,34 @@ select:focus{
     grid-template-columns:1fr;
   }
 }
+
+.firma-team-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+  margin-top:18px;
+}
+
+.firma-team-card{
+  padding:18px;
+  border-radius:18px;
+  background:#141428;
+  border:1px solid rgba(255,20,147,0.18);
+  box-shadow:0 0 18px rgba(255,20,147,0.08);
+}
+
+.firma-team-card strong{
+  display:block;
+  font-size:22px;
+  margin-bottom:8px;
+  color:white;
+}
+
+.firma-team-card span{
+  display:inline-block;
+  color:#ff1493;
+  font-weight:900;
+  font-size:13px;
+  letter-spacing:0.8px;
+  text-transform:uppercase;
+}

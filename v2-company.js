@@ -128,6 +128,7 @@ async function loadBusiness(businessId){
     await loadQuestions();
     await loadApplications();
     await loadCompanyReviews();
+    await loadTeamList();
   }
 
   await loadBoardPosts();
@@ -1425,4 +1426,253 @@ function escapeHtml(text){
   .replaceAll(">", "&gt;")
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
+}
+async function loadTeamList(){
+
+  const list =
+  document.getElementById("teamList");
+
+  if(!list){
+    return;
+  }
+
+  list.innerHTML =
+  "<p class='muted'>Lade Teamliste...</p>";
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_team_members")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .order("sort_order", {
+    ascending:true
+  })
+  .order("display_name", {
+    ascending:true
+  });
+
+  if(error){
+    console.error(error);
+    list.innerHTML =
+    "<p class='muted'>Teamliste konnte nicht geladen werden.</p>";
+    return;
+  }
+
+  if(!data || data.length === 0){
+    list.innerHTML =
+    "<p class='muted'>Noch keine Teammitglieder eingetragen.</p>";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  data.forEach(member => {
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "business-item";
+
+    div.innerHTML = `
+      <strong>
+        ${escapeHtml(member.display_name)}
+      </strong>
+
+      <p>
+        Rang:
+        ${escapeHtml(member.rank_title)}
+      </p>
+
+      <p>
+        Sichtbar:
+        ${member.visible ? "Ja" : "Nein"}
+      </p>
+
+      <p>
+        Sortierung:
+        ${member.sort_order || 0}
+      </p>
+
+      <div class="owner-button-row">
+
+        <button onclick="editTeamMember(${member.id})">
+          Bearbeiten
+        </button>
+
+        <button
+          class="danger-btn"
+          onclick="deleteTeamMember(${member.id})"
+        >
+          L&ouml;schen
+        </button>
+
+      </div>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+async function addTeamMember(){
+
+  if(!isOwner()){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  const displayName =
+  document.getElementById("teamDisplayName")
+  .value
+  .trim();
+
+  const rankTitle =
+  document.getElementById("teamRankTitle")
+  .value
+  .trim();
+
+  const sortOrder =
+  Number(
+    document.getElementById("teamSortOrder").value
+  ) || 0;
+
+  const visible =
+  document.getElementById("teamVisible").checked;
+
+  if(!displayName || !rankTitle){
+    alert("Bitte Name und Rang eintragen");
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_team_members")
+  .insert({
+    business_id:currentBusiness.id,
+    display_name:displayName,
+    rank_title:rankTitle,
+    sort_order:sortOrder,
+    visible:visible
+  });
+
+  if(error){
+    alert("Teammitglied konnte nicht gespeichert werden");
+    console.error(error);
+    return;
+  }
+
+  document.getElementById("teamDisplayName").value = "";
+  document.getElementById("teamRankTitle").value = "";
+  document.getElementById("teamSortOrder").value = "0";
+  document.getElementById("teamVisible").checked = true;
+
+  await loadTeamList();
+
+  alert("Teammitglied gespeichert");
+}
+
+async function editTeamMember(memberId){
+
+  if(!isOwner()){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  const { data: member, error } =
+  await supabaseClient
+  .from("business_team_members")
+  .select("*")
+  .eq("id", memberId)
+  .eq("business_id", currentBusiness.id)
+  .maybeSingle();
+
+  if(error || !member){
+    alert("Teammitglied nicht gefunden");
+    console.error(error);
+    return;
+  }
+
+  const displayName =
+  prompt(
+    "Name:",
+    member.display_name || ""
+  );
+
+  if(displayName === null){
+    return;
+  }
+
+  const rankTitle =
+  prompt(
+    "Rang / Position:",
+    member.rank_title || ""
+  );
+
+  if(rankTitle === null){
+    return;
+  }
+
+  const sortOrder =
+  prompt(
+    "Sortierung:",
+    member.sort_order || 0
+  );
+
+  if(sortOrder === null){
+    return;
+  }
+
+  const visible =
+  confirm(
+    "Soll dieses Teammitglied auf der Homepage sichtbar sein?\n\nOK = Ja\nAbbrechen = Nein"
+  );
+
+  const { error:updateError } =
+  await supabaseClient
+  .from("business_team_members")
+  .update({
+    display_name:displayName.trim(),
+    rank_title:rankTitle.trim(),
+    sort_order:Number(sortOrder) || 0,
+    visible:visible
+  })
+  .eq("id", memberId)
+  .eq("business_id", currentBusiness.id);
+
+  if(updateError){
+    alert("Teammitglied konnte nicht gespeichert werden");
+    console.error(updateError);
+    return;
+  }
+
+  await loadTeamList();
+
+  alert("Teammitglied aktualisiert");
+}
+
+async function deleteTeamMember(memberId){
+
+  if(!isOwner()){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  if(!confirm("Teammitglied wirklich l&ouml;schen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_team_members")
+  .delete()
+  .eq("id", memberId)
+  .eq("business_id", currentBusiness.id);
+
+  if(error){
+    alert("Teammitglied konnte nicht gel&ouml;scht werden");
+    console.error(error);
+    return;
+  }
+
+  await loadTeamList();
 }
