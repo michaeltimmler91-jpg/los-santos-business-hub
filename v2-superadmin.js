@@ -131,38 +131,72 @@ async function createBusiness(){
 
 async function uploadBusinessImage(file, businessName){
 
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif"
+  ];
+
+  if(!allowedTypes.includes(file.type)){
+    alert("Bitte nur JPG, PNG, WEBP oder GIF hochladen.");
+    return "";
+  }
+
+  const maxSize =
+  5 * 1024 * 1024;
+
+  if(file.size > maxSize){
+    alert("Bild ist zu gro&szlig;. Maximal 5 MB.");
+    return "";
+  }
+
   const fileExt =
-  file.name.split(".").pop();
+  (file.name.split(".").pop() || "png")
+  .toLowerCase();
 
   const cleanName =
   businessName
   .toLowerCase()
-  .replaceAll(" ", "-")
-  .replaceAll("&", "und")
-  .replaceAll("'", "")
-  .replaceAll(".", "")
-  .replaceAll("/", "-");
+  .replace(/[^a-z0-9]+/g, "-")
+  .replace(/^-+|-+$/g, "");
 
   const fileName =
-  cleanName + "-" + Date.now() + "." + fileExt;
+  "business-" +
+  cleanName +
+  "-" +
+  Date.now() +
+  "." +
+  fileExt;
 
-  const { error } =
+  const { data, error } =
   await supabaseClient.storage
   .from("business-images")
-  .upload(fileName, file);
+  .upload(fileName, file, {
+    cacheControl:"3600",
+    upsert:false
+  });
 
   if(error){
-    alert("Bild konnte nicht hochgeladen werden");
-    console.error(error);
+    console.error("Upload-Fehler:", error);
+
+    alert(
+      "Bild konnte nicht hochgeladen werden.\n\n" +
+      (
+        error.message ||
+        "Bitte pr&uuml;fe Supabase Storage Bucket und Policies."
+      )
+    );
+
     return "";
   }
 
-  const { data } =
+  const { data:publicData } =
   supabaseClient.storage
   .from("business-images")
-  .getPublicUrl(fileName);
+  .getPublicUrl(data.path);
 
-  return data.publicUrl;
+  return publicData.publicUrl;
 }
 
 async function loadBusinesses(){
