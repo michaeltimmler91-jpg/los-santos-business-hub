@@ -267,7 +267,7 @@ async function loadBusinesses(){
                 Inhaber
               </span>
 
-              ${renderBusinessMemberList(owners)}
+              ${renderBusinessMemberList(owners, true)}
 
             </div>
 
@@ -277,7 +277,7 @@ async function loadBusinesses(){
                 Mitarbeiter
               </span>
 
-              ${renderBusinessMemberList(employees)}
+              ${renderBusinessMemberList(employees, true)}
 
             </div>
 
@@ -370,7 +370,7 @@ async function openEditModal(businessId){
   .remove("hidden");
 }
 
-function renderBusinessMemberList(members){
+function renderBusinessMemberList(members, showActions){
 
   if(!members || members.length === 0){
 
@@ -400,6 +400,9 @@ function renderBusinessMemberList(members){
           ? profile.login_name
           : member.user_id;
 
+          const isOwner =
+          member.member_role === "inhaber";
+
           return `
             <div class="business-admin-member-pill">
 
@@ -410,6 +413,30 @@ function renderBusinessMemberList(members){
               <span>
                 ${escapeHtml(loginName || "-")}
               </span>
+
+              ${
+                showActions
+                ? `
+                  <div class="owner-button-row">
+
+                    <button
+                      class="owner-gray-btn"
+                      onclick="changeBusinessMemberRole(${member.id}, '${isOwner ? "mitarbeiter" : "inhaber"}')"
+                    >
+                      Als ${isOwner ? "Mitarbeiter" : "Inhaber"} setzen
+                    </button>
+
+                    <button
+                      class="danger-btn"
+                      onclick="deleteBusinessMember(${member.id})"
+                    >
+                      Entfernen
+                    </button>
+
+                  </div>
+                `
+                : ""
+              }
 
             </div>
           `;
@@ -446,7 +473,7 @@ function renderEditBusinessMembers(members){
         Inhaber
       </span>
 
-      ${renderBusinessMemberList(owners)}
+      ${renderBusinessMemberList(owners, true)}
 
     </div>
 
@@ -456,10 +483,85 @@ function renderEditBusinessMembers(members){
         Mitarbeiter
       </span>
 
-      ${renderBusinessMemberList(employees)}
+      ${renderBusinessMemberList(employees, true)}
 
     </div>
   `;
+}
+
+async function changeBusinessMemberRole(memberId, newRole){
+
+  if(
+    newRole !== "inhaber" &&
+    newRole !== "mitarbeiter"
+  ){
+    alert("Ungültiger Rang");
+    return;
+  }
+
+  const roleText =
+  newRole === "inhaber"
+  ? "Inhaber"
+  : "Mitarbeiter";
+
+  if(!confirm("Rang wirklich zu " + roleText + " ändern?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_members")
+  .update({
+    member_role:newRole
+  })
+  .eq("id", memberId);
+
+  if(error){
+    alert("Rang konnte nicht geändert werden");
+    console.error(error);
+    return;
+  }
+
+  alert("Rang wurde geändert");
+
+  if(currentEditBusiness){
+    const members =
+    await loadBusinessMembers(currentEditBusiness.id);
+
+    renderEditBusinessMembers(members);
+  }
+
+  await loadBusinesses();
+}
+
+async function deleteBusinessMember(memberId){
+
+  if(!confirm("Person wirklich aus der Firma entfernen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_members")
+  .delete()
+  .eq("id", memberId);
+
+  if(error){
+    alert("Person konnte nicht entfernt werden");
+    console.error(error);
+    return;
+  }
+
+  alert("Person wurde aus der Firma entfernt");
+
+  if(currentEditBusiness){
+    const members =
+    await loadBusinessMembers(currentEditBusiness.id);
+
+    renderEditBusinessMembers(members);
+  }
+
+  await loadBusinesses();
 }
 
 function fillEditOwnerSelect(selectedUserId){
