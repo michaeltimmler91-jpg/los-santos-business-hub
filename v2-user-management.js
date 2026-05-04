@@ -76,6 +76,7 @@ async function loadUsers(){
   await supabaseClient
   .from("profiles")
   .select("*")
+  .or("deleted.is.null,deleted.eq.false")
   .order("display_name");
 
   if(error){
@@ -481,7 +482,7 @@ async function deleteUser(userId){
 
   const confirmDelete =
   confirm(
-    "User wirklich komplett löschen?\n\nDas entfernt:\n- Bewerbungen\n- Nachrichten\n- Rollen\n- Profil\n\nDieser Vorgang kann NICHT rückgängig gemacht werden."
+    "User wirklich löschen?\n\nDer User wird nicht komplett aus der Datenbank entfernt, sondern deaktiviert:\n- wird aus der Userverwaltung ausgeblendet\n- wird gesperrt\n- wird auf nicht freigeschaltet gesetzt\n- Loginname bleibt belegt\n\nDadurch kann sich niemand mit demselben Loginnamen neu registrieren."
   );
 
   if(!confirmDelete){
@@ -490,23 +491,27 @@ async function deleteUser(userId){
 
   const { error } =
   await supabaseClient
-  .rpc("delete_user_full", {
-    target_user_id:userId
-  });
+  .from("profiles")
+  .update({
+    deleted:true,
+    blocked:true,
+    approved:false
+  })
+  .eq("user_id", userId);
 
   if(error){
 
     console.error(error);
 
     alert(
-      "User konnte nicht gelöscht werden.\n\nFehler:\n" +
+      "User konnte nicht deaktiviert werden.\n\nFehler:\n" +
       error.message
     );
 
     return;
   }
 
-  alert("User wurde gelöscht");
+  alert("User wurde deaktiviert und ausgeblendet");
 
   await loadUsers();
 }
