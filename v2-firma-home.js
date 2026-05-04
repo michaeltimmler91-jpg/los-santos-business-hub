@@ -185,7 +185,6 @@ async function loadFirma(){
           : ""
         }
 
-
       </div>
 
     </div>
@@ -197,7 +196,7 @@ async function loadFirma(){
     html += `
 
       <section class="firma-home-block firma-home-intro">
-	  
+
         <h2>
           &Uuml;ber uns
         </h2>
@@ -210,6 +209,8 @@ async function loadFirma(){
 
     `;
   }
+
+  html += await renderVehicleCatalog(business.id);
 
   if(!blocks || blocks.length === 0){
 
@@ -238,10 +239,127 @@ async function loadFirma(){
   }
 
   html += await renderReviews(business.id);
-  html += await renderTeamSection(business.id);
 
   container.innerHTML =
   html;
+}
+
+async function renderVehicleCatalog(businessId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_vehicles")
+  .select("*")
+  .eq("business_id", businessId)
+  .eq("visible", true)
+  .order("sort_order", {
+    ascending:true
+  })
+  .order("vehicle_name", {
+    ascending:true
+  });
+
+  if(error){
+    console.error(error);
+    return "";
+  }
+
+  if(!data || data.length === 0){
+    return "";
+  }
+
+  return `
+    <section class="firma-home-block vehicle-catalog-block">
+
+      <div class="firma-block-label">
+        Fahrzeugkatalog
+      </div>
+
+      <h2>
+        Fahrzeugkatalog
+      </h2>
+
+      <div class="vehicle-catalog-grid">
+
+        ${
+          data.map(vehicle => `
+            <div class="vehicle-catalog-card">
+
+              ${
+                vehicle.image_url
+                ? `
+                  <img
+                    src="${escapeHtml(vehicle.image_url)}"
+                    alt="${escapeHtml(vehicle.vehicle_name)}"
+                  >
+                `
+                : `
+                  <div class="vehicle-catalog-noimage">
+                    Kein Bild
+                  </div>
+                `
+              }
+
+              <div class="vehicle-catalog-content">
+
+                <div class="vehicle-catalog-head">
+
+                  <div>
+
+                    <strong>
+                      ${escapeHtml(vehicle.vehicle_name)}
+                    </strong>
+
+                    <span>
+                      ${escapeHtml(vehicle.category || "Fahrzeug")}
+                    </span>
+
+                  </div>
+
+                  <em class="${
+                    vehicle.available
+                    ? "vehicle-available"
+                    : "vehicle-unavailable"
+                  }">
+                    ${
+                      vehicle.available
+                      ? "Verf&uuml;gbar"
+                      : "Nicht verf&uuml;gbar"
+                    }
+                  </em>
+
+                </div>
+
+                ${
+                  vehicle.price
+                  ? `
+                    <div class="vehicle-price">
+                      ${escapeHtml(vehicle.price)}
+                    </div>
+                  `
+                  : ""
+                }
+
+                ${
+                  vehicle.description
+                  ? `
+                    <p>
+                      ${formatText(vehicle.description)}
+                    </p>
+                  `
+                  : ""
+                }
+
+              </div>
+
+            </div>
+          `).join("")
+        }
+
+      </div>
+
+    </section>
+  `;
 }
 
 function renderBlock(block){
@@ -430,8 +548,8 @@ async function renderReviews(businessId){
         <div class="review-item">
 
           <div class="review-stars">
-			  <span>${renderStars(review.rating)}</span>
-		  </div>
+            <span>${renderStars(review.rating)}</span>
+          </div>
 
           <div class="review-author">
 
@@ -601,63 +719,4 @@ function escapeHtml(text){
   .replaceAll(">", "&gt;")
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
-}
-
-async function renderTeamSection(businessId){
-
-  const { data, error } =
-  await supabaseClient
-  .from("business_team_members")
-  .select("*")
-  .eq("business_id", businessId)
-  .eq("visible", true)
-  .order("sort_order", {
-    ascending:true
-  })
-  .order("display_name", {
-    ascending:true
-  });
-
-  if(error){
-    console.error(error);
-    return "";
-  }
-
-  if(!data || data.length === 0){
-    return "";
-  }
-
-  return `
-    <section class="firma-home-block firma-team-block">
-
-      <div class="firma-block-label">
-        Team
-      </div>
-
-      <h2>
-        Unser Team
-      </h2>
-
-      <div class="firma-team-grid">
-
-        ${
-          data.map(member => `
-            <div class="firma-team-card">
-
-              <strong>
-                ${escapeHtml(member.display_name)}
-              </strong>
-
-              <span>
-                ${escapeHtml(member.rank_title)}
-              </span>
-
-            </div>
-          `).join("")
-        }
-
-      </div>
-
-    </section>
-  `;
 }
