@@ -46,6 +46,7 @@ async function loadProfiles(){
   await supabaseClient
   .from("profiles")
   .select("*")
+  .or("deleted.is.null,deleted.eq.false")
   .order("display_name");
 
   if(error){
@@ -187,7 +188,10 @@ async function loadBusinesses(){
   list.innerHTML = "";
 
   if(businessesCache.length === 0){
-    list.innerHTML = "<p class='muted'>Noch keine Firmen vorhanden.</p>";
+
+    list.innerHTML =
+    "<p class='muted'>Noch keine Firmen vorhanden.</p>";
+
     return;
   }
 
@@ -196,13 +200,15 @@ async function loadBusinesses(){
     const members =
     await loadBusinessMembers(business.id);
 
-    const owner =
-    members.find(member =>
+    const owners =
+    members.filter(member =>
       member.member_role === "inhaber"
     );
 
-    const ownerProfile =
-    owner ? getProfileByUserId(owner.user_id) : null;
+    const employees =
+    members.filter(member =>
+      member.member_role === "mitarbeiter"
+    );
 
     const div =
     document.createElement("div");
@@ -214,31 +220,68 @@ async function loadBusinesses(){
       <div class="business-row">
 
         <div class="business-preview">
+
           ${
             business.image_url
-            ? `<img src="${escapeHtml(business.image_url)}" alt="Firmenbild">`
-            : `<div class="no-image">Kein Bild</div>`
+            ? `
+              <img
+                src="${escapeHtml(business.image_url)}"
+                alt="Firmenbild"
+              >
+            `
+            : `
+              <div class="no-image">
+                Kein Bild
+              </div>
+            `
           }
+
         </div>
 
         <div class="business-info">
 
-          <strong>${escapeHtml(business.name)}</strong>
-
-          <p>Kategorie: ${escapeHtml(business.category || "-")}</p>
-
-          <p>Standort: ${escapeHtml(business.plz || "-")}</p>
-
-          <p>Lieferung erlaubt: ${business.has_delivery ? "Ja" : "Nein"}</p>
+          <strong>
+            ${escapeHtml(business.name)}
+          </strong>
 
           <p>
-            Inhaber:
-            ${
-              ownerProfile
-              ? escapeHtml(ownerProfile.display_name)
-              : "Kein Inhaber"
-            }
+            Kategorie:
+            ${escapeHtml(business.category || "-")}
           </p>
+
+          <p>
+            Standort:
+            ${escapeHtml(business.plz || "-")}
+          </p>
+
+          <p>
+            Lieferung erlaubt:
+            ${business.has_delivery ? "Ja" : "Nein"}
+          </p>
+
+          <div class="business-admin-members">
+
+            <div class="business-admin-member-group">
+
+              <span class="hub-kicker">
+                Inhaber
+              </span>
+
+              ${renderBusinessMemberList(owners)}
+
+            </div>
+
+            <div class="business-admin-member-group">
+
+              <span class="hub-kicker">
+                Mitarbeiter
+              </span>
+
+              ${renderBusinessMemberList(employees)}
+
+            </div>
+
+          </div>
 
           <button onclick="openEditModal(${business.id})">
             Firma bearbeiten
@@ -319,10 +362,104 @@ async function openEditModal(businessId){
     currentOwner ? currentOwner.user_id : ""
   );
 
+  renderEditBusinessMembers(members);
+
   document
   .getElementById("editModal")
   .classList
   .remove("hidden");
+}
+
+function renderBusinessMemberList(members){
+
+  if(!members || members.length === 0){
+
+    return `
+      <p class="muted">
+        Keine eingetragen
+      </p>
+    `;
+  }
+
+  return `
+    <div class="business-admin-member-list">
+
+      ${
+        members.map(member => {
+
+          const profile =
+          getProfileByUserId(member.user_id);
+
+          const displayName =
+          profile
+          ? profile.display_name
+          : "Unbekannter User";
+
+          const loginName =
+          profile
+          ? profile.login_name
+          : member.user_id;
+
+          return `
+            <div class="business-admin-member-pill">
+
+              <strong>
+                ${escapeHtml(displayName)}
+              </strong>
+
+              <span>
+                ${escapeHtml(loginName || "-")}
+              </span>
+
+            </div>
+          `;
+        }).join("")
+      }
+
+    </div>
+  `;
+}
+
+function renderEditBusinessMembers(members){
+
+  const box =
+  document.getElementById("editBusinessMembersList");
+
+  if(!box){
+    return;
+  }
+
+  const owners =
+  (members || []).filter(member =>
+    member.member_role === "inhaber"
+  );
+
+  const employees =
+  (members || []).filter(member =>
+    member.member_role === "mitarbeiter"
+  );
+
+  box.innerHTML = `
+    <div class="business-admin-member-group">
+
+      <span class="hub-kicker">
+        Inhaber
+      </span>
+
+      ${renderBusinessMemberList(owners)}
+
+    </div>
+
+    <div class="business-admin-member-group">
+
+      <span class="hub-kicker">
+        Mitarbeiter
+      </span>
+
+      ${renderBusinessMemberList(employees)}
+
+    </div>
+  `;
 }
 
 function fillEditOwnerSelect(selectedUserId){
@@ -481,7 +618,7 @@ async function changeOwner(businessId, ownerUserId){
     .eq("id", existingMember.id);
 
     if(updateError){
-      alert("Inhaber konnte nicht ge\u00e4ndert werden");
+      alert("Inhaber konnte nicht geändert werden");
       console.error(updateError);
       return false;
     }
@@ -510,11 +647,11 @@ async function changeOwner(businessId, ownerUserId){
 async function deleteBusiness(){
 
   if(!currentEditBusiness){
-    alert("Keine Firma ausgew\u00e4hlt");
+    alert("Keine Firma ausgewählt");
     return;
   }
 
-  if(!confirm("Firma wirklich l\u00f6schen?")){
+  if(!confirm("Firma wirklich löschen?")){
     return;
   }
 
@@ -525,12 +662,12 @@ async function deleteBusiness(){
   .eq("id", currentEditBusiness.id);
 
   if(error){
-    alert("Firma konnte nicht gel\u00f6scht werden");
+    alert("Firma konnte nicht gelöscht werden");
     console.error(error);
     return;
   }
 
-  alert("Firma gel\u00f6scht");
+  alert("Firma gelöscht");
 
   closeEditModal();
 
@@ -595,8 +732,8 @@ async function loadAllReviews(){
 
     div.innerHTML = `
       <div class="review-stars">
-	 	 <span>${renderStars(review.rating)}</span>
-	  </div>
+        <span>${renderStars(review.rating)}</span>
+      </div>
 
       <div class="review-author">
 
@@ -647,7 +784,7 @@ async function loadAllReviews(){
           class="danger-btn"
           onclick="deleteReview(${review.id})"
         >
-          Bewertung l&ouml;schen
+          Bewertung löschen
         </button>
 
         ${
@@ -656,7 +793,7 @@ async function loadAllReviews(){
             <button
               onclick="deleteReviewReplyAdmin(${review.id})"
             >
-              Antwort l&ouml;schen
+              Antwort löschen
             </button>
           `
           : ""

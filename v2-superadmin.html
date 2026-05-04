@@ -177,11 +177,31 @@
     </label>
 
     <label>Firmeninhaber</label>
-    <select id="editOwnerSelect">
-      <option value="">Kein Inhaber</option>
-    </select>
+<select id="editOwnerSelect">
+  <option value="">Kein Inhaber</option>
+</select>
 
-    <div class="owner-button-row">
+<div class="business-members-admin-box">
+
+  <span class="hub-kicker">
+    Team
+  </span>
+
+  <h3>
+    Eingetragene Personen
+  </h3>
+
+  <div id="editBusinessMembersList">
+
+    <p class="muted">
+      Noch keine Firma ausgew&auml;hlt.
+    </p>
+
+  </div>
+
+</div>
+
+<div class="owner-button-row">
 
       <button onclick="saveBusinessEdit()">
         Speichern
@@ -201,7 +221,7 @@
 
 </div>
 
-<script src="./v2-superadmin.js?v=3100"></script>
+<script src="./v2-superadmin.js?v=3101"></script>
 
 <script>
 checkSuperadmin();
