@@ -11,6 +11,7 @@ let currentUser = null;
 let currentBusiness = null;
 let currentMembership = null;
 let companyMemberships = [];
+let editingVehicleId = null;
 
 async function checkCompanyAccess(){
 
@@ -103,8 +104,6 @@ async function loadBusiness(businessId){
 
   currentBusiness =
   currentMembership.businesses_v2;
-  console.log("Aktuelle Firma:", currentBusiness.name);
-console.log("Kategorie:", currentBusiness.category);
 
   document.getElementById("companyContent").classList.remove("hidden");
 
@@ -136,6 +135,7 @@ console.log("Kategorie:", currentBusiness.category);
   }
 
   await loadBoardPosts();
+  await loadCompanyNotifications();
 }
 
 function isOwner(){
@@ -157,6 +157,36 @@ function toggleOwnerAreas(){
       area.classList.add("hidden");
     }
   });
+}
+
+function showCompanyTab(tabId, button, notificationType){
+
+  document
+  .querySelectorAll(".company-pane")
+  .forEach(pane => {
+    pane.classList.remove("active");
+  });
+
+  document
+  .querySelectorAll(".company-command-card")
+  .forEach(card => {
+    card.classList.remove("active");
+  });
+
+  const pane =
+  document.getElementById(tabId);
+
+  if(pane){
+    pane.classList.add("active");
+  }
+
+  if(button){
+    button.classList.add("active");
+  }
+
+  if(notificationType){
+    markCompanyNotificationSeen(notificationType);
+  }
 }
 
 function fillOwnerFields(){
@@ -397,7 +427,6 @@ async function removeEmployee(memberId){
   alert("Mitarbeiter entfernt");
 
   await loadEmployees();
-
   await reloadMemberships();
 }
 
@@ -1149,6 +1178,7 @@ async function createBoardPost(){
   document.getElementById("boardPinned").checked = false;
 
   await loadBoardPosts();
+  await loadCompanyNotifications();
 
   alert("Beitrag erstellt");
 }
@@ -1178,6 +1208,7 @@ async function deleteBoardPost(postId){
   }
 
   await loadBoardPosts();
+  await loadCompanyNotifications();
 }
 
 async function loadCompanyReviews(){
@@ -1233,8 +1264,8 @@ async function loadCompanyReviews(){
 
     div.innerHTML = `
       <div class="review-stars">
-	  <span>${renderStars(review.rating)}</span>
-	  </div>
+        <span>${renderStars(review.rating)}</span>
+      </div>
 
       <div class="review-author">
         ${escapeHtml(profile ? profile.display_name : "Unbekannt")}
@@ -1347,20 +1378,6 @@ async function deleteReviewReply(reviewId){
   await loadCompanyReviews();
 }
 
-function renderStars(rating){
-
-  let stars = "";
-
-  for(let i = 1; i <= 5; i++){
-
-    stars += i <= rating
-    ? "&#9733;"
-    : "&#9734;";
-  }
-
-  return stars;
-}
-
 async function getProfileByUserId(userId){
 
   const { data, error } =
@@ -1378,59 +1395,6 @@ async function getProfileByUserId(userId){
   return data;
 }
 
-function formatStatus(status){
-
-  switch(status){
-
-    case "offen":
-      return "Offen";
-
-    case "in_bearbeitung":
-      return "In Bearbeitung";
-
-    case "angenommen":
-      return "Angenommen";
-
-    case "abgelehnt":
-      return "Abgelehnt";
-
-    default:
-      return status || "Offen";
-  }
-}
-
-function formatMemberRole(role){
-
-  switch(role){
-
-    case "inhaber":
-      return "Inhaber";
-
-    case "mitarbeiter":
-      return "Mitarbeiter";
-
-    default:
-      return role || "Unbekannt";
-  }
-}
-
-async function logoutUser(){
-
-  await supabaseClient.auth.signOut();
-
-  window.location.href =
-  "v2-login.html";
-}
-
-function escapeHtml(text){
-
-  return String(text || "")
-  .replaceAll("&", "&amp;")
-  .replaceAll("<", "&lt;")
-  .replaceAll(">", "&gt;")
-  .replaceAll('"', "&quot;")
-  .replaceAll("'", "&#039;");
-}
 async function loadTeamList(){
 
   const list =
@@ -1680,7 +1644,6 @@ async function deleteTeamMember(memberId){
 
   await loadTeamList();
 }
-let editingVehicleId = null;
 
 function isCarDealer(){
 
@@ -1691,16 +1654,24 @@ function isCarDealer(){
 function toggleVehicleArea(){
 
   const section =
-  document.getElementById("vehicleManagementSection");
+  document.getElementById("tab-vehicles");
 
-  if(!section){
+  const button =
+  document.getElementById("vehicleTabButton");
+
+  if(!section || !button){
     return;
   }
 
   if(isOwner() && isCarDealer()){
+
     section.classList.remove("hidden");
+    button.classList.remove("hidden");
+
   }else{
+
     section.classList.add("hidden");
+    button.classList.add("hidden");
   }
 }
 
@@ -2053,4 +2024,305 @@ function clearVehicleForm(){
   if(visible){
     visible.checked = true;
   }
+}
+
+async function getCompanyNotificationRow(){
+
+  if(!currentBusiness || !currentUser){
+    return null;
+  }
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_notifications")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .eq("user_id", currentUser.id)
+  .maybeSingle();
+
+  if(error){
+    console.error(error);
+    return null;
+  }
+
+  if(data){
+    return data;
+  }
+
+  const now =
+  new Date().toISOString();
+
+  const { data:newRow, error:insertError } =
+  await supabaseClient
+  .from("business_notifications")
+  .insert({
+    business_id:currentBusiness.id,
+    user_id:currentUser.id,
+    last_board_view:now,
+    last_application_view:now,
+    last_review_view:now
+  })
+  .select("*")
+  .single();
+
+  if(insertError){
+    console.error(insertError);
+    return null;
+  }
+
+  return newRow;
+}
+
+async function loadCompanyNotifications(){
+
+  if(!currentBusiness || !currentUser){
+    return;
+  }
+
+  const row =
+  await getCompanyNotificationRow();
+
+  if(!row){
+    return;
+  }
+
+  await updateBoardBadge(row);
+  await updateApplicationBadge(row);
+  await updateReviewBadge(row);
+}
+
+async function updateBoardBadge(row){
+
+  const badge =
+  document.getElementById("badge-board");
+
+  if(!badge){
+    return;
+  }
+
+  let query =
+  supabaseClient
+  .from("business_board_posts")
+  .select("id", {
+    count:"exact",
+    head:true
+  })
+  .eq("business_id", currentBusiness.id);
+
+  if(row.last_board_view){
+    query =
+    query.gt("created_at", row.last_board_view);
+  }
+
+  const { count, error } =
+  await query;
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  setCompanyBadge(badge, count);
+}
+
+async function updateApplicationBadge(row){
+
+  const badge =
+  document.getElementById("badge-applications");
+
+  if(!badge || !isOwner()){
+    return;
+  }
+
+  let query =
+  supabaseClient
+  .from("applications")
+  .select("id", {
+    count:"exact",
+    head:true
+  })
+  .eq("business_id", currentBusiness.id);
+
+  if(row.last_application_view){
+    query =
+    query.gt("created_at", row.last_application_view);
+  }
+
+  const { count, error } =
+  await query;
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  setCompanyBadge(badge, count);
+}
+
+async function updateReviewBadge(row){
+
+  const badge =
+  document.getElementById("badge-reviews");
+
+  if(!badge || !isOwner()){
+    return;
+  }
+
+  let query =
+  supabaseClient
+  .from("business_reviews")
+  .select("id", {
+    count:"exact",
+    head:true
+  })
+  .eq("business_id", currentBusiness.id);
+
+  if(row.last_review_view){
+    query =
+    query.gt("created_at", row.last_review_view);
+  }
+
+  const { count, error } =
+  await query;
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  setCompanyBadge(badge, count);
+}
+
+function setCompanyBadge(badge, count){
+
+  if(count && count > 0){
+
+    badge.innerText =
+    count > 9
+    ? "9+"
+    : String(count);
+
+    badge.classList.remove("hidden");
+
+  }else{
+
+    badge.classList.add("hidden");
+  }
+}
+
+async function markCompanyNotificationSeen(type){
+
+  if(!currentBusiness || !currentUser){
+    return;
+  }
+
+  const now =
+  new Date().toISOString();
+
+  const updateData = {};
+
+  if(type === "board"){
+    updateData.last_board_view = now;
+  }
+
+  if(type === "applications"){
+    updateData.last_application_view = now;
+  }
+
+  if(type === "reviews"){
+    updateData.last_review_view = now;
+  }
+
+  if(Object.keys(updateData).length === 0){
+    return;
+  }
+
+  const row =
+  await getCompanyNotificationRow();
+
+  if(!row){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_notifications")
+  .update(updateData)
+  .eq("business_id", currentBusiness.id)
+  .eq("user_id", currentUser.id);
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  await loadCompanyNotifications();
+}
+
+function formatStatus(status){
+
+  switch(status){
+
+    case "offen":
+      return "Offen";
+
+    case "in_bearbeitung":
+      return "In Bearbeitung";
+
+    case "angenommen":
+      return "Angenommen";
+
+    case "abgelehnt":
+      return "Abgelehnt";
+
+    default:
+      return status || "Offen";
+  }
+}
+
+function formatMemberRole(role){
+
+  switch(role){
+
+    case "inhaber":
+      return "Inhaber";
+
+    case "mitarbeiter":
+      return "Mitarbeiter";
+
+    default:
+      return role || "Unbekannt";
+  }
+}
+
+function renderStars(rating){
+
+  let stars = "";
+
+  for(let i = 1; i <= 5; i++){
+
+    stars += i <= rating
+    ? "&#9733;"
+    : "&#9734;";
+  }
+
+  return stars;
+}
+
+async function logoutUser(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+  "v2-login.html";
+}
+
+function escapeHtml(text){
+
+  return String(text || "")
+  .replaceAll("&", "&amp;")
+  .replaceAll("<", "&lt;")
+  .replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;")
+  .replaceAll("'", "&#039;");
 }
