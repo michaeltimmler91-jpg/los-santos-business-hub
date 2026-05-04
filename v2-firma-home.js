@@ -720,3 +720,133 @@ function escapeHtml(text){
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
 }
+
+async function renderVehicleCatalog(businessId){
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_vehicles")
+  .select("*")
+  .eq("business_id", businessId)
+  .order("sort_order", {
+    ascending:true
+  })
+  .order("vehicle_name", {
+    ascending:true
+  });
+
+  if(error){
+    console.error(error);
+
+    return `
+      <section class="firma-home-block vehicle-catalog-block">
+        <h2>Fahrzeugkatalog</h2>
+        <div class="firma-home-content">
+          Fahrzeuge konnten nicht geladen werden.
+        </div>
+      </section>
+    `;
+  }
+
+  const vehicles =
+  (data || []).filter(vehicle =>
+    vehicle.visible !== false
+  );
+
+  if(vehicles.length === 0){
+    return "";
+  }
+
+  return `
+    <section class="firma-home-block vehicle-catalog-block">
+
+      <div class="firma-block-label">
+        Fahrzeugkatalog
+      </div>
+
+      <h2>
+        Fahrzeugkatalog
+      </h2>
+
+      <div class="vehicle-catalog-grid">
+
+        ${
+          vehicles.map(vehicle => `
+            <div class="vehicle-catalog-card">
+
+              ${
+                vehicle.image_url
+                ? `
+                  <img
+                    src="${escapeHtml(vehicle.image_url)}"
+                    alt="${escapeHtml(vehicle.vehicle_name)}"
+                  >
+                `
+                : `
+                  <div class="vehicle-catalog-noimage">
+                    Kein Bild
+                  </div>
+                `
+              }
+
+              <div class="vehicle-catalog-content">
+
+                <div class="vehicle-catalog-head">
+
+                  <div>
+
+                    <strong>
+                      ${escapeHtml(vehicle.vehicle_name)}
+                    </strong>
+
+                    <span>
+                      ${escapeHtml(vehicle.category || "Fahrzeug")}
+                    </span>
+
+                  </div>
+
+                  <em class="${
+                    vehicle.available
+                    ? "vehicle-available"
+                    : "vehicle-unavailable"
+                  }">
+                    ${
+                      vehicle.available
+                      ? "Verf&uuml;gbar"
+                      : "Nicht verf&uuml;gbar"
+                    }
+                  </em>
+
+                </div>
+
+                ${
+                  vehicle.price
+                  ? `
+                    <div class="vehicle-price">
+                      ${escapeHtml(vehicle.price)}
+                    </div>
+                  `
+                  : ""
+                }
+
+                ${
+                  vehicle.description
+                  ? `
+                    <p>
+                      ${formatText(vehicle.description)}
+                    </p>
+                  `
+                  : ""
+                }
+
+              </div>
+
+            </div>
+          `).join("")
+        }
+
+      </div>
+
+    </section>
+  `;
+}
