@@ -2463,3 +2463,33 @@ select:focus{
     flex-direction:column;
   }
 }
+
+/* Firmenkarten: lange Namen sauber anzeigen */
+.hub-card{
+  min-height:360px;
+}
+
+.hub-card-content{
+  min-height:170px;
+}
+
+.hub-card-content h2{
+  min-height:72px;
+  font-size:clamp(22px, 1.6vw, 30px);
+  line-height:1.08;
+  margin-bottom:10px;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  word-break:normal;
+  overflow-wrap:anywhere;
+}
+
+.hub-card-content h2 a{
+  display:block;
+}
+
+.hub-buttons{
+  margin-top:auto;
+}
