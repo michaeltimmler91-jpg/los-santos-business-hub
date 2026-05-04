@@ -2160,3 +2160,57 @@ select:focus{
     height:180px;
   }
 }
+/* =========================
+   FIRMA HOME TABS
+========================= */
+
+.firma-tabs{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin:0 0 24px;
+  padding:14px;
+  border-radius:22px;
+  background:#0d0d1d;
+  border:1px solid rgba(255,20,147,0.18);
+  position:sticky;
+  top:10px;
+  z-index:20;
+}
+
+.firma-tab-btn{
+  flex:1;
+  min-width:150px;
+  padding:13px 16px;
+  border-radius:16px;
+  background:#181830;
+  border:1px solid rgba(255,255,255,0.06);
+  color:#ddd;
+  font-weight:900;
+}
+
+.firma-tab-btn.active{
+  background:linear-gradient(180deg,#ff1493,#e0007a);
+  color:white;
+  box-shadow:0 0 22px rgba(255,20,147,0.32);
+}
+
+.firma-tab-content{
+  display:none;
+}
+
+.firma-tab-content.active{
+  display:block;
+}
+
+@media(max-width:700px){
+
+  .firma-tabs{
+    position:relative;
+    top:auto;
+  }
+
+  .firma-tab-btn{
+    min-width:100%;
+  }
+}

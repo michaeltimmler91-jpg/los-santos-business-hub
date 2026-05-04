@@ -34,10 +34,7 @@ async function loadFirma(){
   container.innerHTML =
   "<p class='muted'>Lade Firma...</p>";
 
-  const {
-    data: business,
-    error
-  } =
+  const { data: business, error } =
   await supabaseClient
   .from("businesses_v2")
   .select("*")
@@ -64,8 +61,89 @@ async function loadFirma(){
     ascending:true
   });
 
-  let html = `
+  const aboutHtml =
+  renderAboutSection(business);
 
+  const vehicleHtml =
+  await renderVehicleCatalog(business.id);
+
+  const blocksHtml =
+  renderHomepageBlocks(blocks);
+
+  const reviewsHtml =
+  await renderReviews(business.id);
+
+  let html = `
+    ${renderHero(business)}
+
+    <div class="firma-tabs">
+
+      <button
+        class="firma-tab-btn active"
+        onclick="showFirmaTab('tab-about', this)"
+      >
+        &Uuml;ber uns
+      </button>
+
+      ${
+        vehicleHtml
+        ? `
+          <button
+            class="firma-tab-btn"
+            onclick="showFirmaTab('tab-vehicles', this)"
+          >
+            Fahrzeugkatalog
+          </button>
+        `
+        : ""
+      }
+
+      <button
+        class="firma-tab-btn"
+        onclick="showFirmaTab('tab-content', this)"
+      >
+        Inhalte
+      </button>
+
+      <button
+        class="firma-tab-btn"
+        onclick="showFirmaTab('tab-reviews', this)"
+      >
+        Bewertungen
+      </button>
+
+    </div>
+
+    <div id="tab-about" class="firma-tab-content active">
+      ${aboutHtml}
+    </div>
+
+    ${
+      vehicleHtml
+      ? `
+        <div id="tab-vehicles" class="firma-tab-content">
+          ${vehicleHtml}
+        </div>
+      `
+      : ""
+    }
+
+    <div id="tab-content" class="firma-tab-content">
+      ${blocksHtml}
+    </div>
+
+    <div id="tab-reviews" class="firma-tab-content">
+      ${reviewsHtml}
+    </div>
+  `;
+
+  container.innerHTML =
+  html;
+}
+
+function renderHero(business){
+
+  return `
     <div class="firma-public-hero">
 
       <div class="firma-public-header">
@@ -94,13 +172,11 @@ async function loadFirma(){
               ? "hub-badge hub-open"
               : "hub-badge hub-closed"
             }">
-
               ${
                 business.open
                 ? "Ge&ouml;ffnet"
                 : "Geschlossen"
               }
-
             </span>
 
             ${
@@ -111,13 +187,11 @@ async function loadFirma(){
                   ? "hub-badge hub-delivery-on"
                   : "hub-badge hub-delivery-off"
                 }">
-
                   ${
                     business.delivery
                     ? "Lieferung aktiv"
                     : "Keine Lieferung"
                   }
-
                 </span>
               `
               : ""
@@ -132,29 +206,16 @@ async function loadFirma(){
       <div class="firma-public-info">
 
         <div>
-
-          <strong>
-            Standort
-          </strong>
-
+          <strong>Standort</strong>
           <span>
-            ${
-              escapeHtml(
-                business.plz ||
-                "Nicht eingetragen"
-              )
-            }
+            ${escapeHtml(business.plz || "Nicht eingetragen")}
           </span>
-
         </div>
 
         ${
           business.website
           ? `
-            <a
-              href="${escapeHtml(business.website)}"
-              target="_blank"
-            >
+            <a href="${escapeHtml(business.website)}" target="_blank">
               Website
             </a>
           `
@@ -164,10 +225,7 @@ async function loadFirma(){
         ${
           business.discord
           ? `
-            <a
-              href="${escapeHtml(business.discord)}"
-              target="_blank"
-            >
+            <a href="${escapeHtml(business.discord)}" target="_blank">
               Verteiler
             </a>
           `
@@ -188,34 +246,43 @@ async function loadFirma(){
       </div>
 
     </div>
-
   `;
+}
 
-  if(business.description){
+function renderAboutSection(business){
 
-    html += `
+  if(!business.description){
 
-      <section class="firma-home-block firma-home-intro">
-
-        <h2>
-          &Uuml;ber uns
-        </h2>
-
+    return `
+      <section class="firma-home-block">
+        <h2>&Uuml;ber uns</h2>
         <div class="firma-home-content">
-          ${formatText(business.description)}
+          Diese Firma hat noch keine Beschreibung eingetragen.
         </div>
-
       </section>
-
     `;
   }
 
-  html += await renderVehicleCatalog(business.id);
+  return `
+    <section class="firma-home-block firma-home-intro">
+
+      <h2>
+        &Uuml;ber uns
+      </h2>
+
+      <div class="firma-home-content">
+        ${formatText(business.description)}
+      </div>
+
+    </section>
+  `;
+}
+
+function renderHomepageBlocks(blocks){
 
   if(!blocks || blocks.length === 0){
 
-    html += `
-
+    return `
       <section class="firma-home-block">
 
         <h2>
@@ -227,21 +294,38 @@ async function loadFirma(){
         </div>
 
       </section>
-
     `;
-
-  }else{
-
-    for(const block of blocks){
-
-      html += renderBlock(block);
-    }
   }
 
-  html += await renderReviews(business.id);
+  return blocks.map(block =>
+    renderBlock(block)
+  ).join("");
+}
 
-  container.innerHTML =
-  html;
+function showFirmaTab(tabId, button){
+
+  document
+  .querySelectorAll(".firma-tab-content")
+  .forEach(tab => {
+    tab.classList.remove("active");
+  });
+
+  document
+  .querySelectorAll(".firma-tab-btn")
+  .forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  const tab =
+  document.getElementById(tabId);
+
+  if(tab){
+    tab.classList.add("active");
+  }
+
+  if(button){
+    button.classList.add("active");
+  }
 }
 
 async function renderVehicleCatalog(businessId){
@@ -251,7 +335,6 @@ async function renderVehicleCatalog(businessId){
   .from("business_vehicles")
   .select("*")
   .eq("business_id", businessId)
-  .eq("visible", true)
   .order("sort_order", {
     ascending:true
   })
@@ -261,10 +344,23 @@ async function renderVehicleCatalog(businessId){
 
   if(error){
     console.error(error);
-    return "";
+
+    return `
+      <section class="firma-home-block vehicle-catalog-block">
+        <h2>Fahrzeugkatalog</h2>
+        <div class="firma-home-content">
+          Fahrzeuge konnten nicht geladen werden.
+        </div>
+      </section>
+    `;
   }
 
-  if(!data || data.length === 0){
+  const vehicles =
+  (data || []).filter(vehicle =>
+    vehicle.visible !== false
+  );
+
+  if(vehicles.length === 0){
     return "";
   }
 
@@ -282,7 +378,7 @@ async function renderVehicleCatalog(businessId){
       <div class="vehicle-catalog-grid">
 
         ${
-          data.map(vehicle => `
+          vehicles.map(vehicle => `
             <div class="vehicle-catalog-card">
 
               ${
@@ -372,7 +468,6 @@ function renderBlock(block){
   getBlockLabel(block.type);
 
   return `
-
     <section class="firma-home-block ${typeClass}">
 
       <div class="firma-block-label">
@@ -400,7 +495,6 @@ function renderBlock(block){
       </div>
 
     </section>
-
   `;
 }
 
@@ -427,10 +521,7 @@ function getBlockLabel(type){
 
 async function renderReviews(businessId){
 
-  const {
-    data: reviews,
-    error
-  } =
+  const { data: reviews, error } =
   await supabaseClient
   .from("business_reviews")
   .select("*")
@@ -457,7 +548,6 @@ async function renderReviews(businessId){
   }
 
   let html = `
-
     <section class="firma-home-block">
 
       <div class="review-header">
@@ -475,13 +565,11 @@ async function renderReviews(businessId){
         </div>
 
       </div>
-
   `;
 
   if(currentUser){
 
     html += `
-
       <div class="review-create-box">
 
         <h3>
@@ -522,18 +610,15 @@ async function renderReviews(businessId){
         </button>
 
       </div>
-
     `;
   }
 
   if(reviews.length === 0){
 
     html += `
-
       <p class="muted">
         Noch keine Bewertungen vorhanden.
       </p>
-
     `;
 
   }else{
@@ -544,7 +629,6 @@ async function renderReviews(businessId){
       await loadProfile(review.user_id);
 
       html += `
-
         <div class="review-item">
 
           <div class="review-stars">
@@ -552,7 +636,6 @@ async function renderReviews(businessId){
           </div>
 
           <div class="review-author">
-
             ${
               escapeHtml(
                 profile
@@ -560,7 +643,6 @@ async function renderReviews(businessId){
                 : "Unbekannt"
               )
             }
-
           </div>
 
           <div class="review-text">
@@ -586,7 +668,6 @@ async function renderReviews(businessId){
           }
 
         </div>
-
       `;
     }
   }
@@ -719,134 +800,4 @@ function escapeHtml(text){
   .replaceAll(">", "&gt;")
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
-}
-
-async function renderVehicleCatalog(businessId){
-
-  const { data, error } =
-  await supabaseClient
-  .from("business_vehicles")
-  .select("*")
-  .eq("business_id", businessId)
-  .order("sort_order", {
-    ascending:true
-  })
-  .order("vehicle_name", {
-    ascending:true
-  });
-
-  if(error){
-    console.error(error);
-
-    return `
-      <section class="firma-home-block vehicle-catalog-block">
-        <h2>Fahrzeugkatalog</h2>
-        <div class="firma-home-content">
-          Fahrzeuge konnten nicht geladen werden.
-        </div>
-      </section>
-    `;
-  }
-
-  const vehicles =
-  (data || []).filter(vehicle =>
-    vehicle.visible !== false
-  );
-
-  if(vehicles.length === 0){
-    return "";
-  }
-
-  return `
-    <section class="firma-home-block vehicle-catalog-block">
-
-      <div class="firma-block-label">
-        Fahrzeugkatalog
-      </div>
-
-      <h2>
-        Fahrzeugkatalog
-      </h2>
-
-      <div class="vehicle-catalog-grid">
-
-        ${
-          vehicles.map(vehicle => `
-            <div class="vehicle-catalog-card">
-
-              ${
-                vehicle.image_url
-                ? `
-                  <img
-                    src="${escapeHtml(vehicle.image_url)}"
-                    alt="${escapeHtml(vehicle.vehicle_name)}"
-                  >
-                `
-                : `
-                  <div class="vehicle-catalog-noimage">
-                    Kein Bild
-                  </div>
-                `
-              }
-
-              <div class="vehicle-catalog-content">
-
-                <div class="vehicle-catalog-head">
-
-                  <div>
-
-                    <strong>
-                      ${escapeHtml(vehicle.vehicle_name)}
-                    </strong>
-
-                    <span>
-                      ${escapeHtml(vehicle.category || "Fahrzeug")}
-                    </span>
-
-                  </div>
-
-                  <em class="${
-                    vehicle.available
-                    ? "vehicle-available"
-                    : "vehicle-unavailable"
-                  }">
-                    ${
-                      vehicle.available
-                      ? "Verf&uuml;gbar"
-                      : "Nicht verf&uuml;gbar"
-                    }
-                  </em>
-
-                </div>
-
-                ${
-                  vehicle.price
-                  ? `
-                    <div class="vehicle-price">
-                      ${escapeHtml(vehicle.price)}
-                    </div>
-                  `
-                  : ""
-                }
-
-                ${
-                  vehicle.description
-                  ? `
-                    <p>
-                      ${formatText(vehicle.description)}
-                    </p>
-                  `
-                  : ""
-                }
-
-              </div>
-
-            </div>
-          `).join("")
-        }
-
-      </div>
-
-    </section>
-  `;
 }
