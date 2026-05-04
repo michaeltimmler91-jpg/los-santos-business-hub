@@ -103,6 +103,8 @@ async function loadBusiness(businessId){
 
   currentBusiness =
   currentMembership.businesses_v2;
+  console.log("Aktuelle Firma:", currentBusiness.name);
+console.log("Kategorie:", currentBusiness.category);
 
   document.getElementById("companyContent").classList.remove("hidden");
 
