@@ -259,6 +259,30 @@ async function loadBusinesses(){
             ${business.has_delivery ? "Ja" : "Nein"}
           </p>
 
+          <div class="owner-button-row">
+
+            <button
+              class="${business.open ? "danger-btn" : ""}"
+              onclick="toggleBusinessOpen(${business.id}, ${business.open ? "false" : "true"})"
+            >
+              ${business.open ? "Firma schlie&szlig;en" : "Firma &ouml;ffnen"}
+            </button>
+
+            ${
+              business.has_delivery
+              ? `
+                <button
+                  class="${business.delivery ? "danger-btn" : "owner-gray-btn"}"
+                  onclick="toggleBusinessDelivery(${business.id}, ${business.delivery ? "false" : "true"})"
+                >
+                  ${business.delivery ? "Lieferung deaktivieren" : "Lieferung aktivieren"}
+                </button>
+              `
+              : ""
+            }
+
+          </div>
+
           <div class="business-admin-members">
 
             <div class="business-admin-member-group">
@@ -294,6 +318,59 @@ async function loadBusinesses(){
 
     list.appendChild(div);
   }
+}
+
+async function toggleBusinessOpen(businessId, newValue){
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .update({
+    open:newValue
+  })
+  .eq("id", businessId);
+
+  if(error){
+    alert("Status konnte nicht ge&auml;ndert werden");
+    console.error(error);
+    return;
+  }
+
+  await loadBusinesses();
+}
+
+async function toggleBusinessDelivery(businessId, newValue){
+
+  const business =
+  businessesCache.find(item =>
+    Number(item.id) === Number(businessId)
+  );
+
+  if(!business){
+    alert("Firma nicht gefunden");
+    return;
+  }
+
+  if(!business.has_delivery){
+    alert("Diese Firma hat keine Lieferung aktiviert");
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .update({
+    delivery:newValue
+  })
+  .eq("id", businessId);
+
+  if(error){
+    alert("Lieferstatus konnte nicht ge&auml;ndert werden");
+    console.error(error);
+    return;
+  }
+
+  await loadBusinesses();
 }
 
 async function loadBusinessMembers(businessId){
@@ -406,13 +483,15 @@ function renderBusinessMemberList(members, showActions){
           return `
             <div class="business-admin-member-pill">
 
-              <strong>
-                ${escapeHtml(displayName)}
-              </strong>
+              <div>
+                <strong>
+                  ${escapeHtml(displayName)}
+                </strong>
 
-              <span>
-                ${escapeHtml(loginName || "-")}
-              </span>
+                <span>
+                  ${escapeHtml(loginName || "-")}
+                </span>
+              </div>
 
               ${
                 showActions
@@ -495,7 +574,7 @@ async function changeBusinessMemberRole(memberId, newRole){
     newRole !== "inhaber" &&
     newRole !== "mitarbeiter"
   ){
-    alert("Ungültiger Rang");
+    alert("Ung&uuml;ltiger Rang");
     return;
   }
 
@@ -504,7 +583,7 @@ async function changeBusinessMemberRole(memberId, newRole){
   ? "Inhaber"
   : "Mitarbeiter";
 
-  if(!confirm("Rang wirklich zu " + roleText + " ändern?")){
+  if(!confirm("Rang wirklich zu " + roleText + " &auml;ndern?")){
     return;
   }
 
@@ -517,12 +596,12 @@ async function changeBusinessMemberRole(memberId, newRole){
   .eq("id", memberId);
 
   if(error){
-    alert("Rang konnte nicht geändert werden");
+    alert("Rang konnte nicht ge&auml;ndert werden");
     console.error(error);
     return;
   }
 
-  alert("Rang wurde geändert");
+  alert("Rang wurde ge&auml;ndert");
 
   if(currentEditBusiness){
     const members =
@@ -647,10 +726,7 @@ async function saveBusinessEdit(){
     imageUrl = await uploadBusinessImage(imageFile, name);
   }
 
-  const { error } =
-  await supabaseClient
-  .from("businesses_v2")
-  .update({
+  const updateData = {
     name:name,
     category:category,
     description:description,
@@ -659,7 +735,16 @@ async function saveBusinessEdit(){
     discord:discord,
     has_delivery:hasDelivery,
     image_url:imageUrl
-  })
+  };
+
+  if(!hasDelivery){
+    updateData.delivery = false;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("businesses_v2")
+  .update(updateData)
   .eq("id", id);
 
   if(error){
@@ -720,7 +805,7 @@ async function changeOwner(businessId, ownerUserId){
     .eq("id", existingMember.id);
 
     if(updateError){
-      alert("Inhaber konnte nicht geändert werden");
+      alert("Inhaber konnte nicht ge&auml;ndert werden");
       console.error(updateError);
       return false;
     }
@@ -749,11 +834,11 @@ async function changeOwner(businessId, ownerUserId){
 async function deleteBusiness(){
 
   if(!currentEditBusiness){
-    alert("Keine Firma ausgewählt");
+    alert("Keine Firma ausgew&auml;hlt");
     return;
   }
 
-  if(!confirm("Firma wirklich löschen?")){
+  if(!confirm("Firma wirklich l&ouml;schen?")){
     return;
   }
 
@@ -764,12 +849,12 @@ async function deleteBusiness(){
   .eq("id", currentEditBusiness.id);
 
   if(error){
-    alert("Firma konnte nicht gelöscht werden");
+    alert("Firma konnte nicht gel&ouml;scht werden");
     console.error(error);
     return;
   }
 
-  alert("Firma gelöscht");
+  alert("Firma gel&ouml;scht");
 
   closeEditModal();
 
@@ -886,7 +971,7 @@ async function loadAllReviews(){
           class="danger-btn"
           onclick="deleteReview(${review.id})"
         >
-          Bewertung löschen
+          Bewertung l&ouml;schen
         </button>
 
         ${
@@ -895,7 +980,7 @@ async function loadAllReviews(){
             <button
               onclick="deleteReviewReplyAdmin(${review.id})"
             >
-              Antwort löschen
+              Antwort l&ouml;schen
             </button>
           `
           : ""
@@ -910,7 +995,7 @@ async function loadAllReviews(){
 
 async function deleteReview(reviewId){
 
-  if(!confirm("Bewertung wirklich löschen?")){
+  if(!confirm("Bewertung wirklich l&ouml;schen?")){
     return;
   }
 
@@ -922,7 +1007,7 @@ async function deleteReview(reviewId){
 
   if(error){
 
-    alert("Bewertung konnte nicht gelöscht werden");
+    alert("Bewertung konnte nicht gel&ouml;scht werden");
 
     console.error(error);
 
@@ -934,7 +1019,7 @@ async function deleteReview(reviewId){
 
 async function deleteReviewReplyAdmin(reviewId){
 
-  if(!confirm("Antwort wirklich löschen?")){
+  if(!confirm("Antwort wirklich l&ouml;schen?")){
     return;
   }
 
@@ -950,7 +1035,7 @@ async function deleteReviewReplyAdmin(reviewId){
 
   if(error){
 
-    alert("Antwort konnte nicht gelöscht werden");
+    alert("Antwort konnte nicht gel&ouml;scht werden");
 
     console.error(error);
 
