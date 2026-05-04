@@ -204,9 +204,7 @@ function createUserCard(profile, roles){
       ${
         !profile.approved
         ? `
-          <button
-            onclick="approveUser('${profile.user_id}')"
-          >
+          <button onclick="approveUser('${profile.user_id}')">
             Freischalten
           </button>
         `
@@ -230,39 +228,39 @@ function createUserCard(profile, roles){
         profile.blocked &&
         currentRoles.includes("superadmin")
         ? `
-          <button
-            onclick="unblockUser('${profile.user_id}')"
-          >
+          <button onclick="unblockUser('${profile.user_id}')">
             Entsperren
           </button>
         `
         : ""
       }
 
-${
-  currentRoles.includes("superadmin")
-  ? `
-    <button
-      class="owner-gray-btn"
-      onclick="openRoleModal('${profile.user_id}')"
-    >
-      Rollen
-    </button>
+      ${
+        currentRoles.includes("superadmin")
+        ? `
+          <button
+            class="owner-gray-btn"
+            onclick="openRoleModal('${profile.user_id}')"
+          >
+            Rollen
+          </button>
 
-    <button
-      class="owner-gray-btn"
-      onclick="resetPassword('${profile.user_id}')"
-    >
-      Passwort reset
-    </button>
-  `<button
-  class="danger-btn"
-  onclick="deleteUser('${profile.user_id}')"
->
-  User löschen
-</button>
-  : ""
-}
+          <button
+            class="owner-gray-btn"
+            onclick="resetPassword('${profile.user_id}')"
+          >
+            Passwort reset
+          </button>
+
+          <button
+            class="danger-btn"
+            onclick="deleteUser('${profile.user_id}')"
+          >
+            User l&ouml;schen
+          </button>
+        `
+        : ""
+      }
 
     </div>
   `;
@@ -377,23 +375,23 @@ async function openRoleModal(userId){
 
     if(remove){
 
-  const { error } =
-  await supabaseClient
-  .from("user_roles")
-  .delete()
-  .eq("id", existing.id);
+      const { error } =
+      await supabaseClient
+      .from("user_roles")
+      .delete()
+      .eq("id", existing.id);
 
-  if(error){
+      if(error){
 
-    alert("Rolle konnte nicht entfernt werden");
+        alert("Rolle konnte nicht entfernt werden");
 
-    console.error(error);
+        console.error(error);
 
-    return;
-  }
+        return;
+      }
 
-  alert("Rolle entfernt");
-}
+      alert("Rolle entfernt");
+    }
 
   }else{
 
@@ -479,19 +477,11 @@ async function resetPassword(userId){
   alert("Passwort wurde geändert");
 }
 
-async function logoutUser(){
-
-  await supabaseClient.auth.signOut();
-
-  window.location.href =
-  "v2-login.html";
-}
-
 async function deleteUser(userId){
 
   const confirmDelete =
   confirm(
-    "User wirklich komplett löschen?\n\nDas entfernt:\n- Profil\n- Rollen\n- Bewerbungen\n- Antworten\n\nDieser Vorgang kann NICHT rückgängig gemacht werden."
+    "User wirklich komplett löschen?\n\nDas entfernt:\n- Profil\n- Rollen\n- Bewerbungen\n- Nachrichten\n\nDieser Vorgang kann NICHT rückgängig gemacht werden."
   );
 
   if(!confirmDelete){
@@ -518,7 +508,7 @@ async function deleteUser(userId){
     await supabaseClient
     .from("application_messages")
     .delete()
-    .eq("sender_id", userId);
+    .eq("sender_user_id", userId);
 
     alert("User gelöscht");
 
@@ -530,6 +520,14 @@ async function deleteUser(userId){
 
     alert("User konnte nicht gelöscht werden");
   }
+}
+
+async function logoutUser(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+  "v2-login.html";
 }
 
 function escapeHtml(text){
