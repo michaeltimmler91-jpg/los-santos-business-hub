@@ -229,6 +229,92 @@
         <div id="employeeList"></div>
 
       </section>
+      
+      <section
+  id="vehicleManagementSection"
+  class="owner-card owner-wide-card owner-only hidden"
+>
+
+  <span class="hub-kicker">
+    Autohaus
+  </span>
+
+  <h2>Fahrzeugkatalog</h2>
+
+  <p class="muted">
+    Fahrzeuge f&uuml;r die &ouml;ffentliche Firmenhomepage verwalten.
+    Bilder bitte extern hochladen und hier die Bild-URL einf&uuml;gen.
+  </p>
+
+  <div class="owner-two-column">
+
+    <input
+      type="text"
+      id="vehicleName"
+      placeholder="Fahrzeugname z.B. Sultan RS"
+    >
+
+    <input
+      type="text"
+      id="vehicleCategory"
+      placeholder="Kategorie z.B. Sportwagen"
+    >
+
+  </div>
+
+  <div class="owner-two-column">
+
+    <input
+      type="text"
+      id="vehiclePrice"
+      placeholder="Preis z.B. 85.000 $"
+    >
+
+    <input
+      type="number"
+      id="vehicleSortOrder"
+      value="0"
+      placeholder="Sortierung"
+    >
+
+  </div>
+
+  <input
+    type="text"
+    id="vehicleImageUrl"
+    placeholder="Bild-URL z.B. https://..."
+  >
+
+  <textarea
+    id="vehicleDescription"
+    placeholder="Beschreibung des Fahrzeugs..."
+  ></textarea>
+
+  <label class="checkbox-line">
+    <input type="checkbox" id="vehicleAvailable" checked>
+    Fahrzeug verf&uuml;gbar
+  </label>
+
+  <label class="checkbox-line">
+    <input type="checkbox" id="vehicleVisible" checked>
+    Auf Homepage anzeigen
+  </label>
+
+  <button onclick="saveVehicle()">
+    Fahrzeug speichern
+  </button>
+
+  <button
+    type="button"
+    class="owner-gray-btn"
+    onclick="clearVehicleForm()"
+  >
+    Formular leeren
+  </button>
+
+  <div id="vehicleList"></div>
+
+</section>
 <section class="owner-card owner-only">
 
   <h2>Teamliste f&uuml;r Homepage</h2>

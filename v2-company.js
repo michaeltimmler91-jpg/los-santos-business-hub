@@ -119,12 +119,14 @@ async function loadBusiness(businessId){
   updateStatus();
   toggleDeliveryArea();
   toggleOwnerAreas();
+  toggleVehicleArea();
 
   if(isOwner()){
     fillOwnerFields();
 
     await loadEmployees();
     await loadAvailableUsers();
+    await loadVehicles();
     await loadQuestions();
     await loadApplications();
     await loadCompanyReviews();
@@ -1675,4 +1677,378 @@ async function deleteTeamMember(memberId){
   }
 
   await loadTeamList();
+}
+let editingVehicleId = null;
+
+function isCarDealer(){
+
+  return currentBusiness &&
+  currentBusiness.category === "cardealer";
+}
+
+function toggleVehicleArea(){
+
+  const section =
+  document.getElementById("vehicleManagementSection");
+
+  if(!section){
+    return;
+  }
+
+  if(isOwner() && isCarDealer()){
+    section.classList.remove("hidden");
+  }else{
+    section.classList.add("hidden");
+  }
+}
+
+async function loadVehicles(){
+
+  const list =
+  document.getElementById("vehicleList");
+
+  if(!list || !isCarDealer()){
+    return;
+  }
+
+  list.innerHTML =
+  "<p class='muted'>Lade Fahrzeugkatalog...</p>";
+
+  const { data, error } =
+  await supabaseClient
+  .from("business_vehicles")
+  .select("*")
+  .eq("business_id", currentBusiness.id)
+  .order("sort_order", {
+    ascending:true
+  })
+  .order("vehicle_name", {
+    ascending:true
+  });
+
+  if(error){
+    console.error(error);
+
+    list.innerHTML =
+    "<p class='muted'>Fahrzeuge konnten nicht geladen werden.</p>";
+
+    return;
+  }
+
+  if(!data || data.length === 0){
+
+    list.innerHTML =
+    "<p class='muted'>Noch keine Fahrzeuge eingetragen.</p>";
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  data.forEach(vehicle => {
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "vehicle-admin-item";
+
+    div.innerHTML = `
+      <div class="vehicle-admin-preview">
+
+        ${
+          vehicle.image_url
+          ? `
+            <img
+              src="${escapeHtml(vehicle.image_url)}"
+              alt="Fahrzeug"
+            >
+          `
+          : `
+            <div class="no-image">
+              Kein Bild
+            </div>
+          `
+        }
+
+      </div>
+
+      <div class="vehicle-admin-info">
+
+        <strong>
+          ${escapeHtml(vehicle.vehicle_name)}
+        </strong>
+
+        <p>
+          Kategorie:
+          ${escapeHtml(vehicle.category || "-")}
+        </p>
+
+        <p>
+          Preis:
+          ${escapeHtml(vehicle.price || "-")}
+        </p>
+
+        <p>
+          Status:
+          ${vehicle.available ? "Verf&uuml;gbar" : "Nicht verf&uuml;gbar"}
+        </p>
+
+        <p>
+          Sichtbar:
+          ${vehicle.visible ? "Ja" : "Nein"}
+        </p>
+
+        <p>
+          Sortierung:
+          ${vehicle.sort_order || 0}
+        </p>
+
+        <div class="owner-button-row">
+
+          <button onclick="editVehicle(${vehicle.id})">
+            Bearbeiten
+          </button>
+
+          <button
+            class="danger-btn"
+            onclick="deleteVehicle(${vehicle.id})"
+          >
+            L&ouml;schen
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+async function saveVehicle(){
+
+  if(!isOwner() || !isCarDealer()){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  const vehicleName =
+  document.getElementById("vehicleName")
+  .value
+  .trim();
+
+  const category =
+  document.getElementById("vehicleCategory")
+  .value
+  .trim();
+
+  const price =
+  document.getElementById("vehiclePrice")
+  .value
+  .trim();
+
+  const imageUrl =
+  document.getElementById("vehicleImageUrl")
+  .value
+  .trim();
+
+  const description =
+  document.getElementById("vehicleDescription")
+  .value
+  .trim();
+
+  const sortOrder =
+  Number(
+    document.getElementById("vehicleSortOrder").value
+  ) || 0;
+
+  const available =
+  document.getElementById("vehicleAvailable").checked;
+
+  const visible =
+  document.getElementById("vehicleVisible").checked;
+
+  if(!vehicleName){
+    alert("Bitte Fahrzeugname eingeben");
+    return;
+  }
+
+  const vehicleData = {
+    business_id:currentBusiness.id,
+    vehicle_name:vehicleName,
+    category:category,
+    price:price,
+    image_url:imageUrl,
+    description:description,
+    available:available,
+    visible:visible,
+    sort_order:sortOrder
+  };
+
+  let error = null;
+
+  if(editingVehicleId){
+
+    const result =
+    await supabaseClient
+    .from("business_vehicles")
+    .update(vehicleData)
+    .eq("id", editingVehicleId)
+    .eq("business_id", currentBusiness.id);
+
+    error =
+    result.error;
+
+  }else{
+
+    const result =
+    await supabaseClient
+    .from("business_vehicles")
+    .insert(vehicleData);
+
+    error =
+    result.error;
+  }
+
+  if(error){
+    alert("Fahrzeug konnte nicht gespeichert werden");
+    console.error(error);
+    return;
+  }
+
+  clearVehicleForm();
+
+  await loadVehicles();
+
+  alert("Fahrzeug gespeichert");
+}
+
+async function editVehicle(vehicleId){
+
+  if(!isOwner() || !isCarDealer()){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  const { data: vehicle, error } =
+  await supabaseClient
+  .from("business_vehicles")
+  .select("*")
+  .eq("id", vehicleId)
+  .eq("business_id", currentBusiness.id)
+  .maybeSingle();
+
+  if(error || !vehicle){
+    alert("Fahrzeug nicht gefunden");
+    console.error(error);
+    return;
+  }
+
+  editingVehicleId =
+  vehicle.id;
+
+  document.getElementById("vehicleName").value =
+  vehicle.vehicle_name || "";
+
+  document.getElementById("vehicleCategory").value =
+  vehicle.category || "";
+
+  document.getElementById("vehiclePrice").value =
+  vehicle.price || "";
+
+  document.getElementById("vehicleImageUrl").value =
+  vehicle.image_url || "";
+
+  document.getElementById("vehicleDescription").value =
+  vehicle.description || "";
+
+  document.getElementById("vehicleSortOrder").value =
+  vehicle.sort_order || 0;
+
+  document.getElementById("vehicleAvailable").checked =
+  vehicle.available === true;
+
+  document.getElementById("vehicleVisible").checked =
+  vehicle.visible === true;
+
+  document
+  .getElementById("vehicleName")
+  .scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
+}
+
+async function deleteVehicle(vehicleId){
+
+  if(!isOwner() || !isCarDealer()){
+    alert("Keine Berechtigung");
+    return;
+  }
+
+  if(!confirm("Fahrzeug wirklich l&ouml;schen?")){
+    return;
+  }
+
+  const { error } =
+  await supabaseClient
+  .from("business_vehicles")
+  .delete()
+  .eq("id", vehicleId)
+  .eq("business_id", currentBusiness.id);
+
+  if(error){
+    alert("Fahrzeug konnte nicht gel&ouml;scht werden");
+    console.error(error);
+    return;
+  }
+
+  clearVehicleForm();
+
+  await loadVehicles();
+}
+
+function clearVehicleForm(){
+
+  editingVehicleId = null;
+
+  const fields = [
+    "vehicleName",
+    "vehicleCategory",
+    "vehiclePrice",
+    "vehicleImageUrl",
+    "vehicleDescription"
+  ];
+
+  fields.forEach(id => {
+
+    const field =
+    document.getElementById(id);
+
+    if(field){
+      field.value = "";
+    }
+  });
+
+  const sort =
+  document.getElementById("vehicleSortOrder");
+
+  if(sort){
+    sort.value = "0";
+  }
+
+  const available =
+  document.getElementById("vehicleAvailable");
+
+  if(available){
+    available.checked = true;
+  }
+
+  const visible =
+  document.getElementById("vehicleVisible");
+
+  if(visible){
+    visible.checked = true;
+  }
 }
