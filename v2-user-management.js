@@ -481,45 +481,65 @@ async function deleteUser(userId){
 
   const confirmDelete =
   confirm(
-    "User wirklich komplett löschen?\n\nDas entfernt:\n- Profil\n- Rollen\n- Bewerbungen\n- Nachrichten\n\nDieser Vorgang kann NICHT rückgängig gemacht werden."
+    "User wirklich komplett löschen?\n\nDas entfernt:\n- Bewerbungen\n- Nachrichten\n- Rollen\n- Profil\n\nWichtig: Der Login-Account in Supabase Auth bleibt bestehen, falls keine Edge Function genutzt wird.\n\nDieser Vorgang kann NICHT rückgängig gemacht werden."
   );
 
   if(!confirmDelete){
     return;
   }
 
-  try{
+  const deleteSteps = [
+    {
+      table:"application_messages",
+      column:"sender_user_id",
+      label:"Nachrichten"
+    },
+    {
+      table:"applications",
+      column:"user_id",
+      label:"Bewerbungen"
+    },
+    {
+      table:"user_roles",
+      column:"user_id",
+      label:"Rollen"
+    },
+    {
+      table:"profiles",
+      column:"user_id",
+      label:"Profil"
+    }
+  ];
 
+  for(const step of deleteSteps){
+
+    const { error } =
     await supabaseClient
-    .from("user_roles")
+    .from(step.table)
     .delete()
-    .eq("user_id", userId);
+    .eq(step.column, userId);
 
-    await supabaseClient
-    .from("profiles")
-    .delete()
-    .eq("user_id", userId);
+    if(error){
 
-    await supabaseClient
-    .from("applications")
-    .delete()
-    .eq("user_id", userId);
+      console.error(
+        "Fehler beim Löschen:",
+        step.label,
+        error
+      );
 
-    await supabaseClient
-    .from("application_messages")
-    .delete()
-    .eq("sender_user_id", userId);
+      alert(
+        step.label +
+        " konnten nicht gelöscht werden.\n\nFehler:\n" +
+        error.message
+      );
 
-    alert("User gelöscht");
-
-    await loadUsers();
-
-  }catch(error){
-
-    console.error(error);
-
-    alert("User konnte nicht gelöscht werden");
+      return;
+    }
   }
+
+  alert("User wurde aus der Userverwaltung gelöscht");
+
+  await loadUsers();
 }
 
 async function logoutUser(){
