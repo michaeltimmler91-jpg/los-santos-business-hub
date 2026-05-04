@@ -197,7 +197,7 @@ async function loadFirma(){
     html += `
 
       <section class="firma-home-block firma-home-intro">
-	  html += await renderTeamSection(business.id);
+	  
         <h2>
           &Uuml;ber uns
         </h2>
@@ -238,6 +238,7 @@ async function loadFirma(){
   }
 
   html += await renderReviews(business.id);
+  html += await renderTeamSection(business.id);
 
   container.innerHTML =
   html;
