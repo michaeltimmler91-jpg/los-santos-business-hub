@@ -10,6 +10,7 @@ supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = null;
 let currentBusiness = null;
 let companyMemberships = [];
+let editingBlockId = null;
 
 async function checkHomepageEditorAccess(){
 
@@ -40,14 +41,16 @@ async function checkHomepageEditorAccess(){
   }
 
   companyMemberships =
-  memberships
-  .filter(item => item.businesses_v2);
+  memberships.filter(item =>
+    item.businesses_v2
+  );
 
   fillBusinessSelect();
 
   document
   .getElementById("businessSelect")
   .addEventListener("change", async function(){
+    resetHomepageForm();
     await loadBusiness(this.value);
   });
 
@@ -123,56 +126,75 @@ async function loadHomepageBlocks(){
 
   if(error){
     console.error(error);
+
     list.innerHTML =
     "<p class='muted'>Bl&ouml;cke konnten nicht geladen werden.</p>";
+
+    updateHomepageStats([]);
+
     return;
   }
 
-  if(!data || data.length === 0){
+  const blocks =
+  data || [];
+
+  updateHomepageStats(blocks);
+
+  if(blocks.length === 0){
+
     list.innerHTML =
-    "<p class='muted'>Noch keine Homepage-Bl&ouml;cke vorhanden.</p>";
+    "<div class='homepage-empty-box'>Noch keine Homepage-Bl&ouml;cke vorhanden.</div>";
+
     return;
   }
 
   list.innerHTML = "";
 
-  data.forEach(block => {
+  blocks.forEach(block => {
 
     const div =
     document.createElement("div");
 
     div.className =
-    "homepage-block-item";
+    "homepage-editor-block";
 
     div.innerHTML = `
-      <div class="homepage-block-top">
+      <div class="homepage-editor-block-head">
 
         <div>
+
+          <span class="homepage-type-badge">
+            ${escapeHtml(formatBlockType(block.type))}
+          </span>
+
           <h3>
             ${escapeHtml(block.title)}
           </h3>
 
           <p>
-            Typ:
-            ${escapeHtml(formatBlockType(block.type))}
-            |
             Reihenfolge:
-            ${escapeHtml(block.sort_order)}
-            |
+            ${escapeHtml(block.sort_order || 0)}
+            &middot;
             ${
-  			block.visible
-  			? "<span class='hub-badge hub-open'>Sichtbar</span>"
-  			: "<span class='hub-badge hub-closed'>Versteckt</span>"
-			}
+              block.visible
+              ? "<span class='hub-badge hub-open'>Sichtbar</span>"
+              : "<span class='hub-badge hub-closed'>Versteckt</span>"
+            }
           </p>
+
         </div>
 
         <div class="homepage-block-actions">
 
-          <button
-            onclick="editHomepageBlock(${block.id})"
-          >
+          <button onclick="editHomepageBlock(${block.id})">
             Bearbeiten
+          </button>
+
+          <button
+            class="owner-gray-btn"
+            onclick="toggleHomepageBlockVisible(${block.id}, ${block.visible ? "false" : "true"})"
+          >
+            ${block.visible ? "Verstecken" : "Anzeigen"}
           </button>
 
           <button
@@ -192,13 +214,14 @@ async function loadHomepageBlocks(){
           <img
             src="${escapeHtml(block.image_url)}"
             class="homepage-preview-image"
+            alt="Blockbild"
           >
         `
         : ""
       }
 
       <div class="homepage-preview-content">
-        ${escapeHtml(block.content || "")}
+        ${formatPreview(block.content || "")}
       </div>
     `;
 
@@ -206,7 +229,37 @@ async function loadHomepageBlocks(){
   });
 }
 
-async function createHomepageBlock(){
+function updateHomepageStats(blocks){
+
+  const all =
+  blocks.length;
+
+  const visible =
+  blocks.filter(block =>
+    block.visible === true
+  ).length;
+
+  const hidden =
+  blocks.filter(block =>
+    block.visible !== true
+  ).length;
+
+  document.getElementById("blockCount").innerText =
+  all;
+
+  document.getElementById("visibleBlockCount").innerText =
+  visible;
+
+  document.getElementById("hiddenBlockCount").innerText =
+  hidden;
+}
+
+async function saveHomepageBlock(){
+
+  if(!currentBusiness){
+    alert("Keine Firma ausgew&auml;hlt");
+    return;
+  }
 
   const type =
   document.getElementById("homepageBlockType").value;
@@ -229,7 +282,7 @@ async function createHomepageBlock(){
   const order =
   Number(
     document.getElementById("homepageBlockOrder").value
-  );
+  ) || 1;
 
   const visible =
   document.getElementById("homepageBlockVisible")
@@ -240,10 +293,7 @@ async function createHomepageBlock(){
     return;
   }
 
-  const { error } =
-  await supabaseClient
-  .from("business_homepage_blocks")
-  .insert({
+  const blockData = {
     business_id:currentBusiness.id,
     type:type,
     title:title,
@@ -251,23 +301,44 @@ async function createHomepageBlock(){
     content:content,
     sort_order:order,
     visible:visible
-  });
+  };
+
+  let error = null;
+
+  if(editingBlockId){
+
+    const result =
+    await supabaseClient
+    .from("business_homepage_blocks")
+    .update(blockData)
+    .eq("id", editingBlockId)
+    .eq("business_id", currentBusiness.id);
+
+    error =
+    result.error;
+
+  }else{
+
+    const result =
+    await supabaseClient
+    .from("business_homepage_blocks")
+    .insert(blockData);
+
+    error =
+    result.error;
+  }
 
   if(error){
-    alert("Block konnte nicht erstellt werden");
+    alert("Block konnte nicht gespeichert werden");
     console.error(error);
     return;
   }
 
-  document.getElementById("homepageBlockTitle").value = "";
-  document.getElementById("homepageBlockImage").value = "";
-  document.getElementById("homepageBlockContent").value = "";
-  document.getElementById("homepageBlockOrder").value = "1";
-  document.getElementById("homepageBlockVisible").checked = true;
+  resetHomepageForm();
 
   await loadHomepageBlocks();
 
-  alert("Block erstellt");
+  alert("Block gespeichert");
 }
 
 async function editHomepageBlock(blockId){
@@ -282,56 +353,63 @@ async function editHomepageBlock(blockId){
 
   if(error || !block){
     alert("Block nicht gefunden");
+    console.error(error);
     return;
   }
 
-  const newTitle =
-  prompt("Titel:", block.title || "");
+  editingBlockId =
+  block.id;
 
-  if(newTitle === null){
-    return;
-  }
+  document.getElementById("homepageBlockType").value =
+  block.type || "text";
 
-  const newContent =
-  prompt("Inhalt:", block.content || "");
+  document.getElementById("homepageBlockTitle").value =
+  block.title || "";
 
-  if(newContent === null){
-    return;
-  }
+  document.getElementById("homepageBlockImage").value =
+  block.image_url || "";
 
-  const newOrder =
-  prompt("Reihenfolge:", block.sort_order || 1);
+  document.getElementById("homepageBlockContent").value =
+  block.content || "";
 
-  if(newOrder === null){
-    return;
-  }
+  document.getElementById("homepageBlockOrder").value =
+  block.sort_order || 1;
 
-  const visible =
-  confirm(
-    "Soll der Block sichtbar sein?\n\nOK = sichtbar\nAbbrechen = versteckt"
-  );
+  document.getElementById("homepageBlockVisible").checked =
+  block.visible === true;
 
-  const { error: updateError } =
+  document.getElementById("editorModeLabel").innerText =
+  "Bearbeiten";
+
+  document.getElementById("editorTitle").innerText =
+  "Block bearbeiten";
+
+  document
+  .querySelector(".homepage-editor-form")
+  .scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+async function toggleHomepageBlockVisible(blockId, newValue){
+
+  const { error } =
   await supabaseClient
   .from("business_homepage_blocks")
   .update({
-    title:newTitle.trim(),
-    content:newContent.trim(),
-    sort_order:Number(newOrder),
-    visible:visible
+    visible:newValue
   })
   .eq("id", blockId)
   .eq("business_id", currentBusiness.id);
 
-  if(updateError){
-    alert("Block konnte nicht gespeichert werden");
-    console.error(updateError);
+  if(error){
+    alert("Sichtbarkeit konnte nicht ge&auml;ndert werden");
+    console.error(error);
     return;
   }
 
   await loadHomepageBlocks();
-
-  alert("Block gespeichert");
 }
 
 async function deleteHomepageBlock(blockId){
@@ -353,7 +431,40 @@ async function deleteHomepageBlock(blockId){
     return;
   }
 
+  if(editingBlockId === blockId){
+    resetHomepageForm();
+  }
+
   await loadHomepageBlocks();
+}
+
+function resetHomepageForm(){
+
+  editingBlockId = null;
+
+  document.getElementById("homepageBlockType").value =
+  "text";
+
+  document.getElementById("homepageBlockTitle").value =
+  "";
+
+  document.getElementById("homepageBlockImage").value =
+  "";
+
+  document.getElementById("homepageBlockContent").value =
+  "";
+
+  document.getElementById("homepageBlockOrder").value =
+  "1";
+
+  document.getElementById("homepageBlockVisible").checked =
+  true;
+
+  document.getElementById("editorModeLabel").innerText =
+  "Neuer Inhalt";
+
+  document.getElementById("editorTitle").innerText =
+  "Neuen Block erstellen";
 }
 
 function formatBlockType(type){
@@ -378,6 +489,12 @@ function formatBlockType(type){
     default:
       return type || "Block";
   }
+}
+
+function formatPreview(text){
+
+  return escapeHtml(text)
+  .replace(/\n/g, "<br>");
 }
 
 async function logoutUser(){

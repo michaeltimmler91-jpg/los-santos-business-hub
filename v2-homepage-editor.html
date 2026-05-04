@@ -6,7 +6,7 @@
 
   <title>Firmenhomepage verwalten</title>
 
-  <link rel="stylesheet" href="./v2-style.css?v=3301">
+  <link rel="stylesheet" href="./v2-style.css?v=3310">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -14,25 +14,25 @@
 
 <header class="v2-hero">
 
-<div class="hero-top-actions hero-left-actions">
+  <div class="hero-top-actions hero-left-actions">
 
-  <button onclick="window.location.href='v2-firmen.html'">
-    Firmen&uuml;bersicht
-  </button>
+    <button onclick="window.location.href='v2-firmen.html'">
+      Firmen&uuml;bersicht
+    </button>
 
-</div>
+  </div>
 
-<div class="hero-top-actions">
+  <div class="hero-top-actions">
 
-  <button onclick="window.location.href='v2-dashboard.html'">
-    Dashboard
-  </button>
+    <button onclick="window.location.href='v2-dashboard.html'">
+      Dashboard
+    </button>
 
-  <button onclick="logoutUser()">
-    Ausloggen
-  </button>
+    <button onclick="logoutUser()">
+      Ausloggen
+    </button>
 
-</div>
+  </div>
 
 </header>
 
@@ -47,7 +47,7 @@
       </span>
 
       <h2>
-        Homepage verwalten
+        Homepage Editor
       </h2>
 
       <p id="businessTitle">
@@ -55,8 +55,7 @@
       </p>
 
       <p>
-        Erstelle eigene Inhalte f&uuml;r die &ouml;ffentliche Firmenseite:
-        Texte, Bilder, Preislisten, Regeln und Ank&uuml;ndigungen.
+        Erstelle und sortiere Inhalte f&uuml;r die &ouml;ffentliche Firmenseite.
       </p>
 
     </div>
@@ -73,15 +72,36 @@
 
     </div>
 
-    <div id="homepageContent" class="owner-grid hidden">
+    <div id="homepageContent" class="homepage-editor-layout hidden">
 
-      <section class="owner-card homepage-create-card">
+      <section class="homepage-editor-stats">
 
-        <span class="hub-kicker">
+        <div class="hub-stat-card">
+          <strong id="blockCount">0</strong>
+          <span>Bl&ouml;cke</span>
+        </div>
+
+        <div class="hub-stat-card">
+          <strong id="visibleBlockCount">0</strong>
+          <span>Sichtbar</span>
+        </div>
+
+        <div class="hub-stat-card">
+          <strong id="hiddenBlockCount">0</strong>
+          <span>Versteckt</span>
+        </div>
+
+      </section>
+
+      <section class="owner-card homepage-editor-form">
+
+        <span class="hub-kicker" id="editorModeLabel">
           Neuer Inhalt
         </span>
 
-        <h2>Neuer Block</h2>
+        <h2 id="editorTitle">
+          Neuen Block erstellen
+        </h2>
 
         <label>Blocktyp</label>
         <select id="homepageBlockType">
@@ -112,44 +132,64 @@
           placeholder="Inhalt schreiben..."
         ></textarea>
 
-        <label>Reihenfolge</label>
-        <input
-          type="number"
-          id="homepageBlockOrder"
-          value="1"
-        >
+        <div class="owner-two-column">
 
-        <label class="checkbox-line">
-          <input
-            type="checkbox"
-            id="homepageBlockVisible"
-            checked
+          <div>
+            <label>Reihenfolge</label>
+            <input
+              type="number"
+              id="homepageBlockOrder"
+              value="1"
+            >
+          </div>
+
+          <label class="checkbox-line homepage-editor-checkbox">
+            <input
+              type="checkbox"
+              id="homepageBlockVisible"
+              checked
+            >
+            Sichtbar
+          </label>
+
+        </div>
+
+        <div class="owner-button-row">
+
+          <button onclick="saveHomepageBlock()">
+            Speichern
+          </button>
+
+          <button
+            class="owner-gray-btn"
+            onclick="resetHomepageForm()"
           >
-          Sichtbar
-        </label>
+            Formular leeren
+          </button>
 
-        <button onclick="createHomepageBlock()">
-          Block erstellen
-        </button>
+        </div>
 
       </section>
 
-      <section class="owner-card homepage-list-card">
+      <section class="owner-card homepage-editor-list">
 
         <div class="company-board-header">
 
-          <span class="hub-kicker">
-            Inhalte
-          </span>
+          <div>
 
-          <h2>
-            Bestehende Bl&ouml;cke
-          </h2>
+            <span class="hub-kicker">
+              Inhalte
+            </span>
 
-          <p>
-            Hier kannst du vorhandene Homepage-Bl&ouml;cke bearbeiten,
-            sortieren oder l&ouml;schen.
-          </p>
+            <h2>
+              Bestehende Bl&ouml;cke
+            </h2>
+
+            <p>
+              Bearbeiten, sichtbar schalten, sortieren oder l&ouml;schen.
+            </p>
+
+          </div>
 
         </div>
 
@@ -163,7 +203,7 @@
 
 </div>
 
-<script src="./v2-homepage-editor.js?v=3300"></script>
+<script src="./v2-homepage-editor.js?v=3310"></script>
 
 <script>
 checkHomepageEditorAccess();

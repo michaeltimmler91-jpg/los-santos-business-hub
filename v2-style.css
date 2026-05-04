@@ -2363,3 +2363,103 @@ select:focus{
     min-height:auto;
   }
 }
+
+/* =========================
+   HOMEPAGE EDITOR REDESIGN
+========================= */
+
+.homepage-editor-layout{
+  width:100%;
+  display:grid;
+  grid-template-columns:420px 1fr;
+  gap:24px;
+  align-items:start;
+}
+
+.homepage-editor-stats{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.homepage-editor-form{
+  position:sticky;
+  top:20px;
+}
+
+.homepage-editor-list{
+  min-height:400px;
+}
+
+.homepage-editor-checkbox{
+  margin-top:28px;
+}
+
+.homepage-editor-block{
+  padding:20px;
+  margin-bottom:18px;
+  border-radius:24px;
+  background:#0d0d1d;
+  border:1px solid rgba(255,255,255,0.07);
+  box-shadow:0 0 20px rgba(255,20,147,0.08);
+}
+
+.homepage-editor-block-head{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:flex-start;
+  margin-bottom:14px;
+}
+
+.homepage-editor-block h3{
+  font-size:28px;
+  margin:10px 0;
+}
+
+.homepage-editor-block p{
+  color:#aaa;
+  line-height:1.6;
+}
+
+.homepage-type-badge{
+  display:inline-flex;
+  padding:7px 13px;
+  border-radius:999px;
+  background:#181830;
+  border:1px solid rgba(255,20,147,0.28);
+  color:#ff1493;
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+}
+
+.homepage-empty-box{
+  padding:22px;
+  border-radius:20px;
+  background:#0d0d1d;
+  border:1px dashed rgba(255,20,147,0.3);
+  color:#aaa;
+}
+
+@media(max-width:1000px){
+
+  .homepage-editor-layout{
+    grid-template-columns:1fr;
+  }
+
+  .homepage-editor-form{
+    position:relative;
+    top:auto;
+  }
+
+  .homepage-editor-stats{
+    grid-template-columns:1fr;
+  }
+
+  .homepage-editor-block-head{
+    flex-direction:column;
+  }
+}
