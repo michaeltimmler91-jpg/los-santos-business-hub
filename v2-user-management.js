@@ -255,7 +255,12 @@ ${
     >
       Passwort reset
     </button>
-  `
+  `<button
+  class="danger-btn"
+  onclick="deleteUser('${profile.user_id}')"
+>
+  User löschen
+</button>
   : ""
 }
 
@@ -480,6 +485,51 @@ async function logoutUser(){
 
   window.location.href =
   "v2-login.html";
+}
+
+async function deleteUser(userId){
+
+  const confirmDelete =
+  confirm(
+    "User wirklich komplett löschen?\n\nDas entfernt:\n- Profil\n- Rollen\n- Bewerbungen\n- Antworten\n\nDieser Vorgang kann NICHT rückgängig gemacht werden."
+  );
+
+  if(!confirmDelete){
+    return;
+  }
+
+  try{
+
+    await supabaseClient
+    .from("user_roles")
+    .delete()
+    .eq("user_id", userId);
+
+    await supabaseClient
+    .from("profiles")
+    .delete()
+    .eq("user_id", userId);
+
+    await supabaseClient
+    .from("applications")
+    .delete()
+    .eq("user_id", userId);
+
+    await supabaseClient
+    .from("application_messages")
+    .delete()
+    .eq("sender_id", userId);
+
+    alert("User gelöscht");
+
+    await loadUsers();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("User konnte nicht gelöscht werden");
+  }
 }
 
 function escapeHtml(text){
