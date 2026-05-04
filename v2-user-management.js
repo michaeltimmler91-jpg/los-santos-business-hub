@@ -481,63 +481,32 @@ async function deleteUser(userId){
 
   const confirmDelete =
   confirm(
-    "User wirklich komplett löschen?\n\nDas entfernt:\n- Bewerbungen\n- Nachrichten\n- Rollen\n- Profil\n\nWichtig: Der Login-Account in Supabase Auth bleibt bestehen, falls keine Edge Function genutzt wird.\n\nDieser Vorgang kann NICHT rückgängig gemacht werden."
+    "User wirklich komplett löschen?\n\nDas entfernt:\n- Bewerbungen\n- Nachrichten\n- Rollen\n- Profil\n\nDieser Vorgang kann NICHT rückgängig gemacht werden."
   );
 
   if(!confirmDelete){
     return;
   }
 
-  const deleteSteps = [
-    {
-      table:"application_messages",
-      column:"sender_user_id",
-      label:"Nachrichten"
-    },
-    {
-      table:"applications",
-      column:"user_id",
-      label:"Bewerbungen"
-    },
-    {
-      table:"user_roles",
-      column:"user_id",
-      label:"Rollen"
-    },
-    {
-      table:"profiles",
-      column:"user_id",
-      label:"Profil"
-    }
-  ];
+  const { error } =
+  await supabaseClient
+  .rpc("delete_user_full", {
+    target_user_id:userId
+  });
 
-  for(const step of deleteSteps){
+  if(error){
 
-    const { error } =
-    await supabaseClient
-    .from(step.table)
-    .delete()
-    .eq(step.column, userId);
+    console.error(error);
 
-    if(error){
+    alert(
+      "User konnte nicht gelöscht werden.\n\nFehler:\n" +
+      error.message
+    );
 
-      console.error(
-        "Fehler beim Löschen:",
-        step.label,
-        error
-      );
-
-      alert(
-        step.label +
-        " konnten nicht gelöscht werden.\n\nFehler:\n" +
-        error.message
-      );
-
-      return;
-    }
+    return;
   }
 
-  alert("User wurde aus der Userverwaltung gelöscht");
+  alert("User wurde gelöscht");
 
   await loadUsers();
 }
