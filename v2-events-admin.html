@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Events verwalten</title>
+
+  <link rel="stylesheet" href="./v2-style.css?v=4000">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="v2-hero">
+
+  <div class="hero-top-actions hero-left-actions">
+
+    <button onclick="window.location.href='v2-company.html'">
+      Firmenverwaltung
+    </button>
+
+  </div>
+
+  <div class="hero-top-actions">
+
+    <button onclick="window.location.href='v2-events.html'">
+      Eventkalender
+    </button>
+
+    <button onclick="window.location.href='v2-dashboard.html'">
+      Dashboard
+    </button>
+
+    <button onclick="logoutUser()">
+      Ausloggen
+    </button>
+
+  </div>
+
+</header>
+
+<div class="auth-page">
+
+  <div class="admin-wrapper">
+
+    <div class="dashboard-welcome-card">
+
+      <span class="hub-kicker">
+        Firmenbereich
+      </span>
+
+      <h2>
+        Events verwalten
+      </h2>
+
+      <p id="businessTitle">
+        Firma ausw&auml;hlen
+      </p>
+
+    </div>
+
+    <div class="owner-select-box">
+
+      <label>Firma ausw&auml;hlen</label>
+
+      <select id="businessSelect"></select>
+
+      <div class="register-info">
+        Events erscheinen automatisch im &ouml;ffentlichen Eventkalender.
+      </div>
+
+    </div>
+
+    <div id="eventAdminContent" class="homepage-editor-layout hidden">
+
+      <section class="owner-card homepage-editor-form">
+
+        <span class="hub-kicker" id="eventEditorMode">
+          Neues Event
+        </span>
+
+        <h2 id="eventEditorTitle">
+          Event erstellen
+        </h2>
+
+        <label>Eventtitel</label>
+        <input
+          type="text"
+          id="eventTitle"
+          placeholder="z.B. Tuningtreffen, Neuer&ouml;ffnung, Party..."
+        >
+
+        <div class="owner-two-column">
+
+          <div>
+            <label>Datum</label>
+            <input type="date" id="eventDate">
+          </div>
+
+          <div>
+            <label>Uhrzeit</label>
+            <input type="time" id="eventTime">
+          </div>
+
+        </div>
+
+        <label>Ort</label>
+        <input
+          type="text"
+          id="eventLocation"
+          placeholder="z.B. Mirror Park, Benny's, Vinewood..."
+        >
+
+        <label>Beschreibung</label>
+        <textarea
+          id="eventDescription"
+          placeholder="Was passiert bei dem Event?"
+        ></textarea>
+
+        <label class="checkbox-line">
+          <input type="checkbox" id="eventVisible" checked>
+          Im Eventkalender anzeigen
+        </label>
+
+        <div class="owner-button-row">
+
+          <button onclick="saveEvent()">
+            Event speichern
+          </button>
+
+          <button class="owner-gray-btn" onclick="resetEventForm()">
+            Formular leeren
+          </button>
+
+        </div>
+
+      </section>
+
+      <section class="owner-card homepage-editor-list">
+
+        <span class="hub-kicker">
+          Kalender
+        </span>
+
+        <h2>
+          Meine Events
+        </h2>
+
+        <div id="eventsAdminList"></div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="./v2-events-admin.js?v=4000"></script>
+
+<script>
+checkEventsAdminAccess();
+</script>
+
+</body>
+</html>
