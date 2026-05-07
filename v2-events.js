@@ -81,7 +81,7 @@ function renderNextEvent(events){
   event.businesses_v2 || {};
 
   box.innerHTML = `
-    <section class="next-event-card">
+    <section class="next-event-card dashboard-welcome-card">
 
       <span class="hub-kicker">
         N&auml;chstes Event
@@ -148,7 +148,7 @@ function renderEvents(events){
     document.createElement("div");
 
     card.className =
-    "event-card";
+    "event-card owner-card";
 
     card.innerHTML = `
       <div class="event-date-box">
