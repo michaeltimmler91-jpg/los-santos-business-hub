@@ -4,7 +4,6 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_c3bjfIzI3Qz959O6e_GqKg_5XrgbD11";
 
-
 const supabaseClient =
 supabase.createClient(
   SUPABASE_URL,
@@ -331,4 +330,3 @@ function escapeHtml(text){
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
 }
-
