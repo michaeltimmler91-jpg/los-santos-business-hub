@@ -2484,64 +2484,66 @@ select:focus{
 }
 /* =========================
    EVENTS
+   nutzt vorhandene Hub-/Card-Styles
 ========================= */
 
 .events-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:20px;
+  gap:24px;
   margin-top:24px;
 }
 
 .event-card{
+  display:grid;
+  grid-template-columns:90px 1fr;
+  gap:18px;
+  align-items:start;
+}
+
+.event-date-box{
+  width:90px;
+  min-height:90px;
+  border-radius:22px;
+  background:linear-gradient(180deg,#ff1493,#e0007a);
   display:flex;
   flex-direction:column;
-  gap:18px;
-  padding:22px;
-  border-radius:26px;
-  background:linear-gradient(180deg,rgba(18,18,34,0.98),rgba(10,10,20,0.98));
-  border:1px solid rgba(255,20,147,0.18);
-  box-shadow:0 0 24px rgba(255,20,147,0.10);
-  position:relative;
-  overflow:hidden;
+  justify-content:center;
+  align-items:center;
+  box-shadow:0 0 22px rgba(255,20,147,0.35);
 }
 
-.event-card::before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:4px;
-  background:linear-gradient(90deg,#ff1493,#ff4db2);
+.event-date-box strong{
+  font-size:32px;
+  line-height:1;
+  color:white;
 }
 
-.event-date{
-  display:inline-flex;
-  width:max-content;
-  padding:8px 14px;
-  border-radius:999px;
-  background:#181830;
-  border:1px solid rgba(255,255,255,0.08);
-  color:#ff1493;
+.event-date-box span{
+  margin-top:6px;
   font-size:13px;
   font-weight:900;
   text-transform:uppercase;
-  letter-spacing:0.8px;
+  color:white;
 }
 
-.event-card h2{
-  font-size:30px;
+.event-card-content h2{
+  font-size:28px;
   line-height:1.1;
+  margin:8px 0 14px;
+  color:white;
 }
 
-.event-meta{
+.event-meta,
+.next-event-meta{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
+  margin:12px 0;
 }
 
-.event-meta span{
+.event-meta span,
+.next-event-meta span{
   padding:9px 13px;
   border-radius:999px;
   background:#141428;
@@ -2551,16 +2553,35 @@ select:focus{
   font-weight:bold;
 }
 
-.event-description{
+.event-card-content p,
+.next-event-card p{
   color:#ccc;
   line-height:1.7;
+  margin:14px 0;
 }
 
+.next-event-card{
+  margin:26px 0;
+}
 
-.next-event-highlight{
-  margin-bottom:28px;
-  border:1px solid rgba(255,20,147,0.28);
-  box-shadow:
-    0 0 40px rgba(255,20,147,0.18),
-    0 0 90px rgba(255,20,147,0.08);
+.next-event-card h2{
+  font-size:42px;
+  line-height:1.05;
+  margin:10px 0 18px;
+  color:white;
+}
+
+@media(max-width:700px){
+
+  .event-card{
+    grid-template-columns:1fr;
+  }
+
+  .event-date-box{
+    width:90px;
+  }
+
+  .next-event-card h2{
+    font-size:30px;
+  }
 }
